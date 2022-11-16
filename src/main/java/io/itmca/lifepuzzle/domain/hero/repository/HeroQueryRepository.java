@@ -1,14 +1,14 @@
 package io.itmca.lifepuzzle.domain.hero.repository;
 
-import io.itmca.lifepuzzle.global.type.Hero;
-import org.springframework.stereotype.Component;
+import io.itmca.lifepuzzle.domain.hero.entity.Hero;
+import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
+import java.util.Optional;
 
-@Component
-public class HeroQueryRepository {
-    private final EntityManager entityManager;
-
-    public Hero findByHeroNo(int herNo) {}
-    public Hero findHeroesByUserNo(int userNo) {}
+@Repository
+public interface HeroQueryRepository extends CrudRepository<HeroUserAuth, Long> {
+    HeroUserAuth[] findAllByUserNo(Long userNo);
+    Optional<HeroUserAuth> findByUserNoAndHero(Long userNo, Hero hero);
 }
