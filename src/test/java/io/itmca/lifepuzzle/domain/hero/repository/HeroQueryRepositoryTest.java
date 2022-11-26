@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -36,19 +34,17 @@ class HeroQueryRepositoryTest {
     @DisplayName("DB 주인공 번호와 유저 번호로 주인공 1개 가져오기 테스트")
     @Test
     public void getHeroWithUserTest() {
-        Hero hero = Hero.getHeroInstance();
-        hero.setHeroId(2L);
+        Hero hero = Hero.builder().heroNo(2L).build();
 
         Optional<HeroUserAuth> heroUserAuth = heroQueryRepository.findByUserNoAndHero(4L, hero);
         Hero findHero = heroUserAuth.get().getHero();
-        Assertions.assertThat(findHero.getHeroId()).isEqualTo(2L);
+        Assertions.assertThat(findHero.getHeroNo()).isEqualTo(2L);
     };
 
     @DisplayName("[실패 케이스] DB 없는 주인공 번호와 유저 번호로 주인공 1개 가져오기 테스트")
     @Test
     public void getAllHeroWithUserInDBTest() {
-        Hero hero = Hero.getHeroInstance();
-        hero.setHeroId(1L);
+        Hero hero = Hero.builder().heroNo(1L).build();
 
         Optional<HeroUserAuth> heroUserAuth = heroQueryRepository.findByUserNoAndHero(4L, hero);
         assertThrows(NoSuchElementException.class, () -> {heroUserAuth.get();});

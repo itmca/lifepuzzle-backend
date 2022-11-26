@@ -3,12 +3,12 @@ package io.itmca.lifepuzzle.domain.hero.service;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroQueryRepository;
+import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToHeroException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class HeroQueryService {
@@ -19,28 +19,37 @@ public class HeroQueryService {
         this.heroQueryRepository = heroQueryRepository;
     }
 
-    public Hero findByUserNoAndHeroNo(Long userNo, Long heroNo) {
-        Hero findHero = Hero.getHeroInstance();
-        findHero.setHeroId(heroNo);
-        Optional<HeroUserAuth> heroUserAuth = this.heroQueryRepository.findByUserNoAndHero(userNo, findHero);
+    /**
+    * @throws UserNotAccessibleToHeroException 유저가 권한이 있는 주인공이 없는 경우
+    * */
+    public Hero findHeroByUserValidation(Long userNo, Long heroNo) {
+        var findHero = Hero.builder()
+                .heroNo(heroNo)
+                .build();
+        var optionalHeroUserAuth = this.heroQueryRepository.findByUserNoAndHero(userNo, findHero);
+        var heroUserAuth = optionalHeroUserAuth.orElseThrow(() -> new UserNotAccessibleToHeroException());
 
-        if(heroUserAuth.equals(Optional.empty())){
-            System.out.println("EMPTYH OOHOHO");
-            return null;
-        }
+        return heroUserAuth.getHero();
+    }
 
-        Hero hero = heroUserAuth.get().getHero();
-        return hero;
+    /*
+    * 권한 체크에 대해서 서비스를 따로 분리해야할지 고민?
+    * boolean 현태로 넘길지도 고민? 아니면 예외 처리 할지 고민?
+     */
+    public HeroUserAuth findHeroUserAuth(Long userNo, Long heroNo){
+        var findHero = Hero.builder()
+                .heroNo(heroNo)
+                .build();
+        var optionalHeroUserAuth = this.heroQueryRepository.findByUserNoAndHero(userNo, findHero);
+        var heroUserAuth = optionalHeroUserAuth.orElseThrow(() -> new UserNotAccessibleToHeroException());
+
+        return heroUserAuth;
     }
     public List<Hero> findHeroesByUserNo(Long userNo) {
-        HeroUserAuth[] heroUserAuths = this.heroQueryRepository.findAllByUserNo(userNo);
-        List<Hero> heroes = new ArrayList<>();
+        var heroUserAuths = this.heroQueryRepository.findAllByUserNo(userNo);
 
-        for(HeroUserAuth heroUserAuth : heroUserAuths) {
-            Hero hero = heroUserAuth.getHero();
-            heroes.add(hero);
-        }
-
-        return heroes;
+        return Arrays.stream(heroUserAuths)
+                .map(HeroUserAuth::getHero)
+                .toList();
     }
 }
