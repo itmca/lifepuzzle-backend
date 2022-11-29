@@ -6,10 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface HeroQueryRepository extends CrudRepository<HeroUserAuth, Long> {
-    HeroUserAuth[] findAllByUserNo(Long userNo);
-    Optional<HeroUserAuth> findByUserNoAndHero(Long userNo, Hero hero);
+    List<HeroUserAuth> findAllByUserNo(Long userNo);
+
+    @Query(value = "SELECT h FROM Hero h WHERE h.heroNo = :heroNo")
+    Optional<Hero> findByHeroNoWithJPQL(Long heroNo);
 }

@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name = "user_hero_auth")
-@Builder
 @Getter
-@Setter
+@Builder
+@ToString
 @NoArgsConstructor
+@Table(name = "user_hero_auth")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class HeroUserAuth {
 
@@ -21,7 +21,7 @@ public class HeroUserAuth {
     private Long seq;
     private Long userNo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "heroNo")
     private Hero hero;
     private String auth;
@@ -34,8 +34,4 @@ public class HeroUserAuth {
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
-//    public void addhero(Hero hero){
-//        this.hero = hero;
-//        hero.getHeroUserAuths().add(this);
-//    }
 }

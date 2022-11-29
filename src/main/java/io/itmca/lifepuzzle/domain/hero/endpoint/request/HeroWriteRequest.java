@@ -5,17 +5,19 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Builder
-@AllArgsConstructor
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class HeroWriteRequest {
 
-    private final Long heroNo;
-    private final String heroName;
-    private final String heroNickName;
-    private final LocalDateTime birthday;
-    private final String title;
-    private final String imageURL;
+    private Long heroNo;
+    private String heroName;
+    private String heroNickName;
+    private LocalDateTime birthday;
+    private String title;
+    private String imageURL;
 
     public Hero toHero(){
         return toHeroOf(heroNo);

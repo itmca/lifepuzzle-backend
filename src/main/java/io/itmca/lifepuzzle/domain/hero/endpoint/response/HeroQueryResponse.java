@@ -5,8 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class HeroQueryResponse {

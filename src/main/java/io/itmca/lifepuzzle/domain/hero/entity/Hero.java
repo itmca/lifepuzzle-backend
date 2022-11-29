@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Builder
 @Getter
+@Builder
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -28,9 +28,6 @@ public class Hero {
     private String image;
     private String title;
 
-//    @OneToMany(mappedBy = "hero")
-//    private List<HeroUserAuth> heroUserAuths = new ArrayList<>();
-
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -38,14 +35,5 @@ public class Hero {
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime updatedAt;
-//
-//    public boolean canBeAccessedBy(Long userNo){
-//        return false;
-//    }
-//
-//    public void addAccessibleUser(HeroUserAuth heroUserAuth){
-//        heroUserAuth.setHero(this);
-//
-//        this.heroUserAuths.add(heroUserAuth);
-//    }
+
 }

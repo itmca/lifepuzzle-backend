@@ -19,36 +19,14 @@ public class HeroQueryService {
         this.heroQueryRepository = heroQueryRepository;
     }
 
-    /**
-    * @throws UserNotAccessibleToHeroException 유저가 권한이 있는 주인공이 없는 경우
-    * */
-    public Hero findHeroByUserValidation(Long userNo, Long heroNo) {
-        var findHero = Hero.builder()
-                .heroNo(heroNo)
-                .build();
-        var optionalHeroUserAuth = this.heroQueryRepository.findByUserNoAndHero(userNo, findHero);
-        var heroUserAuth = optionalHeroUserAuth.orElseThrow(() -> new UserNotAccessibleToHeroException());
-
-        return heroUserAuth.getHero();
+    public Hero findHeroByUserValidation(Long heroNo) {
+         return this.heroQueryRepository.findByHeroNoWithJPQL(heroNo).get();
     }
 
-    /*
-    * 권한 체크에 대해서 서비스를 따로 분리해야할지 고민?
-    * boolean 현태로 넘길지도 고민? 아니면 예외 처리 할지 고민?
-     */
-    public HeroUserAuth findHeroUserAuth(Long userNo, Long heroNo){
-        var findHero = Hero.builder()
-                .heroNo(heroNo)
-                .build();
-        var optionalHeroUserAuth = this.heroQueryRepository.findByUserNoAndHero(userNo, findHero);
-        var heroUserAuth = optionalHeroUserAuth.orElseThrow(() -> new UserNotAccessibleToHeroException());
-
-        return heroUserAuth;
-    }
     public List<Hero> findHeroesByUserNo(Long userNo) {
         var heroUserAuths = this.heroQueryRepository.findAllByUserNo(userNo);
 
-        return Arrays.stream(heroUserAuths)
+        return heroUserAuths.stream()
                 .map(HeroUserAuth::getHero)
                 .toList();
     }

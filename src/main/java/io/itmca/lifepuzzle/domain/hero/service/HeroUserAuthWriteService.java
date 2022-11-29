@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class HeroUserAuthWriteService {
-
     private final HeroUserAuthWriteRepository heroUserAuthWriteRepository;
 
     public HeroUserAuth create(HeroUserAuth heroUserAuth){

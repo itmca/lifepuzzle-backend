@@ -3,6 +3,7 @@ package io.itmca.lifepuzzle.domain.hero.endpoint;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
+import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.List;
 public class HeroQueryEndpoint {
 
     private final HeroQueryService heroQueryService;
+    private final HeroValidationService heroValidationService;
 
     @GetMapping("")
     public List<HeroQueryResponse> getHeroes(@RequestParam("user") Long userNo) {
@@ -24,8 +26,8 @@ public class HeroQueryEndpoint {
 
     @GetMapping("/{heroNo}/{userNo}")
     public HeroQueryResponse getHeroDetail(@PathVariable("heroNo") Long heroNo, @PathVariable("userNo") Long userNo){
-        Hero hero = heroQueryService.findHeroByUserValidation(userNo, heroNo);
+        heroValidationService.validateUserCanAccessedHero(userNo, heroNo);
 
-        return HeroQueryResponse.from(hero);
+        return HeroQueryResponse.from(heroQueryService.findHeroByUserValidation(heroNo));
     }
 }
