@@ -7,12 +7,13 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 
+
+@Table(name = "user_hero_auth")
 @Entity
 @Getter
 @Builder
 @ToString
 @NoArgsConstructor
-@Table(name = "user_hero_auth")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class HeroUserAuth {
 

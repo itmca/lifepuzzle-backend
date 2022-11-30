@@ -19,8 +19,8 @@ public class HeroQueryResponse {
                 .build();
     }
 
-    @Builder(access = AccessLevel.PRIVATE)
     @Getter
+    @Builder(access = AccessLevel.PRIVATE)
     private static class HeroQueryDTO {
         private Long number;
         private String heroName;
