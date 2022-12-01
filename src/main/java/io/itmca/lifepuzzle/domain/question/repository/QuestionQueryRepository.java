@@ -1,18 +1,13 @@
 package io.itmca.lifepuzzle.domain.question.repository;
 
+import io.itmca.lifepuzzle.domain.question.entity.Question;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
+import java.util.List;
 
 @Repository
-public class QuestionQueryRepository {
-    private final EntityManager entityManager;
-
-    public QuestionQueryRepository(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
-    public void getAll(){}
-    public void getById(String questionNo){}
-    public void getByCategory(String category){}
+public interface QuestionQueryRepository extends JpaRepository<Question, Long> {
+    List<Question> findAll();
+    List<Question> findByCategory(String category);
 }
