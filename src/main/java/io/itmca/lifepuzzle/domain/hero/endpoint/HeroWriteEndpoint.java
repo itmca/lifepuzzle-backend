@@ -36,7 +36,7 @@ public class HeroWriteEndpoint {
     public HeroQueryResponse updateHero(@RequestBody HeroWriteRequest heroWriteRequest, @PathVariable("heroNo") Long heroNo) {
         var dummyUserNo = 4L;
 
-        heroValidationService.validateUserCanAccessedHero(dummyUserNo, heroNo);
+        heroValidationService.validateUserCanAccessHero(dummyUserNo, heroNo);
 
         return HeroQueryResponse.from(heroWriteService.create(heroWriteRequest.toHeroOf(heroNo)));
     }
@@ -45,7 +45,7 @@ public class HeroWriteEndpoint {
     public void deleteHeroAndHeroUserAuth(@PathVariable("heroNo") Long heroNo) {
         var dummyUserNo = 4L;
 
-        heroValidationService.validateUserCanAccessedHero(dummyUserNo, heroNo);
+        heroValidationService.validateUserCanAccessHero(dummyUserNo, heroNo);
         heroWriteService.remove(heroNo);
     }
 

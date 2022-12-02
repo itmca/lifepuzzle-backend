@@ -13,7 +13,7 @@ import java.util.List;
 public class HeroValidationService {
     private final HeroUserAuthQueryRepository heroUserAuthQueryRepository;
 
-    public void validateUserCanAccessedHero(Long userNo, Long heroNo) {
+    public void validateUserCanAccessHero(Long userNo, Long heroNo) {
         List<HeroUserAuth> heroUserAuths = heroUserAuthQueryRepository.findByUserNoAndHeroNo(userNo, heroNo);
 
         if(heroUserAuths.isEmpty()) throw new UserNotAccessibleToHeroException();

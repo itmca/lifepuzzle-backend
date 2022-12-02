@@ -1,7 +1,6 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint;
 
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
-import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,7 @@ public class HeroQueryEndpoint {
 
     @GetMapping("/{heroNo}/{userNo}")
     public HeroQueryResponse getHeroDetail(@PathVariable("heroNo") Long heroNo, @PathVariable("userNo") Long userNo){
-        heroValidationService.validateUserCanAccessedHero(userNo, heroNo);
+        heroValidationService.validateUserCanAccessHero(userNo, heroNo);
 
         return HeroQueryResponse.from(heroQueryService.findHeroByUserValidation(heroNo));
     }
