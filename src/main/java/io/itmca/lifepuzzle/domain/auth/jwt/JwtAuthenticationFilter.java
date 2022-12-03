@@ -20,10 +20,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(jwt) && JwtTokenProvider.validateToken(jwt)) {
                 String userId = JwtTokenProvider.getUserIdFromJWT(jwt);
 
-                UserAuthentication authentication = new UserAuthentication(userId, null, null); //id를 인증한다.
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); //기본적으로 제공한 details 세팅
+                UserAuthentication authentication = new UserAuthentication(userId, null, null);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication); //세션에서 계속 사용하기 위해 securityContext에 Authentication 등록
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
                 if (!StringUtils.hasText(jwt)) {
                     request.setAttribute("unauthorization", "401 인증키 없음.");

@@ -16,10 +16,10 @@ public class TokenIssueService {
         return Token.builder()
                 .accessToken(JwtTokenProvider.generateToken(authentication))
                 .accessTokenExpireAt(LocalDateTime.now()
-                        .plusSeconds(JwtTokenProvider.ACCESS_TOKEN_DURATION / 1000))
+                        .plusSeconds(JwtTokenProvider.ACCESS_TOKEN_DURATION))
                 .refreshToken("")
                 .refreshTokenExpireAt(LocalDateTime.now()
-                        .plusSeconds(JwtTokenProvider.REFRESH_TOKEN_DURATION / 1000))
+                        .plusSeconds(JwtTokenProvider.REFRESH_TOKEN_DURATION))
                 .build();
     }
 }

@@ -4,30 +4,30 @@ import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Slf4j
 public class JwtTokenProvider {
 
     private static final String JWT_SECRET = "secretkey";
 
-    public static final int ACCESS_TOKEN_DURATION = 30 * 60 * 1000;
-    public static final int REFRESH_TOKEN_DURATION = 12 * 24 * 60 * 60 * 1000;
+    public static final int ACCESS_TOKEN_DURATION = 30 * 60;
+    public static final int REFRESH_TOKEN_DURATION = 12 * 24 * 60 * 60;
 
     public static String generateToken(Authentication authentication) {
 
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + ACCESS_TOKEN_DURATION);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expiryDate = now.plusSeconds(ACCESS_TOKEN_DURATION);
 
         return Jwts.builder()
                 .setSubject((String) authentication.getPrincipal())
-                .setIssuedAt(new Date())
-                .setExpiration(expiryDate)
+                .setIssuedAt(Timestamp.valueOf(now))
+                .setExpiration(Timestamp.valueOf(expiryDate))
                 .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
                 .compact();
     }
 
-    // JWT 토큰에서 아이디 추출
     public static String getUserIdFromJWT(String token) {
         return Jwts.parser()
                 .setSigningKey(JWT_SECRET)

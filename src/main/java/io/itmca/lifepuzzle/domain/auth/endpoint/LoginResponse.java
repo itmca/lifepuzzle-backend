@@ -32,7 +32,7 @@ public class LoginResponse {
 //            return UserQueryDto.builder()
 //                    .userNo(user.getUserNo())
 //                    .userNickName(user.getNickName())
-//                    .userType(user.getUserType(user))
+//                    .userType(user.getUserType())
 //                    .build();
             return UserQueryDto.builder()
                     .userNo(1L)
