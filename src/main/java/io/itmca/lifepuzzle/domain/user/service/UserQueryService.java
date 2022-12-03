@@ -1,16 +1,37 @@
 package io.itmca.lifepuzzle.domain.user.service;
 
 import io.itmca.lifepuzzle.domain.user.entity.User;
+import io.itmca.lifepuzzle.domain.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserQueryService {
 
-    public User findByUserNo(long userNo){return new User();}
+    private final UserRepository userRepository;
 
-    public User findByUserId(String userId){return new User();}
+    @Autowired
+    public UserQueryService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-    public User findByEmail(String email){return new User();}
+    public User findByUserNo(long userNo) {
+        return new User();
+    }
 
-    public User findByKakaoId(String kakaoId){return new User();}
+    public User findByUserId(String userId) {
+        return this.userRepository.findByUserId(userId);
+    }
 
-    public User findByAppleId(String appleId){return new User();}
+    public User findByEmail(String email) {
+        return new User();
+    }
+
+    public User findByKakaoId(String kakaoId) {
+        return new User();
+    }
+
+    public User findByAppleId(String appleId) {
+        return new User();
+    }
 }
