@@ -6,19 +6,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-
-
-@Table(name = "user_hero_auth")
-@Entity
-@Getter
-@Builder
-@ToString
+@Entity @Table(name = "user_hero_auth")
+@Getter @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class HeroUserAuth {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
     private Long userNo;
 

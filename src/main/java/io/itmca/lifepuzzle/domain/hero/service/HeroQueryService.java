@@ -3,19 +3,17 @@ package io.itmca.lifepuzzle.domain.hero.service;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroQueryRepository;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class HeroQueryService {
     private final HeroQueryRepository heroQueryRepository;
-
-    @Autowired
-    public HeroQueryService(HeroQueryRepository heroQueryRepository) {
-        this.heroQueryRepository = heroQueryRepository;
-    }
 
     public Hero findHeroByUserValidation(Long heroNo) {
          return this.heroQueryRepository.findByHeroNo(heroNo).get();

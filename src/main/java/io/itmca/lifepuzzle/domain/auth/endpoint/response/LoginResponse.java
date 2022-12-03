@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.auth.endpoint;
+package io.itmca.lifepuzzle.domain.auth.endpoint.response;
 
 import io.itmca.lifepuzzle.domain.auth.entity.Token;
 import io.itmca.lifepuzzle.domain.user.entity.User;

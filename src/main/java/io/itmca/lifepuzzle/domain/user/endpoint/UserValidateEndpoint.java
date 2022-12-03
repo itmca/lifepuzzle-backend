@@ -3,22 +3,22 @@ package io.itmca.lifepuzzle.domain.user.endpoint;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("user")
 public class UserValidateEndpoint {
 
-    @GetMapping("dupcheck/email")
+    @GetMapping("/user/dupcheck/email")
     public void checkEmail(@RequestParam("email") String email) {
     }
 
-    @GetMapping("dupcheck/id")
+    @GetMapping("/user/dupcheck/id")
     public String checkId(@RequestParam("id") String id) {
+        return null;
     }
 
-    @PostMapping("email/verification")
-    public void sendVerificationEmail(@Request String email) {
+    @PostMapping("/user/email/verification")
+    public void sendVerificationEmail(@RequestParam String email) {
     }
 
-    @PostMapping("validation/email/code")
+    @PostMapping("/user/validation/email/code")
     public void checkUserByEmail(@RequestBody String email, @RequestBody String code) {
     }
 }

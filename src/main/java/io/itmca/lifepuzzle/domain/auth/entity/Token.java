@@ -5,13 +5,11 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Builder
 @Getter
+@Builder
 public class Token {
-
     private String accessToken;
     private LocalDateTime accessTokenExpireAt;
     private String refreshToken;
     private LocalDateTime refreshTokenExpireAt;
-
 }
