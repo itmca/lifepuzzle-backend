@@ -1,22 +1,23 @@
 package io.itmca.lifepuzzle.domain.user.entity;
 
-<<<<<<< Updated upstream
-=======
 import io.itmca.lifepuzzle.domain.user.LoginType;
 import lombok.*;
 import org.springframework.util.StringUtils;
 
->>>>>>> Stashed changes
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.time.LocalDate;
 
 @Entity
+@Getter
+@Builder
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
     private Long userNo;
-<<<<<<< Updated upstream
-=======
     private String userId;
     private String email;
     private String salt;
@@ -41,5 +42,4 @@ public class User {
             return LoginType.KAKAO;
         return LoginType.GENERAL;
     }
->>>>>>> Stashed changes
 }
