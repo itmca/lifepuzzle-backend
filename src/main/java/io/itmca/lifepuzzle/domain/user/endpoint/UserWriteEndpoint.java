@@ -1,7 +1,7 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
-import io.itmca.lifepuzzle.domain.user.endpoint.request.UserPasswordUpdateDto;
-import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateDto;
+import io.itmca.lifepuzzle.domain.user.endpoint.request.UserPasswordUpdateRequest;
+import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserWriteEndpoint {
 
     @PutMapping("/{id}")
-    public void updateUser(@PathVariable long id, @RequestBody UserUpdateDto userUpdateDto) {}
+    public void updateUser(@PathVariable long id, @RequestBody UserUpdateRequest userUpdateDto) {
+    }
 
     @PutMapping("/{id}/password")
-    public void updateUserPassword(@PathVariable long id, @RequestBody UserPasswordUpdateDto userPasswordUpdateDto) {}
+    public void updateUserPassword(@PathVariable long id, @RequestBody UserPasswordUpdateRequest userPasswordUpdateDto) {
+    }
 
 }

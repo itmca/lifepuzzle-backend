@@ -1,6 +1,8 @@
 package io.itmca.lifepuzzle.domain.user.entity;
 
+import io.itmca.lifepuzzle.domain.user.LoginType;
 import lombok.*;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -33,12 +35,11 @@ public class User {
     private LocalDate createdAt;
     private LocalDate updatedAt;
 
-    public String getUserType(User user) {
-        // null or empty 체크 메서드
-        if (user.getAppleId() != null && !user.getAppleId().isEmpty())
-            return "apple";
-        else if (user.getKakaoId() != null && !user.getKakaoId().isEmpty())
-            return "kakao";
-        return "general";
+    public LoginType getUserType() {
+        if (StringUtils.hasText(this.appleId))
+            return LoginType.APPLE;
+        else if (StringUtils.hasText(this.kakaoId))
+            return LoginType.KAKAO;
+        return LoginType.GENERAL;
     }
 }
