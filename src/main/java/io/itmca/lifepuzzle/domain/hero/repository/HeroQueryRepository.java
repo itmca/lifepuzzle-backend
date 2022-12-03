@@ -14,5 +14,5 @@ public interface HeroQueryRepository extends JpaRepository<HeroUserAuth, Long> {
     List<HeroUserAuth> findAllByUserNo(Long userNo);
 
     @Query(value = "SELECT h FROM Hero h WHERE h.heroNo = :heroNo")
-    Optional<Hero> findByHeroNoWithJPQL(Long heroNo);
+    Optional<Hero> findByHeroNo(Long heroNo);
 }

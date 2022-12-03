@@ -3,11 +3,9 @@ package io.itmca.lifepuzzle.domain.hero.service;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroQueryRepository;
-import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToHeroException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -20,7 +18,7 @@ public class HeroQueryService {
     }
 
     public Hero findHeroByUserValidation(Long heroNo) {
-         return this.heroQueryRepository.findByHeroNoWithJPQL(heroNo).get();
+         return this.heroQueryRepository.findByHeroNo(heroNo).get();
     }
 
     public List<Hero> findHeroesByUserNo(Long userNo) {

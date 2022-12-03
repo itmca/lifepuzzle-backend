@@ -8,11 +8,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class HeroQueryRepositoryTest {
@@ -37,21 +38,17 @@ class HeroQueryRepositoryTest {
     @DisplayName("DB 주인공 번호와 유저 번호로 주인공 1개 가져오기 테스트")
     @Disabled
     public void getHeroWithUserTest() {
-        Hero hero = Hero.builder().heroNo(2L).build();
 
-        Optional<HeroUserAuth> heroUserAuth = heroQueryRepository.findByUserNoAndHero(4L, hero);
-        Hero findHero = heroUserAuth.get().getHero();
-        Assertions.assertThat(findHero.getHeroNo()).isEqualTo(2L);
+        Optional<Hero> hero = heroQueryRepository.findByHeroNo(4L);
+        Assertions.assertThat(hero.get().getHeroNo()).isEqualTo(4L);
     };
 
     @Test
     @Disabled
     @DisplayName("[실패 케이스] DB 없는 주인공 번호와 유저 번호로 주인공 1개 가져오기 테스트")
     public void getAllHeroWithUserInDBTest() {
-        Hero hero = Hero.builder().heroNo(1L).build();
-
-        Optional<HeroUserAuth> heroUserAuth = heroQueryRepository.findByUserNoAndHero(4L, hero);
-        assertThrows(NoSuchElementException.class, () -> {heroUserAuth.get();});
+        Optional<Hero> hero = heroQueryRepository.findByHeroNo(1L);
+        assertThrows(NoSuchElementException.class, () -> {hero.get();});
     };
 
 }
