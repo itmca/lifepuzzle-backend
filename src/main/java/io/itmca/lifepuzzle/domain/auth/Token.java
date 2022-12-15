@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.auth.entity;
+package io.itmca.lifepuzzle.domain.auth;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,24 +1,65 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
+import io.itmca.lifepuzzle.domain.user.endpoint.request.MailRequest;
+import io.itmca.lifepuzzle.domain.user.entity.UserEmailValidation;
+import io.itmca.lifepuzzle.domain.user.service.MailService;
+import io.itmca.lifepuzzle.domain.user.service.UserEmailValidationService;
+import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("user")
+@RequiredArgsConstructor
 public class UserValidateEndpoint {
 
-    @GetMapping("/user/dupcheck/email")
-    public void checkEmail(@RequestParam("email") String email) {
+    private final UserQueryService userQueryService;
+    private final MailService mailService;
+    private final UserEmailValidationService userEmailValidationService;
+
+    @GetMapping("/dupcheck/email")
+    public boolean checkEmail(@RequestParam("email") String email) {
+        var isDuplicated = false;
+        var user = userQueryService.findByEmail(email);
+        if (user != null) isDuplicated = true;
+
+        return isDuplicated;
     }
 
-    @GetMapping("/user/dupcheck/id")
-    public String checkId(@RequestParam("id") String id) {
-        return null;
+    @GetMapping("/dupcheck/id")
+    public boolean checkId(@RequestParam("id") String id) {
+        var isDuplicated = false;
+        var user = userQueryService.findByUserId(id);
+        if (user != null) isDuplicated = true;
+
+        return isDuplicated;
     }
 
-    @PostMapping("/user/email/verification")
-    public void sendVerificationEmail(@RequestParam String email) {
+    @PostMapping("/email/verification")
+    public HttpStatus sendVerificationEmail(@RequestParam("email") String email) {
+        var code = (int) (Math.random() * 1000000);
+        userEmailValidationService.create(
+                UserEmailValidation.builder()
+                        .email(email)
+                        .code(String.valueOf(code))
+                        .build()
+        );
+        mailService.sendEmail(
+                MailRequest.builder()
+                        .to(email)
+                        .from("***REMOVED***")
+                        .subject("[인생퍼즐] 이메일 인증 요청 메일입니다.")
+                        .html("6자리 인증 코드 : " + code)
+                        .build()
+        );
+
+        return HttpStatus.OK;
     }
 
-    @PostMapping("/user/validation/email/code")
-    public void checkUserByEmail(@RequestBody String email, @RequestBody String code) {
+    @PostMapping("/validation/email/code")
+    public boolean checkUserByEmail(@RequestParam("email") String email, @RequestParam("code") String code) {
+        UserEmailValidation userEmailValidation = userEmailValidationService.findRecentOneByEmail(email);
+        return userEmailValidation.getCode().equals(code);
     }
 }

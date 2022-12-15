@@ -1,18 +1,24 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
-import org.springframework.web.bind.annotation.*;
+import io.itmca.lifepuzzle.domain.user.CurrentUser;
+import io.itmca.lifepuzzle.domain.user.entity.User;
+import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
+import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "user")
+@RequiredArgsConstructor
 public class UserHeroEndpoint {
+    
+    private final UserQueryService userQueryService;
+    private final UserWriteService userWriteService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "Hello World";
-    }
-
-    @PostMapping("/hero/recent")
-    public String updateRecentHero(@RequestBody String heroNo) {
-        return heroNo;
+    @PostMapping("/user/hero/recent")
+    public void updateRecentHero(@RequestParam("heroNo") Long heroNo,
+                                 @CurrentUser User user) {
+        userWriteService.changeRecentHeroNo(user, heroNo);
     }
 }

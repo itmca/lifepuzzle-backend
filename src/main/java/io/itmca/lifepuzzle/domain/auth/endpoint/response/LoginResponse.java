@@ -1,7 +1,10 @@
 package io.itmca.lifepuzzle.domain.auth.endpoint.response;
 
-import io.itmca.lifepuzzle.domain.auth.entity.Token;
+import io.itmca.lifepuzzle.domain.auth.Token;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
+import io.itmca.lifepuzzle.domain.user.UserType;
 import io.itmca.lifepuzzle.domain.user.entity.User;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,37 +16,34 @@ public class LoginResponse {
 
     private UserQueryDto user;
     private TokenQueryDto tokens;
+    private HeroQueryResponse hero;
 
-    public static LoginResponse from(User user, Token tokens) {
+    public static LoginResponse from(User user, Token tokens, HeroQueryResponse hero) {
         return LoginResponse.builder()
                 .user(UserQueryDto.from(user))
                 .tokens(TokenQueryDto.from(tokens))
+                .hero(hero)
                 .build();
     }
 
     @Getter
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private static class UserQueryDto {
         private Long userNo;
         private String userNickName;
-        private String userType;
+        private UserType userType;
 
         public static UserQueryDto from(User user) {
-//            return UserQueryDto.builder()
-//                    .userNo(user.getUserNo())
-//                    .userNickName(user.getNickName())
-//                    .userType(user.getUserType())
-//                    .build();
             return UserQueryDto.builder()
-                    .userNo(1L)
-                    .userNickName("솔미")
-                    .userType("")
+                    .userNo(user.getUserNo())
+                    .userNickName(user.getNickName())
+                    .userType(user.getUserType())
                     .build();
         }
     }
 
     @Getter
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private static class TokenQueryDto {
         private String accessToken;
         private LocalDateTime accessTokenExpireAt;
@@ -55,12 +55,10 @@ public class LoginResponse {
             return TokenQueryDto.builder()
                     .accessToken(tokens.getAccessToken())
                     .accessTokenExpireAt(tokens.getAccessTokenExpireAt())
-                    .refreshToken("")
+                    .refreshToken(tokens.getRefreshToken())
                     .refreshTokenExpireAt(tokens.getRefreshTokenExpireAt())
                     .socialToken("")
                     .build();
         }
     }
-
-
 }

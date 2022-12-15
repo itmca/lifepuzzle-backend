@@ -1,13 +1,24 @@
 package io.itmca.lifepuzzle.domain.user.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Entity
+import javax.persistence.*;
+import java.time.LocalDate;
+
+@Entity(name = "user_email_validation")
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEmailValidation {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
-
     private String email;
+    private String code;
+    @Column(name = "created_at")
+    private LocalDate createdAt;
 }

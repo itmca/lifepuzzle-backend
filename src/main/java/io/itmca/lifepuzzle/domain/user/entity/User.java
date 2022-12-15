@@ -1,12 +1,12 @@
 package io.itmca.lifepuzzle.domain.user.entity;
 
-import io.itmca.lifepuzzle.domain.user.LoginType;
+import io.itmca.lifepuzzle.domain.user.UserType;
 import lombok.*;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -15,31 +15,51 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-
     @Id
+    @Column(name = "seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userNo;
+    @Column(name = "id")
     private String userId;
     private String email;
     private String salt;
     private String password;
     private LocalDate birthday;
+    @Column(name = "recent_hero")
     private Long recentHeroNo;
     private boolean validated;
+    @Column(name = "nick_name")
     private String nickName;
+    @Column(name = "kakao_id")
     private String kakaoId;
+    @Column(name = "apple_id")
     private String appleId;
+    @Column(name = "email_notice")
     private boolean emailNotice;
+    @Column(name = "phone_notice")
     private boolean phoneNotice;
+    @Column(name = "kakao_notice")
     private boolean kakaoNotice;
+    @Column(name = "inapp_notice")
     private boolean inappNotice;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-    public LoginType getUserType() {
+    public UserType getUserType() {
         if (StringUtils.hasText(this.appleId))
-            return LoginType.APPLE;
+            return UserType.APPLE;
         else if (StringUtils.hasText(this.kakaoId))
-            return LoginType.KAKAO;
-        return LoginType.GENERAL;
+            return UserType.KAKAO;
+        return UserType.GENERAL;
+    }
+
+    public void changeRecentHeroNo(Long heroNo) {
+        this.recentHeroNo = heroNo;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
     }
 }
