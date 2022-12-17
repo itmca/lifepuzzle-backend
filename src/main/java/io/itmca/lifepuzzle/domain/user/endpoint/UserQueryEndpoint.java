@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
+import io.itmca.lifepuzzle.domain.auth.TokenType;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ public class UserQueryEndpoint {
 
     @GetMapping("/users/{id}")
     public User getOne(@PathVariable("id") Long id) {
+        System.out.println(TokenType.ACCESS);
         return userQueryService.findByUserNo(id);
     }
 

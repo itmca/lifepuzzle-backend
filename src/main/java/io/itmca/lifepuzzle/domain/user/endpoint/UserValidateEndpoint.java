@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Random;
+
 @RestController
 @RequestMapping("user")
 @RequiredArgsConstructor
@@ -38,7 +40,8 @@ public class UserValidateEndpoint {
 
     @PostMapping("/email/verification")
     public HttpStatus sendVerificationEmail(@RequestParam("email") String email) {
-        var code = (int) (Math.random() * 1000000);
+        Random random = new Random();
+        var code = random.nextInt(900000) + 100000;
         userEmailValidationService.create(
                 UserEmailValidation.builder()
                         .email(email)

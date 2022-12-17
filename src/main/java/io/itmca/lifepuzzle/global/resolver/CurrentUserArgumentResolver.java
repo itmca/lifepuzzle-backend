@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.global.resolver;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
+import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(User.class);
+        return parameter.hasParameterAnnotation(CurrentUser.class);
     }
 
     @Override

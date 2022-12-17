@@ -9,24 +9,23 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class JwtTokenProvider {
 
     private static final String JWT_SECRET = "secretkeyforlifepuzzleisrighthere";
     private static final Key SIGNING_KEY = getSigningKey();
-    public static final int ACCESS_TOKEN_DURATION_MILLISECONDS = 30 * 60 * 1000;
-    public static final int REFRESH_TOKEN_DURATION_MILLISECONDS = 12 * 24 * 60 * 60 * 1000;
+    public static final int ACCESS_TOKEN_DURATION_SECONDS = 60 * 30;
+    public static final int REFRESH_TOKEN_DURATION_SECONDS = 60 * 60 * 24 * 12;
 
     public static Token generateToken(Long userNo) {
 
-        Date now = new Date();
-        Date expiryDateOfAccessToken = new Date(now.getTime() + ACCESS_TOKEN_DURATION_MILLISECONDS);
-        Date expiryDateOfRefreshToken = new Date(now.getTime() + REFRESH_TOKEN_DURATION_MILLISECONDS);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expiryDateOfAccessToken = now.plusMinutes(ACCESS_TOKEN_DURATION_SECONDS);
+        LocalDateTime expiryDateOfRefreshToken = now.plusMinutes(REFRESH_TOKEN_DURATION_SECONDS);
 
         String accessToken = Jwts.builder()
                 .setClaims(new HashMap<>() {{
@@ -40,28 +39,26 @@ public class JwtTokenProvider {
 
         return Token.builder()
                 .accessToken(accessToken)
-                .accessTokenExpireAt(changeDateToLocalDateTime(expiryDateOfAccessToken))
+                .accessTokenExpireAt(expiryDateOfAccessToken)
                 .refreshToken(generateRefreshToken(userNo, expiryDateOfRefreshToken))
-                .refreshTokenExpireAt(changeDateToLocalDateTime(expiryDateOfRefreshToken))
+                .refreshTokenExpireAt(expiryDateOfRefreshToken)
                 .build();
     }
 
-    private static String generateRefreshToken(Long userNo, Date expiryDateOfRefreshToken) {
-
-        Date now = new Date();
+    private static String generateRefreshToken(Long userNo, LocalDateTime expiryDateOfRefreshToken) {
 
         return Jwts.builder()
-                .setClaims(new HashMap<>() {{
-                    put("userNo", userNo);
-                    put("type", TokenType.REFRESH);
-                    put("iat", now);
-                    put("exp", expiryDateOfRefreshToken);
-                }})
+                .setClaims(Map.of(
+                        "userNo", userNo,
+                        "type", TokenType.REFRESH,
+                        "iat", LocalDateTime.now(),
+                        "exp", expiryDateOfRefreshToken
+                ))
                 .signWith(SIGNING_KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public static Long getUserNoFromJWT(String token) {
+    public static Long parseUserNo(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(SIGNING_KEY)
                 .build()
@@ -86,6 +83,7 @@ public class JwtTokenProvider {
         } catch (UnsupportedJwtException ex) {
             log.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
+            ex.printStackTrace();
             log.error("JWT claims string is empty.");
         }
         return false;
@@ -93,9 +91,5 @@ public class JwtTokenProvider {
 
     private static Key getSigningKey() {
         return Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private static LocalDateTime changeDateToLocalDateTime(Date date) {
-        return new Timestamp(date.getTime()).toLocalDateTime();
     }
 }
