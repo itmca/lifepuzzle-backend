@@ -1,10 +1,13 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
+import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
