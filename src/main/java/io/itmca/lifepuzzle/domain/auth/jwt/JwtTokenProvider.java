@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -28,12 +27,12 @@ public class JwtTokenProvider {
         LocalDateTime expiryDateOfRefreshToken = now.plusMinutes(REFRESH_TOKEN_DURATION_SECONDS);
 
         String accessToken = Jwts.builder()
-                .setClaims(new HashMap<>() {{
-                    put("userNo", userNo);
-                    put("type", TokenType.ACCESS);
-                    put("iat", now);
-                    put("exp", expiryDateOfAccessToken);
-                }})
+                .setClaims(Map.of(
+                        "userNo", userNo,
+                        "type", TokenType.ACCESS,
+                        "iat", LocalDateTime.now(),
+                        "exp", expiryDateOfAccessToken
+                ))
                 .signWith(SIGNING_KEY, SignatureAlgorithm.HS256)
                 .compact();
 
