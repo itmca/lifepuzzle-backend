@@ -5,3 +5,14 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL5Dialect
+  mail:
+    host: ***REMOVED***
+    port: 587
+    username: ***REMOVED***
+    password: ***REMOVED***
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

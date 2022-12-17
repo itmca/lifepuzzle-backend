@@ -1,17 +1,24 @@
 package io.itmca.lifepuzzle.domain.auth.jwt;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 
-import java.util.List;
+public class UserAuthentication extends AbstractAuthenticationToken {
 
-public class UserAuthentication extends UsernamePasswordAuthenticationToken {
+    private AuthPayload authPayload;
 
-    public UserAuthentication(String principal, String credentials) {
-        super(principal, credentials);
+    public UserAuthentication(Long userNo) {
+        super(null);
+        this.authPayload = new AuthPayload(userNo);
+        setAuthenticated(true);
     }
 
-    public UserAuthentication(String principal, String credentials, List<GrantedAuthority> authorities) {
-        super(principal, credentials, authorities);
+    @Override
+    public Object getCredentials() {
+        return null;
+    }
+
+    @Override
+    public AuthPayload getPrincipal() {
+        return authPayload;
     }
 }

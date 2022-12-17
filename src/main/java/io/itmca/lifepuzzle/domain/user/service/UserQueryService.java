@@ -2,36 +2,37 @@ package io.itmca.lifepuzzle.domain.user.service;
 
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserQueryService {
-
     private final UserRepository userRepository;
 
-    @Autowired
-    public UserQueryService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     public User findByUserNo(long userNo) {
-        return new User();
+        return userRepository.findById(userNo)
+                .orElseThrow(() -> new IllegalArgumentException("no such data"));
     }
 
     public User findByUserId(String userId) {
-        return this.userRepository.findByUserId(userId);
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("no such data"));
     }
 
     public User findByEmail(String email) {
-        return new User();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("no such data"));
     }
 
     public User findByKakaoId(String kakaoId) {
-        return new User();
+        return userRepository.findByKakaoId(kakaoId)
+                .orElseThrow(() -> new IllegalArgumentException("no such data"));
     }
 
     public User findByAppleId(String appleId) {
-        return new User();
+        return userRepository.findByKakaoId(appleId)
+                .orElseThrow(() -> new IllegalArgumentException("no such data"));
     }
+
 }

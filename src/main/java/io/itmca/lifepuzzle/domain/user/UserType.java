@@ -1,5 +1,5 @@
 package io.itmca.lifepuzzle.domain.user;
 
-public enum LoginType {
+public enum UserType {
     APPLE, KAKAO, GENERAL
 }
