@@ -6,8 +6,13 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class StoryTagResponse {
+public class StoryTagResponse implements Comparable<StoryTagResponse> {
     String key;
     String displayName;
     int priority;
+
+    @Override
+    public int compareTo(StoryTagResponse o) {
+        return Integer.compare(this.priority, o.priority);
+    }
 }

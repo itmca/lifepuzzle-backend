@@ -1,8 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.entity;
 
-import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
-import io.itmca.lifepuzzle.domain.story.endpoint.response.StoryTagResponse;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -59,18 +57,6 @@ public class Story {
                 .audioFolder(String.format("%s/$s/audio", baseFolderPath, storyKey))
                 .audioFiles(storyWriteRequest.getAudioFiles())
                 .date(storyWriteRequest.getDate())
-                .build();
-    }
-
-    public StoryTagResponse getTag(Hero hero) {
-        var birthday = hero.getBirthday();
-        var age =  date.getYear() - birthday.getYear() + 1;
-        var ageGroup = age - age % 10;
-
-        return StoryTagResponse.builder()
-                .key(Integer.toString(ageGroup))
-                .displayName(ageGroup > 0 ? String.format("%l대",ageGroup) : "10대 미만")
-                .priority(ageGroup)
                 .build();
     }
 }
