@@ -1,14 +1,13 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint;
 
-import io.itmca.lifepuzzle.domain.auth.jwt.UserAuthentication;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
-import io.itmca.lifepuzzle.domain.hero.repository.HeroQueryRepository;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -30,6 +29,6 @@ public class HeroQueryEndpoint {
     public HeroQueryResponse getHeroDetail(@PathVariable("heroNo") Long heroNo, @PathVariable("userNo") Long userNo){
         heroValidationService.validateUserCanAccessHero(userNo, heroNo);
 
-        return HeroQueryResponse.from(heroQueryService.findHeroByUserValidation(heroNo));
+        return HeroQueryResponse.from(heroQueryService.findHeroByHeroNo(heroNo));
     }
 }

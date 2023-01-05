@@ -9,10 +9,10 @@ import lombok.*;
 public class StoryTagResponse implements Comparable<StoryTagResponse> {
     String key;
     String displayName;
-    int priority;
+    Long priority;
 
     @Override
     public int compareTo(StoryTagResponse o) {
-        return Integer.compare(this.priority, o.priority);
+        return Long.compare(this.priority, o.priority);
     }
 }

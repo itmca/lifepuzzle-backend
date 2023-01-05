@@ -1,17 +1,20 @@
 package io.itmca.lifepuzzle.domain.story.entity;
 
-import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
+import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Getter
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Story {
@@ -30,33 +33,25 @@ public class Story {
     private String audioFolder;
     private String audioFiles;
     private String hashtag;
-    private LocalDateTime date;
+    private LocalDate date;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @Column(nullable = false)
     @CreationTimestamp
-    private LocalDateTime updatedAt;
+    private LocalDate updatedAt;
 
-    public static Story from(StoryWriteRequest storyWriteRequest){
-        var baseFolderPath = "";
-        var storyKey = "" + storyWriteRequest.getStoryText();
+    public List<String> getImages(){
+        return Arrays.stream(this.imageFiles.split("||"))
+                .map(file -> String.format("$s/$s/$s", ServerConstant.SERVER_HOST, this.imageFolder, file))
+                .toList();
+    }
 
-        return Story.builder()
-                .storyKey(storyKey)
-                .heroNo(storyWriteRequest.getHeroNo())
-                .userNo(storyWriteRequest.getUserNo())
-                .recQuestionNo(storyWriteRequest.getRecQuestionNo())
-                .usedQuestion(storyWriteRequest.getHelpQuestionText())
-                .title(storyWriteRequest.getTitle())
-                .content(storyWriteRequest.getStoryText())
-                .imageFolder(String.format("%s/$s/images", baseFolderPath, storyKey))
-                .imageFiles(storyWriteRequest.getImageFiles())
-                .audioFolder(String.format("%s/$s/audio", baseFolderPath, storyKey))
-                .audioFiles(storyWriteRequest.getAudioFiles())
-                .date(storyWriteRequest.getDate())
-                .build();
+    public List<String> getAudios(){
+        return Arrays.stream(this.imageFiles.split("||"))
+                .map(file -> String.format("$s/$s/$s", ServerConstant.SERVER_HOST, this.audioFolder, file))
+                .toList();
     }
 }
