@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,43 +29,19 @@ public class StoryWriteEndpoint {
                            @RequestPart("voice") MultipartFile voice,
                            @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
 
-        System.out.println(storyWriteRequest.get());
         var userNo = authPayload.getUserNo();
-        var photoFiles = new ArrayList<String>();
-        var voiceFiles = new ArrayList<String>();
 
         if(!FileUtil.isExistFolder(FileConstant.TEMP_FOLDER_PATH)){
             FileUtil.createAllFolder(FileConstant.TEMP_FOLDER_PATH);
         }
 
-        for(var photo : photos) {
-            var saveFileName = Math.round(Math.random() * 1000000) + photo.getOriginalFilename();
-
-            photoFiles.add(saveFileName);
-
-            var file = new File(FileConstant.TEMP_FOLDER_PATH + File.separator + saveFileName);
-
-            photo.transferTo(file);
-            //s3Repository.upload(file);
-
-            file.delete();
-        }
-
-        var saveFileName = Math.round(Math.random() * 1000000) + "_" + voice.getOriginalFilename();
-
-        voiceFiles.add(saveFileName);
-
-        var file = new File(FileConstant.TEMP_FOLDER_PATH + File.separator + saveFileName);
-
-        voice.transferTo(file);
-        //s3Repository.upload(file);
-
-        file.delete();
-
+        var photoFiles = FileUtil.getFilePaths(List.of(photos));
+        var voiceFiles = FileUtil.getFilePaths(List.of(voice));
         var story =  storyWriteRequest.get().toStoryOf(userNo,
                 String.join("||", photoFiles),
                 String.join("||", voiceFiles));
 
+        storyWriteService.saveStoryFiles(story, List.of(photos), List.of(voice));
         storyWriteService.create(story);
     }
 

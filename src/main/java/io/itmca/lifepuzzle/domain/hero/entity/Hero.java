@@ -4,9 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -24,16 +22,16 @@ public class Hero {
     private Long spouseNo;
     private String name;
     private String nickname;
-    private LocalDateTime birthday;
+    private LocalDate birthday;
     private String image;
     private String title;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @Column(nullable = false)
     @CreationTimestamp
-    private LocalDateTime updatedAt;
+    private LocalDate updatedAt;
 
 }

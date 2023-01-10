@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.response;
 
+import io.itmca.lifepuzzle.domain.story.AgeGroup;
 import lombok.*;
 
 @Getter
@@ -10,6 +11,14 @@ public class StoryTagResponse implements Comparable<StoryTagResponse> {
     String key;
     String displayName;
     Long priority;
+
+    public static StoryTagResponse fromAgeGroup(AgeGroup ageGroup){
+        return StoryTagResponse.builder()
+                .key(ageGroup.getPriority().toString())
+                .displayName(ageGroup.getDisplayName())
+                .priority(ageGroup.getPriority())
+                .build();
+    }
 
     @Override
     public int compareTo(StoryTagResponse o) {

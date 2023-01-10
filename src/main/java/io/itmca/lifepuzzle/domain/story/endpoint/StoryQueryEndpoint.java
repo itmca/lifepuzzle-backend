@@ -32,7 +32,7 @@ public class StoryQueryEndpoint {
         var stories = storyQueryService.findStoriesByHeroId(heroNo);
         var tags = storyTagService.getDistinctTags(stories, hero);
 
-        return StoryQueryResponse.from(stories, tags);
+        return StoryQueryResponse.from(stories, hero, tags);
     }
 
     @GetMapping("/stories/{storyKey}")
@@ -45,7 +45,7 @@ public class StoryQueryEndpoint {
 
         var tags = storyTagService.getDistinctTags(Arrays.asList(story), hero);
 
-        return StoryQueryResponse.from(Arrays.asList(story), tags);
+        return StoryQueryResponse.from(Arrays.asList(story), hero, tags);
     }
 
 }

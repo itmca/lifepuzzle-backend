@@ -4,7 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity @Table(name = "user_hero_auth")
 @Getter @Builder
@@ -23,10 +23,10 @@ public class HeroUserAuth {
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @Column(nullable = false)
     @CreationTimestamp
-    private LocalDateTime updatedAt;
+    private LocalDate updatedAt;
 
 }

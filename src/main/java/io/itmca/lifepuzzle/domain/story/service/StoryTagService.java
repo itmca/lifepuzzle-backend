@@ -11,7 +11,8 @@ import java.util.List;
 public class StoryTagService {
     public List<AgeGroup> getDistinctTags(List<Story> stories, Hero hero){
         return stories.stream()
-                .map(story -> AgeGroup.of(story.getDate().getYear() - hero.getBirthday().getYear() + 1))
+                .map(story ->story.getTag(hero))
+                .distinct()
                 .toList();
     }
 }

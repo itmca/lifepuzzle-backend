@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.response;
 
+import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.story.AgeGroup;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import lombok.*;
@@ -16,8 +17,8 @@ public class StoryQueryResponse {
     private List<StoryDTO> stories;
     private List<StoryTagResponse> storyTagResponses;
 
-    public static StoryQueryResponse from(List<Story> stories, List<AgeGroup> ageGroups){
-        var storyDTOs = stories.stream().map(story -> StoryDTO.from(story)).toList();
+    public static StoryQueryResponse from(List<Story> stories, Hero hero, List<AgeGroup> ageGroups){
+        var storyDTOs = stories.stream().map(story -> StoryDTO.from(story, hero)).toList();
         var storyTags = ageGroups.stream()
                 .map(ageGroup -> StoryTagResponse.builder()
                         .key(ageGroup.getPriority().toString())
@@ -42,11 +43,13 @@ public class StoryQueryResponse {
         String content;
         List<String> photos;
         List<String> audios;
-        String tags;
+        String hashTags;
+        StoryTagResponse ageGroup;
+        @Deprecated StoryTagResponse tags;
         LocalDate date;
         LocalDate createdAt;
 
-        public static StoryDTO from(Story story){
+        public static StoryDTO from(Story story, Hero hero){
             return StoryDTO.builder()
                     .id(story.getStoryKey())
                     .heroNo(story.getHeroNo())
@@ -54,7 +57,9 @@ public class StoryQueryResponse {
                     .content(story.getContent())
                     .photos(story.getImages())
                     .audios(story.getAudios())
-                    .tags(story.getHashtag())
+                    .hashTags(story.getHashtag())
+                    .ageGroup(StoryTagResponse.fromAgeGroup(story.getTag(hero)))
+                    .tags(StoryTagResponse.fromAgeGroup(story.getTag(hero)))
                     .date(story.getDate())
                     .createdAt(story.getCreatedAt())
                     .build();

@@ -1,7 +1,7 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.request;
 
 import io.itmca.lifepuzzle.domain.story.entity.Story;
-import io.itmca.lifepuzzle.global.constant.FileConstant;
+import io.itmca.lifepuzzle.global.util.FileUtil;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -33,9 +33,9 @@ public class StoryWriteRequest {
                         .usedQuestion(helpQuestionText)
                         .title(title)
                         .content(storyText)
-                        .imageFolder(String.format("%s/$s/images", FileConstant.BASE_FOLDER_PATH, storyKey))
+                        .imageFolder(String.format("%s/%s/images", FileUtil.getBaseFolderPath(), storyKey))
                         .imageFiles(photoFiles)
-                        .audioFolder(String.format("%s/$s/audio", FileConstant.BASE_FOLDER_PATH, storyKey))
+                        .audioFolder(String.format("%s/%s/audio", FileUtil.getBaseFolderPath(), storyKey))
                         .audioFiles(audioFiles)
                         .date(date)
                         .build();
