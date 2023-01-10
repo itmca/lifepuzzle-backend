@@ -19,9 +19,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             var jwt = getJwtFromRequest(request);
 
             if (StringUtils.hasText(jwt) && JwtTokenProvider.validateToken(jwt)) {
-                Long userNo = JwtTokenProvider.parseUserNo(jwt);
+                var userNo = JwtTokenProvider.parseUserNo(jwt);
 
-                UserAuthentication authentication = new UserAuthentication(userNo);
+                var authentication = new UserAuthentication(userNo);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
+        var bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring("Bearer ".length());
         }

@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.user.service;
 
-import io.itmca.lifepuzzle.domain.user.endpoint.request.MailRequest;
+import io.itmca.lifepuzzle.domain.user.Mail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,12 +12,12 @@ public class MailService {
 
     private final JavaMailSender mailSender;
 
-    public void sendEmail(MailRequest mailRequest) {
+    public void sendEmail(Mail mail) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(mailRequest.getFrom());
-        message.setTo(mailRequest.getTo());
-        message.setSubject(mailRequest.getSubject());
-        message.setText(mailRequest.getHtml());
+        message.setFrom(mail.getFrom());
+        message.setTo(mail.getTo());
+        message.setSubject(mail.getSubject());
+        message.setText(mail.getHtml());
 
         mailSender.send(message);
     }

@@ -19,16 +19,16 @@ public class UserWriteEndpoint {
     private final UserWriteService userWriteService;
     private final PasswordEncoder passwordEncoder;
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public void updateUser(@PathVariable("id") Long id, @CurrentUser User user, @RequestBody UserUpdateRequest userUpdateRequest) {
         if (id != user.getUserNo()) {
             // exception
         }
 
-        userWriteService.save(user, userUpdateRequest);
+        userWriteService.update(user, userUpdateRequest);
     }
 
-    @PutMapping("/{id}/password")
+    @PatchMapping("/{id}/password")
     public void updateUserPassword(@PathVariable("id") Long id, @CurrentUser User user, @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest) {
         if (id != user.getUserNo()) {
             // exception

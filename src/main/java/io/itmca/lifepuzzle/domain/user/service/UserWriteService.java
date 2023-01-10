@@ -14,8 +14,13 @@ public class UserWriteService {
 
     private final UserRepository userRepository;
 
-    public User save(User user, UserUpdateRequest userUpdateRequest) {
+    public User save(User user) {
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void update(User user, UserUpdateRequest userUpdateRequest) {
+        user.updateUserInfo(userUpdateRequest);
     }
 
     @Transactional

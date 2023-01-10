@@ -1,6 +1,5 @@
 package io.itmca.lifepuzzle.domain.user.endpoint.response;
 
-import io.itmca.lifepuzzle.domain.user.UserType;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -27,10 +26,9 @@ public class UserQueryResponse {
         private String userId;
         private String userNickName;
         private Long recentHeroNo;
-        private UserType userType;
+        private String userType;
         private String email;
         private LocalDate birthday;
-        private UserType getUserType;
 
         public static UserQueryDto from(User user) {
             return UserQueryDto.builder()

@@ -41,3 +41,11 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+task buildZip(type: Zip) {
+    from(bootJar.outputs.files) {
+        into "."
+    }
+    destinationDirectory = project.buildDir
+    archiveFileName = project.name + ".zip"
+}

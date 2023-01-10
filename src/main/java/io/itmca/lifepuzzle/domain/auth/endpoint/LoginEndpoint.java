@@ -7,6 +7,7 @@ import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.global.exception.PasswordMismatchException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,10 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class LoginEndpoint {
-    
+
     private final LoginService loginService;
     private final UserQueryService userQueryService;
     private final PasswordEncoder passwordEncoder;
+
+    @GetMapping("/")
+    public String HealthCheck() {
+        return "OK";
+    }
 
     @PostMapping("/auth/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest) {

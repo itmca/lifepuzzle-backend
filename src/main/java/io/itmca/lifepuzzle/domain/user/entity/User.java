@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.domain.user.entity;
 
 import io.itmca.lifepuzzle.domain.user.UserType;
+import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import lombok.*;
 import org.springframework.util.StringUtils;
 
@@ -47,12 +48,12 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public UserType getUserType() {
+    public String getUserType() {
         if (StringUtils.hasText(this.appleId))
-            return UserType.APPLE;
+            return UserType.APPLE.frontendKey();
         else if (StringUtils.hasText(this.kakaoId))
-            return UserType.KAKAO;
-        return UserType.GENERAL;
+            return UserType.KAKAO.frontendKey();
+        return UserType.GENERAL.frontendKey();
     }
 
     public void changeRecentHeroNo(Long heroNo) {
@@ -61,5 +62,20 @@ public class User {
 
     public void changePassword(String password) {
         this.password = password;
+    }
+
+    public void setRandomNickname(String nickname) {
+        this.nickName = nickname;
+    }
+
+    public void setSaltAndEncodedPassword(String salt, String password) {
+        this.salt = salt;
+        this.password = password;
+    }
+
+    public void updateUserInfo(UserUpdateRequest userUpdateRequest) {
+        this.email = userUpdateRequest.getEmail();
+        this.birthday = userUpdateRequest.getBirthday();
+        this.nickName = userUpdateRequest.getNickName();
     }
 }
