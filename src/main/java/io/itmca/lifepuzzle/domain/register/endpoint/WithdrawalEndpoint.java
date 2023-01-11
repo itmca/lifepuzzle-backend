@@ -18,8 +18,8 @@ public class WithdrawalEndpoint {
     @DeleteMapping("/users/{id}")
     public void withdraw(@PathVariable("id") Long id, @CurrentUser User user, @RequestBody String socialToken) {
         if (id != user.getUserNo()) {
-
         }
 
+        withdrawService.withdraw(user, socialToken);
     }
 }

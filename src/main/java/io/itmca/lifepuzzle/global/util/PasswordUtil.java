@@ -1,10 +1,14 @@
 package io.itmca.lifepuzzle.global.util;
 
+import io.itmca.lifepuzzle.domain.register.PasswordVerification;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Random;
 
 public class PasswordUtil {
+
+    private static PasswordEncoder passwordEncoder;
 
     public static String hashPassword(String password, String salt) {
         var bcryptSalt = BCrypt.gensalt();
@@ -20,5 +24,9 @@ public class PasswordUtil {
             result.append(String.format("%02x", b));
         }
         return result.toString();
+    }
+
+    public static boolean matches(PasswordVerification passwordVerification) {
+        return true;
     }
 }

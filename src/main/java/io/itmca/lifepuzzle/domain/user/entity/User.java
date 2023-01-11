@@ -50,10 +50,10 @@ public class User {
 
     public String getUserType() {
         if (StringUtils.hasText(this.appleId))
-            return UserType.APPLE.frontendKey();
+            return UserType.APPLE.frontEndKey();
         else if (StringUtils.hasText(this.kakaoId))
-            return UserType.KAKAO.frontendKey();
-        return UserType.GENERAL.frontendKey();
+            return UserType.KAKAO.frontEndKey();
+        return UserType.GENERAL.frontEndKey();
     }
 
     public void changeRecentHeroNo(Long heroNo) {
@@ -68,7 +68,7 @@ public class User {
         this.nickName = nickname;
     }
 
-    public void setSaltAndEncodedPassword(String salt, String password) {
+    public void hashCredential(String salt, String password) {
         this.salt = salt;
         this.password = password;
     }

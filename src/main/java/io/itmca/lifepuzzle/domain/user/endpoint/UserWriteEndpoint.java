@@ -4,8 +4,8 @@ import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserPasswordUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.entity.User;
-import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
+import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserWriteEndpoint {
 
-    private final UserQueryService userQueryService;
     private final UserWriteService userWriteService;
     private final PasswordEncoder passwordEncoder;
 
@@ -25,7 +24,9 @@ public class UserWriteEndpoint {
             // exception
         }
 
-        userWriteService.update(user, userUpdateRequest);
+        user.updateUserInfo(userUpdateRequest);
+
+        userWriteService.save(user);
     }
 
     @PatchMapping("/{id}/password")
@@ -40,9 +41,10 @@ public class UserWriteEndpoint {
             // exception
         }
 
-        var newPassword = passwordEncoder.encode(userPasswordUpdateRequest.getNewPassword());
+        var salt = PasswordUtil.genSalt();
+        var hashedPassword = PasswordUtil.hashPassword(userPasswordUpdateRequest.getNewPassword(), user.getSalt());
 
-        userWriteService.updateUserPassword(user, newPassword);
+        userWriteService.updateUserPassword(user, salt, hashedPassword);
     }
 
 }

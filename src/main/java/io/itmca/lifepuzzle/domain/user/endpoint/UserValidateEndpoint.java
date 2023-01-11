@@ -41,12 +41,14 @@ public class UserValidateEndpoint {
     @PostMapping("/email/verification")
     public HttpStatus sendVerificationEmail(@RequestParam("email") String email) {
         var code = new Random().nextInt(900000) + 100000;
+
         userEmailValidationService.create(
                 UserEmailValidation.builder()
                         .email(email)
                         .code(String.valueOf(code))
                         .build()
         );
+        
         mailService.sendEmail(
                 Mail.builder()
                         .to(email)
@@ -62,6 +64,7 @@ public class UserValidateEndpoint {
     @PostMapping("/validation/email/code")
     public boolean checkUserByEmail(@RequestParam("email") String email, @RequestParam("code") String code) {
         UserEmailValidation userEmailValidation = userEmailValidationService.findRecentOneByEmail(email);
+
         return userEmailValidation.getCode().equals(code);
     }
 }

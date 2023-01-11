@@ -35,10 +35,9 @@ public class RegisterService {
         var originPassword = user.getPassword();
         var hashedPassword = PasswordUtil.hashPassword(originPassword, salt);
 
-        user.setSaltAndEncodedPassword(salt, hashedPassword);
+        user.hashCredential(salt, hashedPassword);
 
         if (!isPasswordCorrectlyGenerated(user, originPassword)) {
-            // exception
         }
     }
 

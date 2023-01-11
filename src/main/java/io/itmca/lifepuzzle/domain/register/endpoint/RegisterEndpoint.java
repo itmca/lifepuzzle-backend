@@ -20,6 +20,7 @@ public class RegisterEndpoint {
     @PostMapping("/user")
     public HttpStatus register(@RequestBody UserRegisterRequest userRegisterRequest) {
         var user = userRegisterRequest.toUser();
+
         if (!StringUtils.hasText(user.getNickName())) {
             user.setRandomNickname(nicknameProvideService.getRandomNickname(user.getUserId()));
         }

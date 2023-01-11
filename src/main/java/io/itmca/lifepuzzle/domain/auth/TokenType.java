@@ -3,13 +3,13 @@ package io.itmca.lifepuzzle.domain.auth;
 public enum TokenType {
     ACCESS("access"), REFRESH("refresh");
 
-    private String name;
+    private String frontEndKey;
 
-    TokenType(String name) {
-        this.name = name;
+    TokenType(String frontEndKey) {
+        this.frontEndKey = frontEndKey;
     }
 
     public String token() {
-        return name;
+        return frontEndKey;
     }
 }

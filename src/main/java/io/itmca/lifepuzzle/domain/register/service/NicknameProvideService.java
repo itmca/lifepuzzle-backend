@@ -13,10 +13,10 @@ public class NicknameProvideService {
         return randomNicknames[(int) hash % randomNicknames.length];
     }
 
-    private long getHashNumber(String socialId) {
+    private long getHashNumber(String id) {
         var hash = 0;
-        for (int i = 0; i < socialId.length(); i++) {
-            var ch = socialId.codePointAt(i);
+        for (int i = 0; i < id.length(); i++) {
+            var ch = id.codePointAt(i);
             hash += ch;
         }
         return hash + Instant.now().toEpochMilli();
