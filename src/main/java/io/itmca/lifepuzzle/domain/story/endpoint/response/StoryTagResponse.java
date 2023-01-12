@@ -12,7 +12,7 @@ public class StoryTagResponse implements Comparable<StoryTagResponse> {
     String displayName;
     Long priority;
 
-    public static StoryTagResponse fromAgeGroup(AgeGroup ageGroup){
+    public static StoryTagResponse from(AgeGroup ageGroup){
         return StoryTagResponse.builder()
                 .key(ageGroup.getPriority().toString())
                 .displayName(ageGroup.getDisplayName())

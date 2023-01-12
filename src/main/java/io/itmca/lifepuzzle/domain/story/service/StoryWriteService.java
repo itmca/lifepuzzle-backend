@@ -33,6 +33,10 @@ public class StoryWriteService {
         var voiceFolder = story.getAudioFolder();
         var voiceFileNames = Arrays.stream(story.getAudioFiles().split("\\|\\|")).toList();
 
+        if(!FileUtil.isExistFolder(FileConstant.TEMP_FOLDER_PATH)){
+            FileUtil.createAllFolder(FileConstant.TEMP_FOLDER_PATH);
+        }
+
         saveFiles(photoFolder, photoFileNames, photos);
         saveFiles(voiceFolder, voiceFileNames, voices);
     };

@@ -22,7 +22,7 @@ public class StoryWriteRequest {
     String storyText;
 
 
-    public Story toStoryOf(Long userNo, String photoFiles, String audioFiles){
+    public Story toStory(Long userNo, String photoFiles, String audioFiles){
         var storyKey = generatedStoryKey();
         System.out.println(storyKey);
         return Story.builder()

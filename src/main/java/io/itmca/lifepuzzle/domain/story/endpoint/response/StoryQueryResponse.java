@@ -6,6 +6,7 @@ import io.itmca.lifepuzzle.domain.story.entity.Story;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -47,7 +48,7 @@ public class StoryQueryResponse {
         StoryTagResponse ageGroup;
         @Deprecated StoryTagResponse tags;
         LocalDate date;
-        LocalDate createdAt;
+        LocalDateTime createdAt;
 
         public static StoryDTO from(Story story, Hero hero){
             return StoryDTO.builder()
@@ -58,8 +59,8 @@ public class StoryQueryResponse {
                     .photos(story.getImages())
                     .audios(story.getAudios())
                     .hashTags(story.getHashtag())
-                    .ageGroup(StoryTagResponse.fromAgeGroup(story.getTag(hero)))
-                    .tags(StoryTagResponse.fromAgeGroup(story.getTag(hero)))
+                    .ageGroup(StoryTagResponse.from(story.getTag(hero)))
+                    .tags(StoryTagResponse.from(story.getTag(hero)))
                     .date(story.getDate())
                     .createdAt(story.getCreatedAt())
                     .build();

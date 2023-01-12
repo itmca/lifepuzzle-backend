@@ -2,9 +2,11 @@ package io.itmca.lifepuzzle.domain.hero.entity;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -28,10 +30,10 @@ public class Hero {
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    @CreationTimestamp
-    private LocalDate updatedAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
 }

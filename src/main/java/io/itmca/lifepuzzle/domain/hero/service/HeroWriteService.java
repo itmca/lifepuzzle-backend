@@ -31,6 +31,11 @@ public class HeroWriteService {
     };
 
     public void saveHeroFile(Hero hero, MultipartFile multipartFile) throws IOException {
+
+        if(!FileUtil.isExistFolder(FileConstant.TEMP_FOLDER_PATH)) {
+            FileUtil.createAllFolder(FileConstant.TEMP_FOLDER_PATH);
+        }
+
         var savedFile = FileUtil.saveMultiPartFileInLocal(multipartFile
                 ,FileConstant.TEMP_FOLDER_PATH + File.separator + hero.getImage());
 

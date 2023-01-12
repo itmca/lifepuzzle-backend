@@ -33,6 +33,10 @@ public class FileUtil {
         return String.format("%d_%s", Math.round(Math.random() * 1000000), fileName);
     }
 
+    public static Boolean isMultiPartFile(MultipartFile multipartFile){
+        return multipartFile != null && !multipartFile.isEmpty();
+    }
+
     public static File saveMultiPartFileInLocal(MultipartFile multipartFile, String fileURL) throws IOException {
         var file = new File(fileURL);
 

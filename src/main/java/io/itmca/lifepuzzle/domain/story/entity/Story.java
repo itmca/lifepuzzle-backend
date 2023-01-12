@@ -5,11 +5,13 @@ import io.itmca.lifepuzzle.domain.story.AgeGroup;
 import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,11 +41,11 @@ public class Story {
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    @CreationTimestamp
-    private LocalDate updatedAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     public AgeGroup getTag(Hero hero){
         var age = Long.valueOf(date.getYear() - hero.getBirthday().getYear() + 1);
