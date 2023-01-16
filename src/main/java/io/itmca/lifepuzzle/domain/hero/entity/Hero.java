@@ -36,4 +36,14 @@ public class Hero {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public static Hero defaultHero() {
+        return Hero.builder()
+                .name("주인공")
+                .nickname("소중한 분")
+                .title("봄날의 햇살처럼 따뜻한 당신")
+                .birthday(LocalDate.of(1970, 1, 1))
+                .image("")
+                .build();
+    }
+
 }

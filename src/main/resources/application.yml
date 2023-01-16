@@ -38,4 +38,4 @@ cloud:
       auto: false
 
 server :
-  port : 5000
+  port : 9596

@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.auth.endpoint.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.itmca.lifepuzzle.domain.auth.Token;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.user.entity.User;
@@ -11,12 +12,13 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LoginResponse {
 
     private UserQueryDto user;
     private TokenQueryDto tokens;
     private HeroQueryResponse hero;
-    private boolean isNewUser;
+    private Boolean isNewUser;
 
     public static LoginResponse from(User user, Token tokens, HeroQueryResponse hero) {
         return LoginResponse.builder()
