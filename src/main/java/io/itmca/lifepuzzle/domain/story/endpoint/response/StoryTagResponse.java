@@ -8,9 +8,9 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StoryTagResponse implements Comparable<StoryTagResponse> {
-    String key;
-    String displayName;
-    Long priority;
+    private String key;
+    private String displayName;
+    private Long priority;
 
     public static StoryTagResponse from(AgeGroup ageGroup){
         return StoryTagResponse.builder()

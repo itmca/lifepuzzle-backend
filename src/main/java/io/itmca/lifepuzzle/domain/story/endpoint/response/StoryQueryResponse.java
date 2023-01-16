@@ -37,7 +37,7 @@ public class StoryQueryResponse {
 
     @Getter
     @Builder(access = AccessLevel.PRIVATE)
-    static class StoryDTO {
+    private static class StoryDTO {
         String id;
         Long heroNo;
         String title;

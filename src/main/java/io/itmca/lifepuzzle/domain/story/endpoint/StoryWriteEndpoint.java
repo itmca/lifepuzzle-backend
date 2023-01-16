@@ -3,6 +3,7 @@ package io.itmca.lifepuzzle.domain.story.endpoint;
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
+import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.global.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +24,7 @@ public class StoryWriteEndpoint {
     public void writeStory(@RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
                            @RequestPart("photos") MultipartFile[] photos,
                            @RequestPart("voice") MultipartFile voice,
+                           @CurrentUser
                            @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
 
         var userNo = authPayload.getUserNo();
