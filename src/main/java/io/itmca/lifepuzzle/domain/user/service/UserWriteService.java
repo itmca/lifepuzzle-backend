@@ -1,6 +1,5 @@
 package io.itmca.lifepuzzle.domain.user.service;
 
-import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +13,13 @@ public class UserWriteService {
 
     private final UserRepository userRepository;
 
-    public User save(User user, UserUpdateRequest userUpdateRequest) {
+    public User save(User user) {
         return userRepository.save(user);
     }
 
     @Transactional
     public void updateUserPassword(User user, String password) {
-        user.changePassword(password);
+        user.hashCredential(password);
     }
 
     public void deleteByUserNo(Long userNo) {

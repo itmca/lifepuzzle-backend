@@ -1,11 +1,11 @@
-package io.itmca.lifepuzzle.domain.user.endpoint.request;
+package io.itmca.lifepuzzle.domain.user;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class MailRequest {
+public class Mail {
     private String to;
     private String from;
     private String subject;

@@ -1,7 +1,6 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
-import io.itmca.lifepuzzle.domain.auth.TokenType;
-import io.itmca.lifepuzzle.domain.user.entity.User;
+import io.itmca.lifepuzzle.domain.user.endpoint.response.UserQueryResponse;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,9 +14,9 @@ public class UserQueryEndpoint {
     private final UserQueryService userQueryService;
 
     @GetMapping("/users/{id}")
-    public User getOne(@PathVariable("id") Long id) {
-        System.out.println(TokenType.ACCESS);
-        return userQueryService.findByUserNo(id);
-    }
+    public UserQueryResponse getOne(@PathVariable("id") Long id) {
+        var user = userQueryService.findByUserNo(id);
 
+        return UserQueryResponse.from(user);
+    }
 }

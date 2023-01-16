@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserQueryService {
+    
     private final UserRepository userRepository;
 
     public User findByUserNo(long userNo) {

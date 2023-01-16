@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
-import io.itmca.lifepuzzle.domain.user.endpoint.request.MailRequest;
+import io.itmca.lifepuzzle.domain.user.Mail;
 import io.itmca.lifepuzzle.domain.user.entity.UserEmailValidation;
 import io.itmca.lifepuzzle.domain.user.service.MailService;
 import io.itmca.lifepuzzle.domain.user.service.UserEmailValidationService;
@@ -40,16 +40,17 @@ public class UserValidateEndpoint {
 
     @PostMapping("/email/verification")
     public HttpStatus sendVerificationEmail(@RequestParam("email") String email) {
-        Random random = new Random();
-        var code = random.nextInt(900000) + 100000;
+        var code = new Random().nextInt(900000) + 100000;
+
         userEmailValidationService.create(
                 UserEmailValidation.builder()
                         .email(email)
                         .code(String.valueOf(code))
                         .build()
         );
+        
         mailService.sendEmail(
-                MailRequest.builder()
+                Mail.builder()
                         .to(email)
                         .from("***REMOVED***")
                         .subject("[인생퍼즐] 이메일 인증 요청 메일입니다.")
@@ -63,6 +64,7 @@ public class UserValidateEndpoint {
     @PostMapping("/validation/email/code")
     public boolean checkUserByEmail(@RequestParam("email") String email, @RequestParam("code") String code) {
         UserEmailValidation userEmailValidation = userEmailValidationService.findRecentOneByEmail(email);
+
         return userEmailValidation.getCode().equals(code);
     }
 }

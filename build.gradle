@@ -54,5 +54,4 @@ task buildZip(type: Zip) {
     }
     destinationDirectory = project.buildDir
     archiveFileName = project.name + ".zip"
-
 }

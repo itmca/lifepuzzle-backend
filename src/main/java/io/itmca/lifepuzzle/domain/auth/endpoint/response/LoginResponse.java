@@ -2,21 +2,21 @@ package io.itmca.lifepuzzle.domain.auth.endpoint.response;
 
 import io.itmca.lifepuzzle.domain.auth.Token;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
-import io.itmca.lifepuzzle.domain.user.UserType;
 import io.itmca.lifepuzzle.domain.user.entity.User;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoginResponse {
 
     private UserQueryDto user;
     private TokenQueryDto tokens;
     private HeroQueryResponse hero;
+    private boolean isNewUser;
 
     public static LoginResponse from(User user, Token tokens, HeroQueryResponse hero) {
         return LoginResponse.builder()
@@ -26,12 +26,21 @@ public class LoginResponse {
                 .build();
     }
 
+    public LoginResponse from(boolean isNewUser) {
+        return LoginResponse.builder()
+                .isNewUser(isNewUser)
+                .user(this.user)
+                .tokens(this.tokens)
+                .hero(this.hero)
+                .build();
+    }
+
     @Getter
     @Builder(access = AccessLevel.PRIVATE)
     private static class UserQueryDto {
         private Long userNo;
         private String userNickName;
-        private UserType userType;
+        private String userType;
 
         public static UserQueryDto from(User user) {
             return UserQueryDto.builder()
