@@ -18,8 +18,8 @@ public class UserWriteService {
     }
 
     @Transactional
-    public void updateUserPassword(User user, String salt, String password) {
-        user.hashCredential(salt, password);
+    public void updateUserPassword(User user, String password) {
+        user.hashCredential(password);
     }
 
     public void deleteByUserNo(Long userNo) {

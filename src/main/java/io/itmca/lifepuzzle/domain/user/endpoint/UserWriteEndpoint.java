@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
+import io.itmca.lifepuzzle.domain.register.PasswordVerification;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserPasswordUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
@@ -7,7 +8,6 @@ import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserWriteEndpoint {
 
     private final UserWriteService userWriteService;
-    private final PasswordEncoder passwordEncoder;
 
     @PatchMapping("/{id}")
     public void updateUser(@PathVariable("id") Long id, @CurrentUser User user, @RequestBody UserUpdateRequest userUpdateRequest) {
@@ -35,16 +34,19 @@ public class UserWriteEndpoint {
             // exception
         }
 
-        var isMatch = passwordEncoder.matches(userPasswordUpdateRequest.getOldPassword() + user.getSalt(), user.getPassword());
+        var isMatch = PasswordUtil.matches(
+                PasswordVerification.builder()
+                        .plainPassword(userPasswordUpdateRequest.getOldPassword())
+                        .salt(user.getSalt())
+                        .hashedPassword(user.getPassword())
+                        .build()
+        );
 
         if (!isMatch) {
             // exception
         }
 
-        var salt = PasswordUtil.genSalt();
-        var hashedPassword = PasswordUtil.hashPassword(userPasswordUpdateRequest.getNewPassword(), user.getSalt());
-
-        userWriteService.updateUserPassword(user, salt, hashedPassword);
+        userWriteService.updateUserPassword(user, userPasswordUpdateRequest.getNewPassword());
     }
 
 }

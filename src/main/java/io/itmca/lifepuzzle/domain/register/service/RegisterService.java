@@ -1,11 +1,11 @@
 package io.itmca.lifepuzzle.domain.register.service;
 
+import io.itmca.lifepuzzle.domain.register.PasswordVerification;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +14,6 @@ public class RegisterService {
 
     private final UserWriteService userWriteService;
     private final RegisterPostActionService registerPostActionService;
-    private final PasswordEncoder passwordEncoder;
 
     @Async
     public void register(User user) {
@@ -23,7 +22,6 @@ public class RegisterService {
         registerPostActionService.doAfterRegisterActions(registeredUser);
     }
 
-    @Async
     private User registerInternally(User user) {
         this.setSaltAndEncodedPasswordToUser(user);
 
@@ -31,22 +29,18 @@ public class RegisterService {
     }
 
     private void setSaltAndEncodedPasswordToUser(User user) {
-        var salt = PasswordUtil.genSalt();
         var originPassword = user.getPassword();
-        var hashedPassword = PasswordUtil.hashPassword(originPassword, salt);
-
-        user.hashCredential(salt, hashedPassword);
+        user.hashCredential(originPassword);
 
         if (!isPasswordCorrectlyGenerated(user, originPassword)) {
         }
     }
 
     private Boolean isPasswordCorrectlyGenerated(User user, String originPassword) {
-        return passwordEncoder.matches(originPassword + user.getSalt(), user.getPassword());
-//        return PasswordUtil.matches(PasswordVerification.builder()
-//                .plainPassword(originPassword)
-//                .salt(user.getSalt())
-//                .hashedPassword(user.getPassword())
-//                .build());
+        return PasswordUtil.matches(PasswordVerification.builder()
+                .plainPassword(originPassword)
+                .salt(user.getSalt())
+                .hashedPassword(user.getPassword())
+                .build());
     }
 }

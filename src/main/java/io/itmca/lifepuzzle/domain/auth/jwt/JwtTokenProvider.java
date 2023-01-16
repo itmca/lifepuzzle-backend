@@ -30,7 +30,7 @@ public class JwtTokenProvider {
         var accessToken = Jwts.builder()
                 .setClaims(Map.of(
                         "userNo", userNo,
-                        "type", TokenType.ACCESS.token(),
+                        "type", TokenType.ACCESS.frontEndKey(),
                         "iat", now.getEpochSecond(),
                         "exp", expiryDateOfAccessToken.getEpochSecond()
                 ))
@@ -50,7 +50,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(Map.of(
                         "userNo", userNo,
-                        "type", TokenType.REFRESH.token(),
+                        "type", TokenType.REFRESH.frontEndKey(),
                         "iat", Instant.now().getEpochSecond(),
                         "exp", expiryDateOfRefreshToken.getEpochSecond()
                 ))

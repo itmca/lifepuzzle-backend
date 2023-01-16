@@ -16,12 +16,22 @@ public class LoginResponse {
     private UserQueryDto user;
     private TokenQueryDto tokens;
     private HeroQueryResponse hero;
+    private boolean isNewUser;
 
     public static LoginResponse from(User user, Token tokens, HeroQueryResponse hero) {
         return LoginResponse.builder()
                 .user(UserQueryDto.from(user))
                 .tokens(TokenQueryDto.from(tokens))
                 .hero(hero)
+                .build();
+    }
+
+    public LoginResponse from(boolean isNewUser) {
+        return LoginResponse.builder()
+                .isNewUser(isNewUser)
+                .user(this.user)
+                .tokens(this.tokens)
+                .hero(this.hero)
                 .build();
     }
 

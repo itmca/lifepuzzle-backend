@@ -23,7 +23,6 @@ public class RegisterPostActionService {
         this.createHeroOfUser(user);
     }
 
-    @Async
     private void createHeroOfUser(User user) {
         var hero = heroWriteService.create(Hero.defaultHero());
 

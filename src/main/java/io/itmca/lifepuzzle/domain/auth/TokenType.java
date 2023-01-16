@@ -9,7 +9,7 @@ public enum TokenType {
         this.frontEndKey = frontEndKey;
     }
 
-    public String token() {
+    public String frontEndKey() {
         return frontEndKey;
     }
 }

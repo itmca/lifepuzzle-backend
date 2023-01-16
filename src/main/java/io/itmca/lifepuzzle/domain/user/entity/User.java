@@ -2,6 +2,7 @@ package io.itmca.lifepuzzle.domain.user.entity;
 
 import io.itmca.lifepuzzle.domain.user.UserType;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
+import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import lombok.*;
 import org.springframework.util.StringUtils;
 
@@ -68,9 +69,12 @@ public class User {
         this.nickName = nickname;
     }
 
-    public void hashCredential(String salt, String password) {
-        this.salt = salt;
-        this.password = password;
+    public void hashCredential(String password) {
+        var newSalt = PasswordUtil.genSalt();
+        var hashedPassword = PasswordUtil.hashPassword(password, newSalt);
+
+        this.salt = newSalt;
+        this.password = hashedPassword;
     }
 
     public void updateUserInfo(UserUpdateRequest userUpdateRequest) {
