@@ -1,9 +1,10 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint.response;
 
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
+import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -25,7 +26,7 @@ public class HeroQueryResponse {
         private Long number;
         private String heroName;
         private String heroNickName;
-        private LocalDateTime birthday;
+        private LocalDate birthday;
         private String title;
         private String imageURL;
 
@@ -36,8 +37,12 @@ public class HeroQueryResponse {
                     .heroNickName(hero.getNickname())
                     .birthday(hero.getBirthday())
                     .title(hero.getTitle())
-                    .imageURL(hero.getImage())
+                    .imageURL(addServerURLInImage(hero.getHeroNo(), hero.getImage()))
                     .build();
+        }
+
+        private static String addServerURLInImage(Long heroNo, String imageURL){
+            return String.format("%s/hero/profile/%d/%s", ServerConstant.SERVER_HOST, heroNo, imageURL);
         }
     }
 }

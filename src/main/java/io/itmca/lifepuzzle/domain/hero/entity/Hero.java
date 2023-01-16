@@ -2,11 +2,11 @@ package io.itmca.lifepuzzle.domain.hero.entity;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -24,7 +24,7 @@ public class Hero {
     private Long spouseNo;
     private String name;
     private String nickname;
-    private LocalDateTime birthday;
+    private LocalDate birthday;
     private String image;
     private String title;
 
@@ -33,7 +33,7 @@ public class Hero {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
 }
