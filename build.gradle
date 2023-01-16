@@ -18,6 +18,9 @@ dependencies {
     // Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // AWS
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -40,4 +43,16 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+processResources {
+    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+}
+task buildZip(type: Zip) {
+    from (bootJar.outputs.files) {
+        into "."
+    }
+    destinationDirectory = project.buildDir
+    archiveFileName = project.name + ".zip"
+
 }

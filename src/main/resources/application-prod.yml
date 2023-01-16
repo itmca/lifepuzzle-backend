@@ -1,5 +1,5 @@
 spring:
   datasource:
     url: ***REMOVED***
-    username: ***REMOVED***
+    username: admin
     password: ***REMOVED***
