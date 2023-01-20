@@ -5,7 +5,6 @@ import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +14,6 @@ public class RegisterService {
     private final UserWriteService userWriteService;
     private final RegisterPostActionService registerPostActionService;
 
-    @Async
     public void register(User user) {
         var registeredUser = this.registerInternally(user);
 

@@ -26,6 +26,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.25.6'
 
     // Data
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -49,7 +50,7 @@ processResources {
     duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
 }
 task buildZip(type: Zip) {
-    from (bootJar.outputs.files) {
+    from(bootJar.outputs.files) {
         into "."
     }
     destinationDirectory = project.buildDir

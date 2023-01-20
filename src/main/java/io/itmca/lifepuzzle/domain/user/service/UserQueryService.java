@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserQueryService {
-    
+
     private final UserRepository userRepository;
 
     public User findByUserNo(long userNo) {
@@ -32,7 +32,7 @@ public class UserQueryService {
     }
 
     public User findByAppleId(String appleId) {
-        return userRepository.findByKakaoId(appleId)
+        return userRepository.findByAppleId(appleId)
                 .orElseThrow(() -> new IllegalArgumentException("no such data"));
     }
 

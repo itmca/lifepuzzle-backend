@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LoginResponse {
-
     private UserQueryDto user;
     private TokenQueryDto tokens;
     private HeroQueryResponse hero;
@@ -29,12 +28,8 @@ public class LoginResponse {
     }
 
     public LoginResponse from(boolean isNewUser) {
-        return LoginResponse.builder()
-                .isNewUser(isNewUser)
-                .user(this.user)
-                .tokens(this.tokens)
-                .hero(this.hero)
-                .build();
+        this.isNewUser = isNewUser;
+        return this;
     }
 
     @Getter
@@ -55,6 +50,7 @@ public class LoginResponse {
 
     @Getter
     @Builder(access = AccessLevel.PRIVATE)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private static class TokenQueryDto {
         private String accessToken;
         private LocalDateTime accessTokenExpireAt;
@@ -68,7 +64,7 @@ public class LoginResponse {
                     .accessTokenExpireAt(tokens.getAccessTokenExpireAt())
                     .refreshToken(tokens.getRefreshToken())
                     .refreshTokenExpireAt(tokens.getRefreshTokenExpireAt())
-                    .socialToken("")
+                    .socialToken(tokens.getSocialToken())
                     .build();
         }
     }
