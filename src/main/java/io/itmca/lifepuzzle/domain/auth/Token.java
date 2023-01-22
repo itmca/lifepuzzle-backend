@@ -12,4 +12,9 @@ public class Token {
     private LocalDateTime accessTokenExpireAt;
     private String refreshToken;
     private LocalDateTime refreshTokenExpireAt;
+    private String socialToken;
+
+    public void addSocialToken(String socialToken) {
+        this.socialToken = socialToken;
+    }
 }

@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.auth.endpoint;
 
+import io.itmca.lifepuzzle.domain.auth.Login;
 import io.itmca.lifepuzzle.domain.auth.endpoint.request.LoginRequest;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
 import io.itmca.lifepuzzle.domain.auth.service.LoginService;
@@ -41,6 +42,9 @@ public class LoginEndpoint {
             throw new PasswordMismatchException();
         }
 
-        return loginService.getLoginResponse(user);
+        return loginService.getLoginResponse(
+                Login.builder()
+                        .user(user)
+                        .build());
     }
 }

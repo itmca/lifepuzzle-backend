@@ -7,7 +7,6 @@ import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +17,6 @@ public class RegisterPostActionService {
     private final HeroUserAuthWriteService heroUserAuthWriteService;
     private final UserWriteService userWriteService;
 
-    @Async
     public void doAfterRegisterActions(User user) {
         this.createHeroOfUser(user);
     }
@@ -32,9 +30,6 @@ public class RegisterPostActionService {
                         .hero(hero)
                         .build());
 
-        // userWriteService.changeRecentHeroNo(user, hero.getHeroNo());
-
-        user.changeRecentHeroNo(hero.getHeroNo());
-        userWriteService.save(user);
+        userWriteService.changeRecentHeroNo(user, hero.getHeroNo());
     }
 }
