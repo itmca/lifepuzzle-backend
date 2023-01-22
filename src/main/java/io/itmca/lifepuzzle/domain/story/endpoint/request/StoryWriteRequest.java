@@ -24,7 +24,6 @@ public class StoryWriteRequest {
 
     public Story toStory(Long userNo, String photoFiles, String audioFiles){
         var storyKey = generatedStoryKey();
-        System.out.println(storyKey);
         return Story.builder()
                         .storyKey(storyKey)
                         .heroNo(heroNo)
@@ -43,10 +42,6 @@ public class StoryWriteRequest {
 
     public String generatedStoryKey() {
        var now = LocalDateTime.now();
-       return String.format("%s-%02d%02d%02d",
-               heroNo.toString(),
-               now.getHour(),
-               now.getMinute(),
-               now.getSecond());
+       return heroNo.toString() + "-" + now.getHour() + now.getMinute() + now.getSecond();
     }
 }
