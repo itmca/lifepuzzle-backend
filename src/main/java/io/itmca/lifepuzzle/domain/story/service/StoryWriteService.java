@@ -1,7 +1,7 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
 import io.itmca.lifepuzzle.domain.story.entity.Story;
-import io.itmca.lifepuzzle.domain.story.repository.StoryWriteRepository;
+import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
 import io.itmca.lifepuzzle.global.constant.FileConstant;
 import io.itmca.lifepuzzle.global.infra.file.S3Repository;
 import io.itmca.lifepuzzle.global.util.FileUtil;
@@ -17,14 +17,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StoryWriteService {
-    private final StoryWriteRepository storyWriteRepository;
+    private final StoryRepository storyRepository;
     private final S3Repository s3Repository;
 
     public Story create(Story story){
-        return storyWriteRepository.save(story);
+        return storyRepository.save(story);
     };
     public void update(Story story){
-        storyWriteRepository.save(story);
+        storyRepository.save(story);
     };
 
     public void saveStoryFiles(Story story, List<MultipartFile> photos, List<MultipartFile> voices ) throws IOException {

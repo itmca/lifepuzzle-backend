@@ -1,39 +1,43 @@
 package io.itmca.lifepuzzle.domain.question.service;
 
 import io.itmca.lifepuzzle.domain.question.entity.Question;
-import io.itmca.lifepuzzle.domain.question.repository.QuestionQueryRepository;
-import io.itmca.lifepuzzle.domain.question.repository.QuestionStoryQueryRepository;
+import io.itmca.lifepuzzle.domain.question.repository.QuestionRepository;
+import io.itmca.lifepuzzle.domain.question.repository.QuestionStoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class QuestionQueryService {
-    private final QuestionQueryRepository questionQueryRepository;
-    private final QuestionStoryQueryRepository questionStoryQueryRepository;
+    private final QuestionRepository questionRepository;
+    private final QuestionStoryRepository questionStoryRepository;
 
     public List<Question> getRecommendedQuestion(String category, Long heroNo, Long size){
-        var questions = ObjectUtils.isEmpty(category.trim())
-                ? questionQueryRepository.findAll()
-                : questionQueryRepository.findByCategory(category);
+        var questions = StringUtils.isEmpty(category.trim())
+                ? questionRepository.findAll()
+                : questionRepository.findByCategory(category);
         var alreadyUsedQuestions = getUsedQuestionsOfHero(heroNo);
 
         return questions.stream()
-                .filter(question -> !alreadyUsedQuestions.contains(question.getQuestionNo()))
+                .filter(question -> !isUsedBefore(alreadyUsedQuestions, question))
                 .limit(size)
                 .toList();
     };
 
     private List<Long> getUsedQuestionsOfHero(Long heroNo){
-        var heroQuestionStories = questionStoryQueryRepository.findByHeroNo(heroNo);
+        var heroQuestionStories = questionStoryRepository.findByHeroNo(heroNo);
 
         return heroQuestionStories.stream()
-                .filter(stories -> !stories.getIsQuestionModified().booleanValue())
+                .filter(stories -> !stories.getIsQuestionModified())
                 .map(stories -> stories.getRecQuestionNo())
                 .toList();
     };
+
+    private boolean isUsedBefore(List<Long> alreadyUsedQuestions, Question question){
+        return alreadyUsedQuestions.contains(question.getQuestionNo());
+    }
 
 }

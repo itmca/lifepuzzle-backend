@@ -31,7 +31,7 @@ public class HeroWriteEndpoint {
 
         var hero = heroWriteService.create(heroWriteRequest.toHeroOf(photo));
 
-        if(FileUtil.isMultiPartFile(photo)) heroWriteService.saveHeroFile(hero, photo);
+        if(FileUtil.isMultiPartFile(photo)) heroWriteService.saveHeroProfile(hero, photo);
 
         heroUserAuthWriteService.create(HeroUserAuth.builder()
                 .userNo(authPayload.getUserNo())
@@ -51,7 +51,7 @@ public class HeroWriteEndpoint {
     }
 
     @DeleteMapping("/{heroNo}")
-    public void deleteHeroAndHeroUserAuth(@PathVariable("heroNo") Long heroNo,
+    public void deleteHero(@PathVariable("heroNo") Long heroNo,
                                           @AuthenticationPrincipal AuthPayload authPayload) {
         heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
         heroWriteService.remove(heroNo);
@@ -65,7 +65,7 @@ public class HeroWriteEndpoint {
         heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
         var hero = heroWriteRequest.toHeroOf(heroNo, photo);
-        heroWriteService.saveHeroFile(hero, photo);
+        heroWriteService.saveHeroProfile(hero, photo);
 
         return HeroQueryResponse.from(heroWriteService.update(hero));
 
