@@ -25,7 +25,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying'
-                sh 'aws elasticbeanstalk create-application-version --region ***REMOVED*** \ 
+                sh 'aws elasticbeanstalk create-application-version --region ***REMOVED*** \
                     --application-name lifepuzzle-api \
                     --version-label ${JOB_NAME}-${BUILD_NUMBER} \
                     --description ${BUILD_TAG} \
