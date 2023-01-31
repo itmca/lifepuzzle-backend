@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class WithdrawalEndpoint {
+public class WithdrawEndpoint {
 
     private final WithdrawService withdrawService;
 

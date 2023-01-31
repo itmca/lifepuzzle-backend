@@ -58,6 +58,15 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public static String parseTokenType(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SIGNING_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("type", String.class);
+    }
+
     public static Long parseUserNo(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(SIGNING_KEY)
@@ -88,7 +97,7 @@ public class JwtTokenProvider {
         return false;
     }
 
-    private static Key getSigningKey() {
+    public static Key getSigningKey() {
         return Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
     }
 }

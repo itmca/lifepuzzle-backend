@@ -2,10 +2,10 @@ package io.itmca.lifepuzzle.global.exception;
 
 import io.itmca.lifepuzzle.global.exception.handler.AuthException;
 
-public class PasswordMismatchException extends AuthException {
+public class TokenTypeMismatchException extends AuthException {
 
-    public PasswordMismatchException(String msg) {
+    public TokenTypeMismatchException(String msg) {
         super(msg);
     }
-    
+
 }

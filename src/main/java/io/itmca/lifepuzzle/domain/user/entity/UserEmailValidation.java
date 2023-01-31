@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -20,5 +21,6 @@ public class UserEmailValidation {
     private String email;
     private String code;
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDate createdAt;
 }

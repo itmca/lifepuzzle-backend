@@ -2,13 +2,10 @@ package io.itmca.lifepuzzle.domain.auth.service;
 
 import io.itmca.lifepuzzle.domain.auth.Login;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +16,11 @@ public class LoginService {
 
     public LoginResponse getLoginResponse(Login login) {
         var user = login.getUser();
+        var tokens = tokenIssueService.getTokensOfUser(user.getUserNo());
+        var hero = heroQueryServiceService.findHeroByHeroNo(user.getRecentHeroNo());
+
         var socialToken = login.getSocialToken();
         var isNewUser = login.getIsNewUser();
-
-        var tokens = tokenIssueService.getTokensOfUser(user.getUserNo());
-        var hero = HeroQueryResponse.from(heroQueryServiceService.findHeroByHeroNo(user.getRecentHeroNo()));
 
         if (StringUtils.hasText(socialToken)) {
             tokens.addSocialToken(socialToken);
@@ -31,7 +28,7 @@ public class LoginService {
 
         LoginResponse loginResponse = LoginResponse.from(user, tokens, hero);
 
-        if (!Objects.isNull(isNewUser)) {
+        if (isNewUser != null) {
             return loginResponse.from(isNewUser);
         }
 

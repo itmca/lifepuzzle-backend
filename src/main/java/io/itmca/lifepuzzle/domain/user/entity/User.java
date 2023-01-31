@@ -4,6 +4,8 @@ import io.itmca.lifepuzzle.domain.user.UserType;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -44,9 +46,13 @@ public class User {
     private boolean kakaoNotice;
     @Column(name = "inapp_notice")
     private boolean inappNotice;
+
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
+    
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     public String getUserType() {
