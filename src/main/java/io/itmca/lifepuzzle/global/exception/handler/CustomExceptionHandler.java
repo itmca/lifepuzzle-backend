@@ -16,4 +16,9 @@ public class CustomExceptionHandler {
         
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity handleNotFoundException(NotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 }
