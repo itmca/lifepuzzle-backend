@@ -3,6 +3,7 @@ package io.itmca.lifepuzzle.domain.auth.endpoint.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.itmca.lifepuzzle.domain.auth.Token;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
+import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import lombok.*;
 
@@ -19,11 +20,11 @@ public class LoginResponse {
     private HeroQueryResponse hero;
     private Boolean isNewUser;
 
-    public static LoginResponse from(User user, Token tokens, HeroQueryResponse hero) {
+    public static LoginResponse from(User user, Token tokens, Hero hero) {
         return LoginResponse.builder()
                 .user(UserQueryDto.from(user))
                 .tokens(TokenQueryDto.from(tokens))
-                .hero(hero)
+                .hero(HeroQueryResponse.from(hero))
                 .build();
     }
 

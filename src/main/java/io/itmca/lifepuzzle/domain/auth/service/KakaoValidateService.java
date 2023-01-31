@@ -1,8 +1,6 @@
 package io.itmca.lifepuzzle.domain.auth.service;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.itmca.lifepuzzle.domain.auth.KakaoProfile;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -15,12 +13,10 @@ import java.net.URL;
 public class KakaoValidateService {
 
     public String getKakaoIdByTokenValidation(String kakaoAccessToken) throws IOException {
-        var kakaoProfile = this.getKakaoProfile(kakaoAccessToken);
-
-        return kakaoProfile.getId();
+        return this.getKakaoProfile(kakaoAccessToken);
     }
 
-    private KakaoProfile getKakaoProfile(String accessToken) throws IOException {
+    private String getKakaoProfile(String accessToken) throws IOException {
         var url = new URL("https://kapi.kakao.com/v2/user/me");
         var conn = (HttpURLConnection) url.openConnection();
 
@@ -42,9 +38,9 @@ public class KakaoValidateService {
             sb.append(line);
         }
 
-        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        KakaoProfile kakaoProfile = objectMapper.readValue(sb.toString(), KakaoProfile.class);
+        var kakaoProfile = new JSONObject(sb.toString());
+        var id = kakaoProfile.getString("id");
 
-        return kakaoProfile;
+        return id;
     }
 }

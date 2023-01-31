@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,24 +24,30 @@ public class KakaoAuthEndpoint {
 
     @PostMapping("/auth/social/kakao")
     public LoginResponse login(@RequestHeader("kakao-access-token") String kakaoAccessToken) {
-        var kakaoId = "";
+        var kakaoId = getKakaoId(kakaoAccessToken);
 
-        try {
-            kakaoId = kakaoValidateService.getKakaoIdByTokenValidation(kakaoAccessToken);
-            var kakaoUser = userQueryService.findByKakaoId(kakaoId);
-
-            if (!Objects.isNull(kakaoUser)) {
-                return loginService.getLoginResponse(
-                        Login.builder()
-                                .user(kakaoUser)
-                                .build());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalArgumentException e) {
+        if (kakaoId != null) {
+            return tryKakaoLogin(kakaoId);
         }
 
         return loginAfterRegistration(kakaoId);
+    }
+
+    private LoginResponse tryKakaoLogin(String kakaoId) {
+        var kakaoUser = userQueryService.findByKakaoId(kakaoId);
+
+        return loginService.getLoginResponse(
+                Login.builder()
+                        .user(kakaoUser)
+                        .build());
+    }
+
+    private String getKakaoId(String kakaoAccessToken) {
+        try {
+            return kakaoValidateService.getKakaoIdByTokenValidation(kakaoAccessToken);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private LoginResponse loginAfterRegistration(String kakaoId) {

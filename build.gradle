@@ -39,6 +39,7 @@ dependencies {
     // Tool
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    implementation 'org.json:json:20220924'
     implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.4'
 }
 
