@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: prod
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
@@ -36,6 +36,3 @@ cloud:
       static: ***REMOVED***
     stack:
       auto: false
-
-server :
-  port : 9596
