@@ -3,3 +3,5 @@ spring:
     url: ***REMOVED***
     username: admin
     password: ***REMOVED***
+server:
+  port: 5000
