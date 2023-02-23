@@ -46,6 +46,7 @@ public class UserWriteEndpoint {
             // exception
         }
 
+        //PasswordChange 클래스 안에 oldPassword, newPassword 래퍼 클래스를 파라미터로 넘기기
         userWriteService.updateUserPassword(user, userPasswordUpdateRequest.getNewPassword());
     }
 

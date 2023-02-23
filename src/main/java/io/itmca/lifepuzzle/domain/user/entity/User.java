@@ -50,7 +50,7 @@ public class User {
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
+
     @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -71,7 +71,7 @@ public class User {
         this.password = password;
     }
 
-    public void setRandomNickname(String nickname) {
+    public void addRandomNickname(String nickname) {
         this.nickName = nickname;
     }
 

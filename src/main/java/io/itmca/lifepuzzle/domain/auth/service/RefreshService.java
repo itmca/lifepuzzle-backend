@@ -7,6 +7,8 @@ import io.itmca.lifepuzzle.global.exception.TokenTypeMismatchException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static io.itmca.lifepuzzle.domain.auth.jwt.JwtTokenProvider.parseTokenType;
+
 @Service
 @RequiredArgsConstructor
 public class RefreshService {
@@ -14,8 +16,7 @@ public class RefreshService {
     private final TokenIssueService tokenIssueService;
 
     public Token refresh(String refreshToken) {
-        if (!JwtTokenProvider.parseTokenType(refreshToken)
-                .equals(TokenType.REFRESH.frontEndKey())) {
+        if (!parseTokenType(refreshToken).equals(TokenType.REFRESH.frontEndKey())) {
             throw new TokenTypeMismatchException("토큰 타입이 일치하지 않습니다.");
         }
 

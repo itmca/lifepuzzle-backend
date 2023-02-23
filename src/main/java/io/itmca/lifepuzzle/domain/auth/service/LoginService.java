@@ -2,6 +2,9 @@ package io.itmca.lifepuzzle.domain.auth.service;
 
 import io.itmca.lifepuzzle.domain.auth.Login;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
+import io.itmca.lifepuzzle.domain.auth.endpoint.response.dto.TokenQueryDTO;
+import io.itmca.lifepuzzle.domain.auth.endpoint.response.dto.UserQueryDTO;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,12 +29,25 @@ public class LoginService {
             tokens.addSocialToken(socialToken);
         }
 
-        LoginResponse loginResponse = LoginResponse.from(user, tokens, hero);
+        var tokenQueryDTO = TokenQueryDTO.builder()
+                .accessToken(tokens.getAccessToken())
+                .accessTokenExpireAt(tokens.getAccessTokenExpireAt())
+                .refreshToken(tokens.getRefreshToken())
+                .refreshTokenExpireAt(tokens.getRefreshTokenExpireAt())
+                .socialToken(tokens.getSocialToken())
+                .build();
 
-        if (isNewUser != null) {
-            return loginResponse.from(isNewUser);
-        }
+        var userQueryDTO = UserQueryDTO.builder()
+                .userNo(user.getUserNo())
+                .userNickName(user.getNickName())
+                .userType(user.getUserType())
+                .build();
 
-        return loginResponse;
+        return LoginResponse.builder()
+                .user(userQueryDTO)
+                .tokens(tokenQueryDTO)
+                .hero(HeroQueryDTO.from(hero))
+                .isNewUser(isNewUser)
+                .build();
     }
 }

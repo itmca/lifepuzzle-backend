@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
-import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,14 +32,19 @@ public class AppleAuthController {
                 .user(appleUser)
                 .build();
 
-        return !Objects.isNull(appleUser)
+        return appleUser != null
                 ? loginService.getLoginResponse(loginType)
                 : loginAfterRegistration(appleAuthBody);
 
     }
 
-    private void verify(AppleAuthBody appleAuthBody) throws ParseException {
-        var sub = appleValidateService.parseToken(appleAuthBody.getIdentityToken());
+    private void verify(AppleAuthBody appleAuthBody) {
+        String sub = "";
+        try {
+            sub = appleValidateService.parseToken(appleAuthBody.getIdentityToken());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
 
         if (!sub.equals(appleAuthBody.getAppleUserId())) {
         }

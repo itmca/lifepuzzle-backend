@@ -4,8 +4,8 @@ import io.itmca.lifepuzzle.global.exception.handler.AuthException;
 
 public class PasswordMismatchException extends AuthException {
 
-    public PasswordMismatchException(String msg) {
-        super(msg);
+    public PasswordMismatchException() {
+        super("Password does not match");
     }
-    
+
 }
