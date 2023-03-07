@@ -26,6 +26,9 @@ public class StoryQueryEndpoint {
     @GetMapping("/stories")
     public StoryQueryResponse findStories(@RequestParam("heroNo") Long heroNo,
                                           @AuthenticationPrincipal AuthPayload authPayload){
+        // [Debugging]
+        // heroNo 가 -1일 경우 무조건 exception이 떨어지는 문제. heroNo의 -1은 default인데.... 다른 부분들도 전부 처리해야할듯
+        if(heroNo == -1) return StoryQueryResponse.getEmptyResponse();
         heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
         var hero = heroQueryService.findHeroByHeroNo(heroNo);

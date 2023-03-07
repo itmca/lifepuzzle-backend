@@ -1,7 +1,7 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +20,17 @@ public class HeroQueryEndpoint {
     private final HeroValidationService heroValidationService;
 
     @GetMapping("/heroes")
-    public List<HeroQueryResponse> getHeroes(@AuthenticationPrincipal AuthPayload authPayload) {
+    public List<HeroQueryDTO> getHeroes(@AuthenticationPrincipal AuthPayload authPayload) {
         var heroes = heroQueryService.findHeroesByUserNo(authPayload.getUserNo());
 
-        return heroes.stream().map(HeroQueryResponse::from).toList();
+        return heroes.stream().map(HeroQueryDTO::from).toList();
     }
 
     @GetMapping("/heroes/{heroNo}")
-    public HeroQueryResponse getHeroDetail(@PathVariable("heroNo") Long heroNo,
+    public HeroQueryDTO getHeroDetail(@PathVariable("heroNo") Long heroNo,
                                            @AuthenticationPrincipal AuthPayload authPayload){
         heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
-        return HeroQueryResponse.from(heroQueryService.findHeroByHeroNo(heroNo));
+        return HeroQueryDTO.from(heroQueryService.findHeroByHeroNo(heroNo));
     }
 }

@@ -2,7 +2,7 @@ package io.itmca.lifepuzzle.domain.auth.endpoint.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.itmca.lifepuzzle.domain.auth.Token;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import lombok.*;
@@ -17,14 +17,17 @@ import java.time.LocalDateTime;
 public class LoginResponse {
     private UserQueryDto user;
     private TokenQueryDto tokens;
-    private HeroQueryResponse hero;
+    /* [Debugging]
+        클라이언트 입장에서 hero 키 값으로 한 번 더 랩핑 되어 있으면 암됨 HeroQeuryResponse -> HeroQueryDTO
+     */
+    private HeroQueryDTO hero;
     private Boolean isNewUser;
 
     public static LoginResponse from(User user, Token tokens, Hero hero) {
         return LoginResponse.builder()
                 .user(UserQueryDto.from(user))
                 .tokens(TokenQueryDto.from(tokens))
-                .hero(HeroQueryResponse.from(hero))
+                .hero(HeroQueryDTO.from(hero))
                 .build();
     }
 

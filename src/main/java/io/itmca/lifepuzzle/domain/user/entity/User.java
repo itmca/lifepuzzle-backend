@@ -31,7 +31,7 @@ public class User {
     private LocalDate birthday;
     @Column(name = "recent_hero")
     private Long recentHeroNo;
-    private boolean validated;
+    private Boolean validated;
     @Column(name = "nick_name")
     private String nickName;
     @Column(name = "kakao_id")
@@ -39,13 +39,13 @@ public class User {
     @Column(name = "apple_id")
     private String appleId;
     @Column(name = "email_notice")
-    private boolean emailNotice;
+    private Boolean emailNotice;
     @Column(name = "phone_notice")
-    private boolean phoneNotice;
+    private Boolean phoneNotice;
     @Column(name = "kakao_notice")
-    private boolean kakaoNotice;
+    private Boolean kakaoNotice;
     @Column(name = "inapp_notice")
-    private boolean inappNotice;
+    private Boolean inappNotice;
 
     @Column(name = "created_at")
     @CreationTimestamp

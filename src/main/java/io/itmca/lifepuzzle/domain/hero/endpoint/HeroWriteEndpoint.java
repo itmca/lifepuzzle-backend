@@ -2,7 +2,7 @@ package io.itmca.lifepuzzle.domain.hero.endpoint;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("hero")
 @RequiredArgsConstructor
 public class HeroWriteEndpoint {
 
@@ -24,8 +23,8 @@ public class HeroWriteEndpoint {
     private final HeroWriteService heroWriteService;
     private final HeroUserAuthWriteService heroUserAuthWriteService;
 
-    @PostMapping("")
-    public HeroQueryResponse createHero(@RequestPart("toCreate") HeroWriteRequest heroWriteRequest,
+    @PostMapping("/heroes")
+    public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest heroWriteRequest,
                                         @RequestPart(value = "photo", required = false) MultipartFile photo,
                                         @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
 
@@ -38,36 +37,36 @@ public class HeroWriteEndpoint {
                 .hero(hero)
                 .build());
 
-        return HeroQueryResponse.from(hero);
+        return HeroQueryDTO.from(hero);
     }
 
-    @PutMapping("/{heroNo}")
-    public HeroQueryResponse updateHero(@RequestBody HeroWriteRequest heroWriteRequest,
+    @PutMapping("heroes/{heroNo}")
+    public HeroQueryDTO updateHero(@RequestBody HeroWriteRequest heroWriteRequest,
                                         @PathVariable("heroNo") Long heroNo,
                                         @AuthenticationPrincipal AuthPayload authPayload) {
         heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
-        return HeroQueryResponse.from(heroWriteService.create(heroWriteRequest.toHeroOf(heroNo)));
+        return HeroQueryDTO.from(heroWriteService.create(heroWriteRequest.toHeroOf(heroNo)));
     }
 
-    @DeleteMapping("/{heroNo}")
+    @DeleteMapping("heroes/{heroNo}")
     public void deleteHero(@PathVariable("heroNo") Long heroNo,
                                           @AuthenticationPrincipal AuthPayload authPayload) {
         heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
         heroWriteService.remove(heroNo);
     }
 
-    @PostMapping("/profile/{heroNo}")
-    public HeroQueryResponse saveHeroPhoto(@PathVariable("heroNo") Long heroNo,
+    @PostMapping("heroes/profile/{heroNo}")
+    public HeroQueryDTO saveHeroPhoto(@PathVariable("heroNo") Long heroNo,
                               @RequestPart("toUpdate") HeroWriteRequest heroWriteRequest,
-                              @RequestPart(name = "photo") MultipartFile photo,
+                              @RequestPart(name = "photo", required = false) MultipartFile photo,
                               @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
         heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
         var hero = heroWriteRequest.toHeroOf(heroNo, photo);
-        heroWriteService.saveHeroProfile(hero, photo);
+        if(FileUtil.isMultiPartFile(photo)) heroWriteService.saveHeroProfile(hero, photo);
 
-        return HeroQueryResponse.from(heroWriteService.update(hero));
+        return HeroQueryDTO.from(heroWriteService.update(hero));
 
     }
 }

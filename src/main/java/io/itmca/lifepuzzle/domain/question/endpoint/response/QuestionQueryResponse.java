@@ -17,19 +17,4 @@ public class QuestionQueryResponse {
                 .build();
     }
 
-    @Getter
-    @Builder(access = AccessLevel.PRIVATE)
-    static class RecommendQuestionDTO {
-        final Long questionNo;
-        final String category;
-        final String question;
-
-        public static RecommendQuestionDTO from(Question question) {
-            return RecommendQuestionDTO.builder()
-                    .questionNo(question.getQuestionNo())
-                    .category(question.getCategory())
-                    .question(question.getQuestion())
-                    .build();
-        }
-    }
 }
