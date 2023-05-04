@@ -51,3 +51,14 @@ springdoc:
 #      enabled: true
   cache:
     disabled: true
+  group-configs:
+    - group: story
+      paths-to-match: /story/**, /stories/**
+    - group: auth
+      paths-to-match: /auth/**
+    - group: user
+      paths-to-match: /user/**, /users/**
+    - group: question
+      paths-to-match: /question/**
+    - group: hero
+      paths-to-match: /hero/**, /heroes/**

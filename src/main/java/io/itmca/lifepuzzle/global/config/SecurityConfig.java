@@ -30,8 +30,7 @@ public class SecurityConfig {
                         (request) -> request.antMatchers("/auth/**", "/", "/user", "/hc", "/v3/**", "/swagger-ui/**")
                                 .permitAll()
                                 .anyRequest()
-                                .permitAll()
-                        //.authenticated()
+                                .authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
