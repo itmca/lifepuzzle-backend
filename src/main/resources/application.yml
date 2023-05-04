@@ -45,20 +45,16 @@ springdoc:
     path: demo-ui.html
     tags-sorter: alpha
     operations-sorter: alpha
-#  api-docs:
-#    path: /api-docs/json
-#    groups:
-#      enabled: true
   cache:
     disabled: true
   group-configs:
-    - group: story
+    - group: 이야기
       paths-to-match: /story/**, /stories/**
-    - group: auth
+    - group: 권한
       paths-to-match: /auth/**
-    - group: user
+    - group: 유저
       paths-to-match: /user/**, /users/**
-    - group: question
+    - group: 질문
       paths-to-match: /question/**
-    - group: hero
+    - group: 주인공
       paths-to-match: /hero/**, /heroes/**
