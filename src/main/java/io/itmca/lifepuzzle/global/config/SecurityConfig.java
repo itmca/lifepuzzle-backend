@@ -27,10 +27,11 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests(
-                        (request) -> request.antMatchers("/auth/**", "/", "/user", "/hc")
+                        (request) -> request.antMatchers("/auth/**", "/", "/user", "/hc", "/v3/**", "/swagger-ui/**")
                                 .permitAll()
                                 .anyRequest()
-                                .authenticated()
+                                .permitAll()
+                        //.authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
