@@ -4,4 +4,4 @@ spring:
     username: ***REMOVED***
     password: ***REMOVED***
 server:
-  port: 5000
+  port: 5055

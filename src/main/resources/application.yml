@@ -36,3 +36,25 @@ cloud:
       static: ***REMOVED***
     stack:
       auto: false
+
+springdoc:
+  packages-to-scan: io.itmca.lifepuzzle.domain
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: demo-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  cache:
+    disabled: true
+  group-configs:
+    - group: 이야기
+      paths-to-match: /story/**, /stories/**
+    - group: 권한
+      paths-to-match: /auth/**
+    - group: 유저
+      paths-to-match: /user/**, /users/**
+    - group: 질문
+      paths-to-match: /question/**
+    - group: 주인공
+      paths-to-match: /hero/**, /heroes/**
