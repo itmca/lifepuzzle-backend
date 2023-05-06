@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.4'
     id 'io.spring.dependency-management' version '1.0.14.RELEASE'
     id 'java'
+    id 'checkstyle'
 }
 
 group = 'io.itmca'
@@ -59,4 +60,9 @@ task buildZip(type: Zip) {
     }
     destinationDirectory = project.buildDir
     archiveFileName = project.name + ".zip"
+}
+
+checkstyle {
+    toolVersion('10.10.0')
+    configFile = rootProject.file('checkstyle/checkstyle.xml')
 }
