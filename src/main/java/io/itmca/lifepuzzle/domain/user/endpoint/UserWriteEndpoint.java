@@ -8,7 +8,6 @@ import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,15 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/users")
 @RequiredArgsConstructor
-@Tag(name = "유저 정보 수정")
+@Tag(name = "유저 수정")
 public class UserWriteEndpoint {
 
   private final UserWriteService userWriteService;
 
   @PatchMapping("/{id}")
-  @Operation(summary = "유저 정보 수정")
+  @Operation(summary = "유저 수정")
   public void updateUser(@PathVariable("id") Long id,
-                         @Parameter(hidden = true) @CurrentUser User user,
+                         @CurrentUser User user,
                          @RequestBody UserUpdateRequest userUpdateRequest) {
 //    if (id != user.getUserNo()) {
 //      // exception
@@ -42,7 +41,7 @@ public class UserWriteEndpoint {
   @PatchMapping("/{id}/password")
   @Operation(summary = "비밀번호 변경")
   public void updateUserPassword(@PathVariable("id") Long id,
-                                 @Parameter(hidden = true) @CurrentUser User user,
+                                 @CurrentUser User user,
                                  @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest) {
     if (id != user.getUserNo()) {
       // exception

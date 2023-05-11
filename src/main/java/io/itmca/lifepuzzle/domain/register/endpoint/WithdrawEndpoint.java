@@ -4,7 +4,6 @@ import io.itmca.lifepuzzle.domain.register.service.WithdrawService;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +21,7 @@ public class WithdrawEndpoint {
   @DeleteMapping("/users/{id}")
   @Operation(summary = "회원탈퇴")
   public void withdraw(@PathVariable("id") Long id,
-                       @Parameter(hidden = true) @CurrentUser User user,
+                       @CurrentUser User user,
                        @RequestBody String socialToken) {
     if (id != user.getUserNo()) {
     }
