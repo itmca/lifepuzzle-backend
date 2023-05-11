@@ -5,6 +5,8 @@ import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.global.util.FileUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +19,11 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name="스토리 작성 API")
 public class StoryWriteEndpoint {
     private final StoryWriteService storyWriteService;
 
+    @Operation(summary = "스토리 작성")
     @PostMapping(value = "/story")
     public void writeStory(@RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
                            @RequestPart("photos") MultipartFile[] photos,

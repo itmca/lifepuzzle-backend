@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name="스토리 조회")
+@Tag(name="스토리 조회 API")
 public class StoryQueryEndpoint {
     private final StoryQueryService storyQueryService;
     private final StoryTagService storyTagService;
@@ -27,7 +27,7 @@ public class StoryQueryEndpoint {
     private final HeroQueryService heroQueryService;
 
     @GetMapping("/stories")
-    @Operation(summary = "주인공 정보")
+    @Operation(summary = "스토리 전체 목록 조회")
     public StoryQueryResponse findStories(@RequestParam("heroNo") Long heroNo,
                                           @AuthenticationPrincipal AuthPayload authPayload){
         // [Debugging]
@@ -42,6 +42,7 @@ public class StoryQueryEndpoint {
         return StoryQueryResponse.from(stories, hero, tags);
     }
 
+    @Operation(summary = "스토리 조회")
     @GetMapping("/stories/{storyKey}")
     public StoryQueryResponse findSingleStory(@PathVariable("storyKey") String storyKey,
                                 @AuthenticationPrincipal AuthPayload authPayload){
