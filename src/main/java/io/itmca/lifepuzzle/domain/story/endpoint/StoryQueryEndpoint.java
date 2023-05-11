@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name="스토리 조회 API")
+@Tag(name="스토리 조회")
 public class StoryQueryEndpoint {
     private final StoryQueryService storyQueryService;
     private final StoryTagService storyTagService;

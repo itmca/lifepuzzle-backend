@@ -19,11 +19,11 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name="스토리 작성 API")
+@Tag(name="스토리 등록")
 public class StoryWriteEndpoint {
     private final StoryWriteService storyWriteService;
 
-    @Operation(summary = "스토리 작성")
+    @Operation(summary = "스토리 등록")
     @PostMapping(value = "/story")
     public void writeStory(@RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
                            @RequestPart("photos") MultipartFile[] photos,

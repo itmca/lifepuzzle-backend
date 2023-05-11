@@ -16,13 +16,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name="주인공 조회 API")
+@Tag(name="주인공 조회")
 public class HeroQueryEndpoint {
 
     private final HeroQueryService heroQueryService;
     private final HeroValidationService heroValidationService;
 
-    @Operation(summary = "주인공 전체 조회")
+    @Operation(summary = "주인공 전체 목록 조회")
     @GetMapping("/heroes")
     public List<HeroQueryDTO> getHeroes(@AuthenticationPrincipal AuthPayload authPayload) {
         var heroes = heroQueryService.findHeroesByUserNo(authPayload.getUserNo());

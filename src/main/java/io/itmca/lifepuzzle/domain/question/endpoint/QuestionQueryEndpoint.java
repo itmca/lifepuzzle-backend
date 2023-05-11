@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("question")
 @RequiredArgsConstructor
-@Tag(name="질문 조회 API")
+@Tag(name="질문 조회")
 public class QuestionQueryEndpoint {
     private final QuestionQueryService questionQueryService;
 

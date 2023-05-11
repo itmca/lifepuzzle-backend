@@ -19,14 +19,14 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name ="주인공 작성 API")
+@Tag(name ="주인공 등록")
 public class HeroWriteEndpoint {
 
     private final HeroValidationService heroValidationService;
     private final HeroWriteService heroWriteService;
     private final HeroUserAuthWriteService heroUserAuthWriteService;
 
-    @Operation(summary = "주인공 작성")
+    @Operation(summary = "주인공 등록")
     @PostMapping("/heroes")
     public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest heroWriteRequest,
                                         @RequestPart(value = "photo", required = false) MultipartFile photo,
