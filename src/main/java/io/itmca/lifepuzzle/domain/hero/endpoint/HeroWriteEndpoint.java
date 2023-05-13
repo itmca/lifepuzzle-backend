@@ -8,6 +8,8 @@ import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
 import io.itmca.lifepuzzle.global.util.FileUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +19,14 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name ="주인공 등록")
 public class HeroWriteEndpoint {
 
     private final HeroValidationService heroValidationService;
     private final HeroWriteService heroWriteService;
     private final HeroUserAuthWriteService heroUserAuthWriteService;
 
+    @Operation(summary = "주인공 등록")
     @PostMapping("/heroes")
     public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest heroWriteRequest,
                                         @RequestPart(value = "photo", required = false) MultipartFile photo,
@@ -40,6 +44,7 @@ public class HeroWriteEndpoint {
         return HeroQueryDTO.from(hero);
     }
 
+    @Operation(summary = "주인공 수정")
     @PutMapping("heroes/{heroNo}")
     public HeroQueryDTO updateHero(@RequestBody HeroWriteRequest heroWriteRequest,
                                         @PathVariable("heroNo") Long heroNo,
@@ -49,6 +54,7 @@ public class HeroWriteEndpoint {
         return HeroQueryDTO.from(heroWriteService.create(heroWriteRequest.toHeroOf(heroNo)));
     }
 
+    @Operation(summary = "주인공 삭제")
     @DeleteMapping("heroes/{heroNo}")
     public void deleteHero(@PathVariable("heroNo") Long heroNo,
                                           @AuthenticationPrincipal AuthPayload authPayload) {
@@ -56,6 +62,7 @@ public class HeroWriteEndpoint {
         heroWriteService.remove(heroNo);
     }
 
+    @Operation(summary = "주인공 사진 수정")
     @PostMapping("heroes/profile/{heroNo}")
     public HeroQueryDTO saveHeroPhoto(@PathVariable("heroNo") Long heroNo,
                               @RequestPart("toUpdate") HeroWriteRequest heroWriteRequest,
