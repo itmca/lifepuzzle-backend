@@ -3,6 +3,7 @@ package io.itmca.lifepuzzle.domain.register.endpoint;
 import io.itmca.lifepuzzle.domain.register.service.WithdrawService;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
+import io.itmca.lifepuzzle.global.exception.UserNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class WithdrawEndpoint {
                        @CurrentUser User user,
                        @RequestBody String socialToken) {
     if (id != user.getUserNo()) {
+      throw new UserNotFoundException(id);
     }
 
     withdrawService.withdraw(user, socialToken);
