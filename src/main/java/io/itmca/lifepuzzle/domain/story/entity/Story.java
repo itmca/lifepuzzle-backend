@@ -50,8 +50,8 @@ public class Story {
   private LocalDateTime updatedAt;
 
   public AgeGroup getTag(Hero hero) {
-    var age = Long.valueOf(date.getYear() - hero.getBirthday().getYear() + 1);
-    return AgeGroup.of(age - (age % 10));
+    var age = Integer.valueOf(date.getYear() - hero.getBirthday().getYear() + 1);
+    return AgeGroup.of(age);
   }
 
   public List<String> getImages() {

@@ -36,9 +36,9 @@ public class StoryQueryResponse {
     var storyDTOs = stories.stream().map(story -> StoryDTO.from(story, hero)).toList();
     var storyTags = ageGroups.stream()
         .map(ageGroup -> StoryTagResponse.builder()
-            .key(ageGroup.getPriority().toString())
+            .key(ageGroup.getRepresentativeAge().toString())
             .displayName(ageGroup.getDisplayName())
-            .priority(ageGroup.getPriority())
+            .priority(ageGroup.getRepresentativeAge())
             .build())
         .sorted()
         .toList();

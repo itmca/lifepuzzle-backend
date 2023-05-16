@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 public class StoryTagResponse implements Comparable<StoryTagResponse> {
   private String key;
   private String displayName;
-  private Long priority;
+  private Integer priority;
 
   public static StoryTagResponse from(AgeGroup ageGroup) {
     return StoryTagResponse.builder()
-        .key(ageGroup.getPriority().toString())
+        .key(ageGroup.getRepresentativeAge().toString())
         .displayName(ageGroup.getDisplayName())
-        .priority(ageGroup.getPriority())
+        .priority(ageGroup.getRepresentativeAge())
         .build();
   }
 

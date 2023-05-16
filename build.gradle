@@ -65,4 +65,5 @@ task buildZip(type: Zip) {
 checkstyle {
     toolVersion('10.10.0')
     configFile = rootProject.file('checkstyle/checkstyle.xml')
+    maxWarnings = 0
 }

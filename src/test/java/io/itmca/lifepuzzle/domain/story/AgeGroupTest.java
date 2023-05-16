@@ -8,10 +8,14 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 class AgeGroupTest {
 
-  @DisplayName("나이가 주어졌을 때 적절한 AgeGroup으로 변환한다")
+  // TODO 적절한 테스트 케이스 추가 및 수정 필요
+  @DisplayName("10대부터 90대까지 적절한 AgeGroup으로 변환한다")
   @ParameterizedTest
-  @CsvSource({"1,UNDER_TEENAGER", "11, TEENAGER"})
-  public void getAgeGroupByAgeTest(Long age, AgeGroup expectedAgeGroup) {
+  @CsvSource({
+      "1,UNDER_TEENAGER",
+      "11, TEENAGER"
+  })
+  public void testAgeGroupByAge(Integer age, AgeGroup expectedAgeGroup) {
     // Given
     // When
     var ageGroup = AgeGroup.of(age);
