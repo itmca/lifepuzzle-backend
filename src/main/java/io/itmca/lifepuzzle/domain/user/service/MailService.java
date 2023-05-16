@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MailService {
 
-    private final JavaMailSender mailSender;
+  private final JavaMailSender mailSender;
 
-    public void sendEmail(Mail mail) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(mail.getFrom());
-        message.setTo(mail.getTo());
-        message.setSubject(mail.getSubject());
-        message.setText(mail.getHtml());
+  public void sendEmail(Mail mail) {
+    SimpleMailMessage message = new SimpleMailMessage();
+    message.setFrom(mail.getFrom());
+    message.setTo(mail.getTo());
+    message.setSubject(mail.getSubject());
+    message.setText(mail.getHtml());
 
-        mailSender.send(message);
-    }
+    mailSender.send(message);
+  }
 }

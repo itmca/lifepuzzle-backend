@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class Login {
-    private User user;
-    private String socialToken;
-    private Boolean isNewUser;
+  private User user;
+  private String socialToken;
+  private Boolean isNewUser;
 }

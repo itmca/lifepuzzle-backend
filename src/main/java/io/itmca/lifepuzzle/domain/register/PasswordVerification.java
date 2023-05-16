@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class PasswordVerification {
-    private String plainPassword;
-    private String salt;
-    private String hashedPassword;
+  private String plainPassword;
+  private String salt;
+  private String hashedPassword;
 }

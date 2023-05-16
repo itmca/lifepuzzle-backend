@@ -8,17 +8,17 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class HeroUserAuthWriteService {
-    private final HeroUserAuthRepository heroUserAuthRepository;
+  private final HeroUserAuthRepository heroUserAuthRepository;
 
-    public HeroUserAuth create(HeroUserAuth heroUserAuth){
-        return heroUserAuthRepository.save(heroUserAuth);
-    }
+  public HeroUserAuth create(HeroUserAuth heroUserAuth) {
+    return heroUserAuthRepository.save(heroUserAuth);
+  }
 
-    public HeroUserAuth update(HeroUserAuth heroUserAuth){
-        return heroUserAuthRepository.save(heroUserAuth);
-    }
+  public HeroUserAuth update(HeroUserAuth heroUserAuth) {
+    return heroUserAuthRepository.save(heroUserAuth);
+  }
 
-    public void remove(HeroUserAuth heroUserAuth){
-        heroUserAuthRepository.delete(heroUserAuth);
-    }
+  public void remove(HeroUserAuth heroUserAuth) {
+    heroUserAuthRepository.delete(heroUserAuth);
+  }
 }

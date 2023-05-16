@@ -9,8 +9,7 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public
-class HeroQueryDTO {
+public class HeroQueryDTO {
   private Long heroNo;
   private String heroName;
   private String heroNickName;
@@ -25,11 +24,11 @@ class HeroQueryDTO {
         .heroNickName(hero.getNickname())
         .birthday(hero.getBirthday())
         .title(hero.getTitle())
-        .imageURL(addServerURLInImage(hero.getHeroNo(), hero.getImage()))
+        .imageURL(addServerHostInImage(hero.getHeroNo(), hero.getImage()))
         .build();
   }
 
-  private static String addServerURLInImage(Long heroNo, String imageURL) {
+  private static String addServerHostInImage(Long heroNo, String imageURL) {
     return String.format("%s/hero/profile/%d/%s", ServerConstant.SERVER_HOST, heroNo, imageURL);
   }
 }

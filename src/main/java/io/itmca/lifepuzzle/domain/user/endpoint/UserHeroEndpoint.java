@@ -24,9 +24,9 @@ public class UserHeroEndpoint {
 
   @PostMapping("/user/hero/recent")
   @Operation(summary = "현재 주인공 변경")
-  public void updateRecentHero(@RequestBody RecentHeroResponse RecentHeroResponse,
+  public void updateRecentHero(@RequestBody RecentHeroResponse recentHeroResponse,
                                @CurrentUser User user) {
-    userWriteService.changeRecentHeroNo(user, RecentHeroResponse.heroNo);
+    userWriteService.changeRecentHeroNo(user, recentHeroResponse.heroNo);
   }
 
   // [Debugging] 클라이언트 쪽에서 Body로 데이터를 보내다보니 Response 생성

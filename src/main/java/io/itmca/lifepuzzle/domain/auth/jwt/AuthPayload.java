@@ -7,9 +7,9 @@ import lombok.Getter;
 @Hidden
 public class AuthPayload {
 
-    private Long userNo;
+  private Long userNo;
 
-    public AuthPayload(Long userNo) {
-        this.userNo = userNo;
-    }
+  public AuthPayload(Long userNo) {
+    this.userNo = userNo;
+  }
 }

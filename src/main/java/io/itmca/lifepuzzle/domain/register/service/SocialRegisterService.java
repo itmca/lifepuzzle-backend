@@ -10,33 +10,33 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SocialRegisterService {
 
-    private final UserWriteService userWriteService;
-    private final NicknameProvideService nicknameProvideService;
-    private final RegisterPostActionService registerPostActionService;
+  private final UserWriteService userWriteService;
+  private final NicknameProvideService nicknameProvideService;
+  private final RegisterPostActionService registerPostActionService;
 
-    public void registerKakaoUser(String kakaoId) {
-        var user = userWriteService.save(
-                User.builder()
-                        .userId("kakao" + kakaoId)
-                        .nickName(nicknameProvideService.getRandomNickname(kakaoId))
-                        .kakaoId(kakaoId)
-                        .build());
+  public void registerKakaoUser(String kakaoId) {
+    var user = userWriteService.save(
+        User.builder()
+            .userId("kakao" + kakaoId)
+            .nickName(nicknameProvideService.getRandomNickname(kakaoId))
+            .kakaoId(kakaoId)
+            .build());
 
-        registerPostActionService.doAfterRegisterActions(user);
-    }
+    registerPostActionService.doAfterRegisterActions(user);
+  }
 
-    public void registerAppleUser(AppleAuthBody appleAuthBody) {
-        var appleUserId = appleAuthBody.getAppleUserId();
-        var email = appleAuthBody.getEmail();
+  public void registerAppleUser(AppleAuthBody appleAuthBody) {
+    var appleUserId = appleAuthBody.getAppleUserId();
+    var email = appleAuthBody.getEmail();
 
-        var user = userWriteService.save(
-                User.builder()
-                        .userId("appleUserId" + appleUserId)
-                        .nickName(nicknameProvideService.getRandomNickname(appleUserId))
-                        .email(email)
-                        .appleId(appleUserId)
-                        .build());
+    var user = userWriteService.save(
+        User.builder()
+            .userId("appleUserId" + appleUserId)
+            .nickName(nicknameProvideService.getRandomNickname(appleUserId))
+            .email(email)
+            .appleId(appleUserId)
+            .build());
 
-        registerPostActionService.doAfterRegisterActions(user);
-    }
+    registerPostActionService.doAfterRegisterActions(user);
+  }
 }

@@ -7,17 +7,16 @@ import lombok.Getter;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public
-class RecommendQuestionDTO {
-    final Long questionNo;
-    final String category;
-    final String question;
+public class RecommendQuestionDTO {
+  final Long questionNo;
+  final String category;
+  final String question;
 
-    public static RecommendQuestionDTO from(Question question) {
-        return RecommendQuestionDTO.builder()
-                .questionNo(question.getQuestionNo())
-                .category(question.getCategory())
-                .question(question.getQuestion())
-                .build();
-    }
+  public static RecommendQuestionDTO from(Question question) {
+    return RecommendQuestionDTO.builder()
+        .questionNo(question.getQuestionNo())
+        .category(question.getCategory())
+        .question(question.getQuestion())
+        .build();
+  }
 }

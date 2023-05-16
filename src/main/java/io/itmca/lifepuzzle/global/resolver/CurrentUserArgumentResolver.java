@@ -17,19 +17,21 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final UserQueryService userQueryService;
+  private final UserQueryService userQueryService;
 
-    @Override
-    public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(CurrentUser.class);
-    }
+  @Override
+  public boolean supportsParameter(MethodParameter parameter) {
+    return parameter.hasParameterAnnotation(CurrentUser.class);
+  }
 
-    @Override
-    public User resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        AuthPayload principal = (AuthPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long userNo = principal.getUserNo();
+  @Override
+  public User resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                              NativeWebRequest webRequest, WebDataBinderFactory binderFactory)
+      throws Exception {
+    AuthPayload principal =
+        (AuthPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Long userNo = principal.getUserNo();
 
-        return userQueryService.findByUserNo(userNo);
-    }
+    return userQueryService.findByUserNo(userNo);
+  }
 }

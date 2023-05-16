@@ -13,23 +13,23 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RegisterPostActionService {
 
-    private final HeroWriteService heroWriteService;
-    private final HeroUserAuthWriteService heroUserAuthWriteService;
-    private final UserWriteService userWriteService;
+  private final HeroWriteService heroWriteService;
+  private final HeroUserAuthWriteService heroUserAuthWriteService;
+  private final UserWriteService userWriteService;
 
-    public void doAfterRegisterActions(User user) {
-        this.createHeroOfUser(user);
-    }
+  public void doAfterRegisterActions(User user) {
+    this.createHeroOfUser(user);
+  }
 
-    private void createHeroOfUser(User user) {
-        var hero = heroWriteService.create(Hero.defaultHero());
+  private void createHeroOfUser(User user) {
+    var hero = heroWriteService.create(Hero.defaultHero());
 
-        heroUserAuthWriteService.create(
-                HeroUserAuth.builder()
-                        .userNo(user.getUserNo())
-                        .hero(hero)
-                        .build());
+    heroUserAuthWriteService.create(
+        HeroUserAuth.builder()
+            .userNo(user.getUserNo())
+            .hero(hero)
+            .build());
 
-        userWriteService.changeRecentHeroNo(user, hero.getHeroNo());
-    }
+    userWriteService.changeRecentHeroNo(user, hero.getHeroNo());
+  }
 }

@@ -11,7 +11,6 @@ import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,11 +22,6 @@ public class LoginEndpoint {
 
   private final LoginService loginService;
   private final UserQueryService userQueryService;
-
-  @GetMapping("/")
-  public String HealthCheck() {
-    return "OK";
-  }
 
   @PostMapping("/auth/login")
   @Operation(summary = "일반 로그인")

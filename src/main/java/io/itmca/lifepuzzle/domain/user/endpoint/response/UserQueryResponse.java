@@ -8,12 +8,12 @@ import lombok.Getter;
 @Builder
 public class UserQueryResponse {
 
-    private UserQueryDto user;
+  private UserQueryDto user;
 
-    public static UserQueryResponse from(User user) {
-        return UserQueryResponse.builder()
-                .user(UserQueryDto.from(user))
-                .build();
-    }
+  public static UserQueryResponse from(User user) {
+    return UserQueryResponse.builder()
+        .user(UserQueryDto.from(user))
+        .build();
+  }
 
 }

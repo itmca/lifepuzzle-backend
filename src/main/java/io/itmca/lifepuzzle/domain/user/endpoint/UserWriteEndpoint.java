@@ -29,13 +29,13 @@ public class UserWriteEndpoint {
   public void updateUser(@PathVariable("id") Long id,
                          @CurrentUser User user,
                          @RequestBody UserUpdateRequest userUpdateRequest) {
-//    if (id != user.getUserNo()) {
-//      // exception
-//    }
-//
-//    user.updateUserInfo(userUpdateRequest);
-//
-//    userWriteService.save(user);
+    if (id != user.getUserNo()) {
+      // TODO throw exception
+    }
+
+    user.updateUserInfo(userUpdateRequest);
+
+    userWriteService.save(user);
   }
 
   @PatchMapping("/{id}/password")
@@ -44,7 +44,7 @@ public class UserWriteEndpoint {
                                  @CurrentUser User user,
                                  @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest) {
     if (id != user.getUserNo()) {
-      // exception
+      // TODO throw exception
     }
 
     var isMatch = PasswordUtil.matches(
@@ -57,7 +57,7 @@ public class UserWriteEndpoint {
 
 
     if (!isMatch) {
-      // exception
+      // TODO throw exception
     }
 
     userWriteService.updateUserPassword(user, userPasswordUpdateRequest.getNewPassword());

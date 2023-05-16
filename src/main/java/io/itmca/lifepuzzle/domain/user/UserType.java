@@ -1,15 +1,15 @@
 package io.itmca.lifepuzzle.domain.user;
 
 public enum UserType {
-    APPLE("apple"), KAKAO("kakao"), GENERAL("general");
+  APPLE("apple"), KAKAO("kakao"), GENERAL("general");
 
-    private String frontEndKey;
+  private String frontEndKey;
 
-    UserType(String frontEndKey) {
-        this.frontEndKey = frontEndKey;
-    }
+  UserType(String frontEndKey) {
+    this.frontEndKey = frontEndKey;
+  }
 
-    public String frontEndKey() {
-        return frontEndKey;
-    }
+  public String frontEndKey() {
+    return frontEndKey;
+  }
 }

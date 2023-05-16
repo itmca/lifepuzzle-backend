@@ -9,15 +9,17 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class HeroRequestArgumentResolver implements HandlerMethodArgumentResolver {
 
-    @Override
-    public boolean supportsParameter(MethodParameter parameter) {
-        return HeroWriteRequest.class.isInstance(parameter.getParameterType());
-    }
+  @Override
+  public boolean supportsParameter(MethodParameter parameter) {
+    return HeroWriteRequest.class.isInstance(parameter.getParameterType());
+  }
 
-    @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        System.out.println("webRequest getparameterMap");
-        System.out.println(webRequest.getParameterMap());
-        return null;
-    }
+  @Override
+  public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                NativeWebRequest webRequest, WebDataBinderFactory binderFactory)
+      throws Exception {
+    System.out.println("webRequest getparameterMap");
+    System.out.println(webRequest.getParameterMap());
+    return null;
+  }
 }

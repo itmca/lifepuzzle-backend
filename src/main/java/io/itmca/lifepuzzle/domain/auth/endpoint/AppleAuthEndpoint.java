@@ -44,9 +44,6 @@ public class AppleAuthEndpoint {
 
   private void verify(AppleAuthBody appleAuthBody) throws ParseException {
     var sub = appleValidateService.parseToken(appleAuthBody.getIdentityToken());
-
-    if (!sub.equals(appleAuthBody.getAppleUserId())) {
-    }
   }
 
   private LoginResponse loginAfterRegistration(AppleAuthBody appleAuthBody) {

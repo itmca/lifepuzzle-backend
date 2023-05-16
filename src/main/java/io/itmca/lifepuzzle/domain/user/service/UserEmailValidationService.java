@@ -9,14 +9,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserEmailValidationService {
 
-    private final UserEmailValidationRepository userEmailValidationRepository;
+  private final UserEmailValidationRepository userEmailValidationRepository;
 
-    public UserEmailValidation create(UserEmailValidation userEmailValidation) {
-        return userEmailValidationRepository.save(userEmailValidation);
-    }
+  public UserEmailValidation create(UserEmailValidation userEmailValidation) {
+    return userEmailValidationRepository.save(userEmailValidation);
+  }
 
-    public UserEmailValidation findRecentOneByEmail(String email) {
-        return userEmailValidationRepository.findFirstByEmailOrderBySeqDesc(email)
-                .orElseThrow(() -> new IllegalArgumentException("no such data"));
-    }
+  public UserEmailValidation findRecentOneByEmail(String email) {
+    return userEmailValidationRepository.findFirstByEmailOrderBySeqDesc(email)
+        .orElseThrow(() -> new IllegalArgumentException("no such data"));
+  }
 }

@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class UserQueryDTO {
-    private Long userNo;
-    private String userNickName;
-    private String userType;
+  private Long userNo;
+  private String userNickName;
+  private String userType;
 }

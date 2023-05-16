@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class CustomExceptionHandler {
 
-    @ExceptionHandler(AuthException.class)
-    public ResponseEntity handleUnAuthorizedException(AuthException e) {
-        log.error("handleUnAuthorizedException", e);
-        
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    }
+  @ExceptionHandler(AuthException.class)
+  public ResponseEntity handleUnAuthorizedException(AuthException e) {
+    log.error("handleUnAuthorizedException", e);
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity handleNotFoundException(NotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+  }
+
+  @ExceptionHandler(NotFoundException.class)
+  public ResponseEntity handleNotFoundException(NotFoundException e) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  }
 }
