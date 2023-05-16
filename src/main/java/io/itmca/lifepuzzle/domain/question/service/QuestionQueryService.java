@@ -16,7 +16,7 @@ public class QuestionQueryService {
     private final QuestionStoryRepository questionStoryRepository;
 
     public List<Question> getRecommendedQuestion(String category, Long heroNo, Long size){
-        var questions = StringUtils.isEmpty(category.trim())
+        var questions = !StringUtils.hasText(category)
                 ? questionRepository.findAll()
                 : questionRepository.findByCategory(category);
         var alreadyUsedQuestions = getUsedQuestionsOfHero(heroNo);

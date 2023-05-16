@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.4'
     id 'io.spring.dependency-management' version '1.0.14.RELEASE'
     id 'java'
+    id 'checkstyle'
 }
 
 group = 'io.itmca'
@@ -41,6 +42,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     implementation 'org.json:json:20220924'
     implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.4'
+
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
 }
 
 tasks.named('test') {
@@ -56,4 +60,9 @@ task buildZip(type: Zip) {
     }
     destinationDirectory = project.buildDir
     archiveFileName = project.name + ".zip"
+}
+
+checkstyle {
+    toolVersion('10.10.0')
+    configFile = rootProject.file('checkstyle/checkstyle.xml')
 }

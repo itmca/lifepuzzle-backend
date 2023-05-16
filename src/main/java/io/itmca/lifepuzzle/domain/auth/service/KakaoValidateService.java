@@ -27,9 +27,11 @@ public class KakaoValidateService {
 
         int responseCode = conn.getResponseCode();
 
+        // [Feedback] if 처리 해놓으셨는데 비어있네요. 이 부분 확인이 필요합니다.
         if (responseCode != 200) {
         }
 
+        // [Feedback] type 명시를 일괄적으로 하는 것이 좋을 것 같아요. 저희는 var로 통일하기로 했으니 var 쓰는 것이 어떠할까요? 아니면 이렇게 쓰신 이유가 있을까요?
         BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         StringBuilder sb = new StringBuilder();
         String line = "";
@@ -38,8 +40,13 @@ public class KakaoValidateService {
             sb.append(line);
         }
 
+        /*
+            [Debugging]
+            Response 참고 : https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#req-user-info-response
+            "id"의 value의 Type이 Long -> getString("id")의 문제가 발생
+         */
         var kakaoProfile = new JSONObject(sb.toString());
-        var id = kakaoProfile.getString("id");
+        var id = kakaoProfile.get("id").toString();
 
         return id;
     }

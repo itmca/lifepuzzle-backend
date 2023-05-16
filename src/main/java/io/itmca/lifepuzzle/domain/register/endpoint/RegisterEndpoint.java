@@ -2,6 +2,8 @@ package io.itmca.lifepuzzle.domain.register.endpoint;
 
 import io.itmca.lifepuzzle.domain.register.endpoint.request.UserRegisterRequest;
 import io.itmca.lifepuzzle.domain.register.service.RegisterService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,17 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "회원가입")
 public class RegisterEndpoint {
 
-    private final RegisterService registerService;
+  private final RegisterService registerService;
 
+  @PostMapping("/user")
+  @Operation(summary = "회원가입")
+  public HttpStatus register(@RequestBody UserRegisterRequest userRegisterRequest) {
+    var user = userRegisterRequest.toUser();
 
-    @PostMapping("/user")
-    public HttpStatus register(@RequestBody UserRegisterRequest userRegisterRequest) {
-        var user = userRegisterRequest.toUser();
+    registerService.register(user);
 
-        registerService.register(user);
-
-        return HttpStatus.OK;
-    }
+    return HttpStatus.OK;
+  }
 }

@@ -28,6 +28,7 @@ public class UserWriteService {
 
     @Transactional
     public void changeRecentHeroNo(User user, Long heroNo) {
+        System.out.println("consolefe  " + heroNo.toString());
         user.changeRecentHeroNo(heroNo);
     }
 }

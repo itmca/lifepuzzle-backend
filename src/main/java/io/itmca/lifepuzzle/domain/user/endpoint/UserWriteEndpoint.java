@@ -7,47 +7,60 @@ import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/users")
 @RequiredArgsConstructor
+@Tag(name = "유저 수정")
 public class UserWriteEndpoint {
 
-    private final UserWriteService userWriteService;
+  private final UserWriteService userWriteService;
 
-    @PatchMapping("/{id}")
-    public void updateUser(@PathVariable("id") Long id, @CurrentUser User user, @RequestBody UserUpdateRequest userUpdateRequest) {
-        if (id != user.getUserNo()) {
-            // exception
-        }
+  @PatchMapping("/{id}")
+  @Operation(summary = "유저 수정")
+  public void updateUser(@PathVariable("id") Long id,
+                         @CurrentUser User user,
+                         @RequestBody UserUpdateRequest userUpdateRequest) {
+//    if (id != user.getUserNo()) {
+//      // exception
+//    }
+//
+//    user.updateUserInfo(userUpdateRequest);
+//
+//    userWriteService.save(user);
+  }
 
-        user.updateUserInfo(userUpdateRequest);
-
-        userWriteService.save(user);
+  @PatchMapping("/{id}/password")
+  @Operation(summary = "비밀번호 변경")
+  public void updateUserPassword(@PathVariable("id") Long id,
+                                 @CurrentUser User user,
+                                 @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest) {
+    if (id != user.getUserNo()) {
+      // exception
     }
 
-    @PatchMapping("/{id}/password")
-    public void updateUserPassword(@PathVariable("id") Long id, @CurrentUser User user, @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest) {
-        if (id != user.getUserNo()) {
-            // exception
-        }
+    var isMatch = PasswordUtil.matches(
+        PasswordVerification.builder()
+            .plainPassword(userPasswordUpdateRequest.getOldPassword())
+            .salt(user.getSalt())
+            .hashedPassword(user.getPassword())
+            .build()
+    );
 
-        var isMatch = PasswordUtil.matches(
-                PasswordVerification.builder()
-                        .plainPassword(userPasswordUpdateRequest.getOldPassword())
-                        .salt(user.getSalt())
-                        .hashedPassword(user.getPassword())
-                        .build()
-        );
 
-        if (!isMatch) {
-            // exception
-        }
-
-        //PasswordChange 클래스 안에 oldPassword, newPassword 래퍼 클래스를 파라미터로 넘기기
-        userWriteService.updateUserPassword(user, userPasswordUpdateRequest.getNewPassword());
+    if (!isMatch) {
+      // exception
     }
+
+    userWriteService.updateUserPassword(user, userPasswordUpdateRequest.getNewPassword());
+  }
 
 }

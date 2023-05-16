@@ -11,8 +11,8 @@ import lombok.Getter;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LoginResponse {
-    private UserQueryDTO user;
-    private TokenQueryDTO tokens;
-    private HeroQueryDTO hero;
-    private Boolean isNewUser;
+  private UserQueryDTO user;
+  private TokenQueryDTO tokens;
+  private HeroQueryDTO hero;
+  private Boolean isNewUser;
 }

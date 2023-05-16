@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: ***REMOVED***
-    username: admin
+    username: ***REMOVED***
     password: ***REMOVED***
 server:
   port: 5000

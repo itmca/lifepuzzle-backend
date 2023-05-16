@@ -14,40 +14,40 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class LoginService {
 
-    private final TokenIssueService tokenIssueService;
-    private final HeroQueryService heroQueryServiceService;
+  private final TokenIssueService tokenIssueService;
+  private final HeroQueryService heroQueryServiceService;
 
-    public LoginResponse getLoginResponse(Login login) {
-        var user = login.getUser();
-        var tokens = tokenIssueService.getTokensOfUser(user.getUserNo());
-        var hero = heroQueryServiceService.findHeroByHeroNo(user.getRecentHeroNo());
+  public LoginResponse getLoginResponse(Login login) {
+    var user = login.getUser();
+    var tokens = tokenIssueService.getTokensOfUser(user.getUserNo());
+    var hero = heroQueryServiceService.findHeroByHeroNo(user.getRecentHeroNo());
 
-        var socialToken = login.getSocialToken();
-        var isNewUser = login.getIsNewUser();
+    var socialToken = login.getSocialToken();
+    var isNewUser = login.getIsNewUser();
 
-        if (StringUtils.hasText(socialToken)) {
-            tokens.addSocialToken(socialToken);
-        }
-
-        var tokenQueryDTO = TokenQueryDTO.builder()
-                .accessToken(tokens.getAccessToken())
-                .accessTokenExpireAt(tokens.getAccessTokenExpireAt())
-                .refreshToken(tokens.getRefreshToken())
-                .refreshTokenExpireAt(tokens.getRefreshTokenExpireAt())
-                .socialToken(tokens.getSocialToken())
-                .build();
-
-        var userQueryDTO = UserQueryDTO.builder()
-                .userNo(user.getUserNo())
-                .userNickName(user.getNickName())
-                .userType(user.getUserType())
-                .build();
-
-        return LoginResponse.builder()
-                .user(userQueryDTO)
-                .tokens(tokenQueryDTO)
-                .hero(HeroQueryDTO.from(hero))
-                .isNewUser(isNewUser)
-                .build();
+    if (StringUtils.hasText(socialToken)) {
+      tokens.addSocialToken(socialToken);
     }
+
+    var tokenQueryDTO = TokenQueryDTO.builder()
+        .accessToken(tokens.getAccessToken())
+        .accessTokenExpireAt(tokens.getAccessTokenExpireAt())
+        .refreshToken(tokens.getRefreshToken())
+        .refreshTokenExpireAt(tokens.getRefreshTokenExpireAt())
+        .socialToken(tokens.getSocialToken())
+        .build();
+
+    var userQueryDTO = UserQueryDTO.builder()
+        .userNo(user.getUserNo())
+        .userNickName(user.getNickName())
+        .userType(user.getUserType())
+        .build();
+
+    return LoginResponse.builder()
+        .user(userQueryDTO)
+        .tokens(tokenQueryDTO)
+        .hero(HeroQueryDTO.from(hero))
+        .isNewUser(isNewUser)
+        .build();
+  }
 }
