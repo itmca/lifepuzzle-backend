@@ -1,5 +1,7 @@
 package io.itmca.lifepuzzle.domain.auth.jwt;
 
+import io.itmca.lifepuzzle.domain.auth.TokenType;
+import io.itmca.lifepuzzle.global.exception.TokenTypeMismatchException;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,20 +19,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   FilterChain filterChain) throws ServletException, IOException {
     try {
       var jwt = getJwtFromRequest(request);
+      var servletPath = request.getServletPath();
+
+      if (servletPath.equals("/auth/login") || servletPath.equals("/user")) {
+        filterChain.doFilter(request, response);
+        return;
+      }
 
       if (StringUtils.hasText(jwt) && JwtTokenProvider.validateToken(jwt)) {
-        var userNo = JwtTokenProvider.parseUserNo(jwt);
+        var tokenType = JwtTokenProvider.parseTokenType(jwt);
+        if (!isAccessToken(tokenType)) {
+          throw new TokenTypeMismatchException(tokenType);
+        }
 
+        var userNo = JwtTokenProvider.parseUserNo(jwt);
         var authentication = new UserAuthentication(userNo);
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
       } else {
-        if (!StringUtils.hasText(jwt)) {
+        if (!StringUtils.hasText(jwt) && !JwtTokenProvider.validateToken(jwt)) {
           request.setAttribute("unauthorization", "401 인증키 없음.");
-        }
-
-        if (JwtTokenProvider.validateToken(jwt)) {
+        } else {
           request.setAttribute("unauthorization", "401-001 인증키 만료.");
         }
       }
@@ -41,6 +51,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
+  private static boolean isAccessToken(String tokenType) {
+    return TokenType.ACCESS.frontEndKey().equals(tokenType);
+  }
+
   private String getJwtFromRequest(HttpServletRequest request) {
     var bearerToken = request.getHeader("Authorization");
     if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
@@ -48,4 +62,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
     return null;
   }
+
 }

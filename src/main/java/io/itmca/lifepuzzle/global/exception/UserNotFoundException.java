@@ -9,7 +9,7 @@ public class UserNotFoundException extends NotFoundException {
   }
 
   public UserNotFoundException(String userId) {
-    super(String.format("User is not found - userId: %d", userId));
+    super(String.format("User is not found - userId: %s", userId));
   }
 
 }

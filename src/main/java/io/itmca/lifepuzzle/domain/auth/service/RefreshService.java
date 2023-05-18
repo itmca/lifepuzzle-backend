@@ -17,7 +17,7 @@ public class RefreshService {
 
   public Token refresh(String refreshToken) {
     if (!parseTokenType(refreshToken).equals(TokenType.REFRESH.frontEndKey())) {
-      throw new TokenTypeMismatchException("토큰 타입이 일치하지 않습니다.");
+      throw new TokenTypeMismatchException(refreshToken);
     }
 
     return tokenIssueService.getTokensOfUser(JwtTokenProvider.parseUserNo(refreshToken));
