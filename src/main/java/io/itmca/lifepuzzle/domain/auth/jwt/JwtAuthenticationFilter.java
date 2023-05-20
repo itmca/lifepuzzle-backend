@@ -1,5 +1,8 @@
 package io.itmca.lifepuzzle.domain.auth.jwt;
 
+import static io.itmca.lifepuzzle.domain.auth.jwt.JwtTokenProvider.validateToken;
+import static org.springframework.util.StringUtils.hasText;
+
 import io.itmca.lifepuzzle.domain.auth.TokenType;
 import io.itmca.lifepuzzle.global.exception.TokenTypeMismatchException;
 import java.io.IOException;
@@ -9,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -18,32 +20,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
     try {
-      var jwt = getJwtFromRequest(request);
-      var servletPath = request.getServletPath();
-
-      if (servletPath.equals("/auth/login") || servletPath.equals("/user")) {
-        filterChain.doFilter(request, response);
-        return;
-      }
-
-      if (StringUtils.hasText(jwt) && JwtTokenProvider.validateToken(jwt)) {
-        var tokenType = JwtTokenProvider.parseTokenType(jwt);
-        if (!isAccessToken(tokenType)) {
-          throw new TokenTypeMismatchException(tokenType);
-        }
-
-        var userNo = JwtTokenProvider.parseUserNo(jwt);
-        var authentication = new UserAuthentication(userNo);
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-      } else {
-        if (!StringUtils.hasText(jwt) && !JwtTokenProvider.validateToken(jwt)) {
-          request.setAttribute("unauthorization", "401 인증키 없음.");
-        } else {
-          request.setAttribute("unauthorization", "401-001 인증키 만료.");
-        }
-      }
+      trySettingAuthentication(request);
     } catch (Exception ex) {
       logger.error("Could not set user authentication in security context", ex);
     }
@@ -51,13 +28,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
-  private static boolean isAccessToken(String tokenType) {
-    return TokenType.ACCESS.frontEndKey().equals(tokenType);
+  private void trySettingAuthentication(HttpServletRequest request) {
+    var jwt = getJwtFromRequest(request);
+
+    if (!hasText(jwt) || !validateToken(jwt)) {
+      return;
+    }
+
+    if (!isAccessToken(jwt)) {
+      throw TokenTypeMismatchException.accessTokenExpected(jwt);
+    }
+
+    var userNo = JwtTokenProvider.parseUserNo(jwt);
+
+    var authentication = new UserAuthentication(userNo);
+    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+  }
+
+  private boolean isAccessToken(String token) {
+    return TokenType.ACCESS.frontEndKey().equals(JwtTokenProvider.parseTokenType(token));
   }
 
   private String getJwtFromRequest(HttpServletRequest request) {
     var bearerToken = request.getHeader("Authorization");
-    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+    if (hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
       return bearerToken.substring("Bearer ".length());
     }
     return null;
