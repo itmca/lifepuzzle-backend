@@ -2,6 +2,7 @@ package io.itmca.lifepuzzle.domain.register.service;
 
 import io.itmca.lifepuzzle.domain.register.PasswordVerification;
 import io.itmca.lifepuzzle.domain.user.entity.User;
+import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.itmca.lifepuzzle.global.exception.PasswordMismatchException;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
@@ -17,11 +18,21 @@ public class RegisterService {
   private final UserWriteService userWriteService;
   private final RegisterPostActionService registerPostActionService;
   private final NicknameProvideService nicknameProvideService;
+  private final UserQueryService userQueryService;
 
   public void register(User user) {
+    if (isDuplicated(user)) {
+      return;
+    }
+
     var registeredUser = this.registerInternally(user);
 
     registerPostActionService.doAfterRegisterActions(registeredUser);
+  }
+
+  private boolean isDuplicated(User user) {
+    var findUser = userQueryService.findByUserId(user.getUserId());
+    return findUser != null ? true : false;
   }
 
   private User registerInternally(User user) {
