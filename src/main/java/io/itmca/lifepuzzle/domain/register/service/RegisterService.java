@@ -21,7 +21,7 @@ public class RegisterService {
   private final UserQueryService userQueryService;
 
   public void register(User user) {
-    if (isDuplicated(user)) {
+    if (isIdDuplicated(user)) {
       return;
     }
 
@@ -30,7 +30,7 @@ public class RegisterService {
     registerPostActionService.doAfterRegisterActions(registeredUser);
   }
 
-  private boolean isDuplicated(User user) {
+  private boolean isIdDuplicated(User user) {
     var findUser = userQueryService.findByUserId(user.getUserId());
     return findUser != null ? true : false;
   }
