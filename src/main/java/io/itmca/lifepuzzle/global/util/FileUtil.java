@@ -35,7 +35,7 @@ public class FileUtil {
     return String.format("%d_%s", Math.round(Math.random() * 1000000), fileName);
   }
 
-  public static String encodingToUTF8(String fileName){
+  public static String encodingToUTF8(String fileName) {
     return URLDecoder.decode(fileName, StandardCharsets.UTF_8);
   }
 

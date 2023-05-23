@@ -33,7 +33,7 @@ public class Story {
   private Long heroNo;
   private Long recQuestionNo;
   private String usedQuestion;
-  @Column(columnDefinition="tinyint(1) default 0")
+  @Column(columnDefinition = "tinyint(1) default 0")
   private boolean isQuestionModified;
   private String title;
   private String content;
@@ -58,7 +58,9 @@ public class Story {
   }
 
   public List<String> getImages() {
-    if(!StringUtils.hasText(imageFiles)) return Collections.emptyList();
+    if (!StringUtils.hasText(imageFiles)) {
+      return Collections.emptyList();
+    }
 
     return Arrays.stream(this.imageFiles.split("\\|\\|"))
         .map(file -> String.format("%s/%s/%s", ServerConstant.SERVER_HOST, this.imageFolder, file))
@@ -66,7 +68,9 @@ public class Story {
   }
 
   public List<String> getAudios() {
-    if(!StringUtils.hasText(audioFiles)) return Collections.emptyList();
+    if (!StringUtils.hasText(audioFiles)) {
+      return Collections.emptyList();
+    }
 
     return Arrays.stream(this.audioFiles.split("\\|\\|"))
         .map(file -> String.format("%s/%s/%s", ServerConstant.SERVER_HOST, this.audioFolder, file))
