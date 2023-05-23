@@ -10,10 +10,10 @@ import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,7 +24,7 @@ public class UserWriteEndpoint {
 
   private final UserWriteService userWriteService;
 
-  @PatchMapping("/{id}")
+  @RequestMapping(value = "/{id}", method = {RequestMethod.PUT, RequestMethod.PATCH})
   @Operation(summary = "유저 수정")
   public void updateUser(@PathVariable("id") Long id,
                          @CurrentUser User user,
@@ -38,7 +38,7 @@ public class UserWriteEndpoint {
     userWriteService.save(user);
   }
 
-  @PatchMapping("/{id}/password")
+  @RequestMapping(value = "/{id}/password", method = {RequestMethod.PUT, RequestMethod.PATCH})
   @Operation(summary = "비밀번호 변경")
   public void updateUserPassword(@PathVariable("id") Long id,
                                  @CurrentUser User user,

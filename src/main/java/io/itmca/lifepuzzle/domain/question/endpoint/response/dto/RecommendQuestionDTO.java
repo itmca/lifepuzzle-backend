@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.question.endpoint.response;
+package io.itmca.lifepuzzle.domain.question.endpoint.response.dto;
 
 import io.itmca.lifepuzzle.domain.question.entity.Question;
 import lombok.AccessLevel;

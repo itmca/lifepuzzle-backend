@@ -6,6 +6,7 @@ import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -31,7 +33,8 @@ public class Story {
   private Long heroNo;
   private Long recQuestionNo;
   private String usedQuestion;
-  private Boolean isQuestionModified;
+  @Column(columnDefinition="tinyint(1) default 0")
+  private boolean isQuestionModified;
   private String title;
   private String content;
   private String imageFolder;
@@ -55,12 +58,16 @@ public class Story {
   }
 
   public List<String> getImages() {
+    if(!StringUtils.hasText(imageFiles)) return Collections.emptyList();
+
     return Arrays.stream(this.imageFiles.split("\\|\\|"))
         .map(file -> String.format("%s/%s/%s", ServerConstant.SERVER_HOST, this.imageFolder, file))
         .toList();
   }
 
   public List<String> getAudios() {
+    if(!StringUtils.hasText(audioFiles)) return Collections.emptyList();
+
     return Arrays.stream(this.audioFiles.split("\\|\\|"))
         .map(file -> String.format("%s/%s/%s", ServerConstant.SERVER_HOST, this.audioFolder, file))
         .toList();

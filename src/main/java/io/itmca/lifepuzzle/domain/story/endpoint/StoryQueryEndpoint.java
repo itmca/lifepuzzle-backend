@@ -4,11 +4,11 @@ import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.story.endpoint.response.StoryQueryResponse;
+import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.StoryDTO;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.story.service.StoryTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,16 +45,14 @@ public class StoryQueryEndpoint {
 
   @Operation(summary = "스토리 조회")
   @GetMapping("/stories/{storyKey}")
-  public StoryQueryResponse findSingleStory(@PathVariable("storyKey") String storyKey,
-                                            @AuthenticationPrincipal AuthPayload authPayload) {
+  public StoryDTO findSingleStory(@PathVariable("storyKey") String storyKey,
+                                  @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyQueryService.findById(storyKey);
     var hero = heroQueryService.findHeroByHeroNo(story.getHeroNo());
 
     heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), hero.getHeroNo());
 
-    var tags = storyTagService.getDistinctTags(Arrays.asList(story), hero);
-
-    return StoryQueryResponse.from(Arrays.asList(story), hero, tags);
+    return StoryDTO.from(story, hero);
   }
 
 }

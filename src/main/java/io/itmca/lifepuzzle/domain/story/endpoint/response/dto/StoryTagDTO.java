@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.story.endpoint.response;
+package io.itmca.lifepuzzle.domain.story.endpoint.response.dto;
 
 import io.itmca.lifepuzzle.domain.story.AgeGroup;
 import lombok.AccessLevel;
@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class StoryTagResponse implements Comparable<StoryTagResponse> {
+public class StoryTagDTO implements Comparable<StoryTagDTO> {
   private String key;
   private String displayName;
   private Integer priority;
 
-  public static StoryTagResponse from(AgeGroup ageGroup) {
-    return StoryTagResponse.builder()
+  public static StoryTagDTO from(AgeGroup ageGroup) {
+    return StoryTagDTO.builder()
         .key(ageGroup.getRepresentativeAge().toString())
         .displayName(ageGroup.getDisplayName())
         .priority(ageGroup.getRepresentativeAge())
@@ -25,7 +25,7 @@ public class StoryTagResponse implements Comparable<StoryTagResponse> {
   }
 
   @Override
-  public int compareTo(StoryTagResponse o) {
+  public int compareTo(StoryTagDTO o) {
     return Long.compare(this.priority, o.priority);
   }
 }
