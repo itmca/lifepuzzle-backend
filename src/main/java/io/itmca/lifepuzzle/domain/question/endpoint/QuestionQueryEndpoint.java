@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.question.endpoint;
 
-import io.itmca.lifepuzzle.domain.question.endpoint.response.RecommendQuestionDTO;
+import io.itmca.lifepuzzle.domain.question.endpoint.response.dto.RecommendQuestionDTO;
 import io.itmca.lifepuzzle.domain.question.service.QuestionQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -33,7 +33,7 @@ public class QuestionStory {
   Long recQuestionNo;
 
   @Column
-  Boolean isQuestionModified;
+  boolean isQuestionModified;
 
   @Column(nullable = false, updatable = false)
   @CreationTimestamp

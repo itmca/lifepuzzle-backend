@@ -32,7 +32,7 @@ public class QuestionQueryService {
     var heroQuestionStories = questionStoryRepository.findByHeroNo(heroNo);
 
     return heroQuestionStories.stream()
-        .filter(stories -> !stories.getIsQuestionModified())
+        .filter(stories -> !stories.isQuestionModified())
         .map(stories -> stories.getRecQuestionNo())
         .toList();
   }

@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.question.endpoint.response;
 
+import io.itmca.lifepuzzle.domain.question.endpoint.response.dto.RecommendQuestionDTO;
 import io.itmca.lifepuzzle.domain.question.entity.Question;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

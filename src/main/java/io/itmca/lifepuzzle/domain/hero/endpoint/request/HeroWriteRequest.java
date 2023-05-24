@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
@@ -39,7 +40,7 @@ public class HeroWriteRequest {
   }
 
   public Hero toHeroOf(Long heroNo, MultipartFile photo) {
-    var imageURL = removeFileServerHostInImage();
+    var imageURL = StringUtils.hasText(this.imageURL) ? removeFileServerHostInImage() : null;
 
     if (FileUtil.isMultiPartFile(photo)) {
       imageURL = FileUtil.addRandomValueFilePrefix(photo.getOriginalFilename());

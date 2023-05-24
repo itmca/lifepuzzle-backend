@@ -33,6 +33,7 @@ public class StoryWriteRequest {
         .heroNo(heroNo)
         .userNo(userNo)
         .recQuestionNo(recQuestionNo)
+        .isQuestionModified(recQuestionModified)
         .usedQuestion(helpQuestionText)
         .title(title)
         .content(storyText)
