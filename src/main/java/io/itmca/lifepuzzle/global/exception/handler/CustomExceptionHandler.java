@@ -21,4 +21,9 @@ public class CustomExceptionHandler {
   public ResponseEntity handleNotFoundException(NotFoundException e) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
+
+  @ExceptionHandler(AlreadyExistsException.class)
+  public ResponseEntity handleAlreadyExistsException(AlreadyExistsException e) {
+    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+  }
 }
