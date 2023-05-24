@@ -14,27 +14,26 @@ public class UserQueryService {
 
   public User findByUserNo(long userNo) {
     return userRepository.findById(userNo)
-        .orElseThrow(() -> new UserNotFoundException(userNo));
+        .orElseThrow(() -> UserNotFoundException.notFoundByUserNo(userNo));
   }
 
   public User findByUserId(String userId) {
     return userRepository.findByUserId(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId));
+        .orElseThrow(() -> UserNotFoundException.notFoundById(userId));
   }
 
   public User findByEmail(String email) {
     return userRepository.findByEmail(email)
-        .orElseThrow(() -> new IllegalArgumentException("no such data"));
+        .orElseThrow(() -> UserNotFoundException.notFoundByEmail(email));
   }
 
   public User findByKakaoId(String kakaoId) {
     return userRepository.findByKakaoId(kakaoId)
-        .orElseThrow(() -> new IllegalArgumentException("no such data"));
+        .orElseThrow(() -> UserNotFoundException.notFoundByKakaoId(kakaoId));
   }
 
   public User findByAppleId(String appleId) {
     return userRepository.findByAppleId(appleId)
-        .orElseThrow(() -> new IllegalArgumentException("no such data"));
+        .orElseThrow(() -> UserNotFoundException.notFoundByAppleId(appleId));
   }
-
 }

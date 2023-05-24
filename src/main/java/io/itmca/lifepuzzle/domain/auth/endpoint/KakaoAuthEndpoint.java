@@ -6,6 +6,7 @@ import io.itmca.lifepuzzle.domain.auth.service.KakaoValidateService;
 import io.itmca.lifepuzzle.domain.auth.service.LoginService;
 import io.itmca.lifepuzzle.domain.register.service.SocialRegisterService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
+import io.itmca.lifepuzzle.global.exception.handler.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
@@ -28,21 +29,19 @@ public class KakaoAuthEndpoint {
   @Operation(summary = "카카오 로그인")
   public LoginResponse login(@RequestHeader("kakao-access-token") String kakaoAccessToken) {
     var kakaoId = getKakaoId(kakaoAccessToken);
-
-    if (kakaoId != null) {
-      return tryKakaoLogin(kakaoId);
-    }
-
-    return loginAfterRegistration(kakaoId);
+    return tryKakaoLogin(kakaoId);
   }
 
   private LoginResponse tryKakaoLogin(String kakaoId) {
-    var kakaoUser = userQueryService.findByKakaoId(kakaoId);
-
-    return loginService.getLoginResponse(
-        Login.builder()
-            .user(kakaoUser)
-            .build());
+    try {
+      var kakaoUser = userQueryService.findByKakaoId(kakaoId);
+      return loginService.getLoginResponse(
+          Login.builder()
+              .user(kakaoUser)
+              .build());
+    } catch (NotFoundException e) {
+      return loginAfterRegistration(kakaoId);
+    }
   }
 
   private String getKakaoId(String kakaoAccessToken) {

@@ -25,7 +25,7 @@ public class WithdrawEndpoint {
                        @CurrentUser User user,
                        @RequestBody String socialToken) {
     if (id != user.getUserNo()) {
-      throw new UserNotFoundException(id);
+      throw UserNotFoundException.notFoundByUserNo(user.getUserNo());
     }
 
     withdrawService.withdraw(user, socialToken);
