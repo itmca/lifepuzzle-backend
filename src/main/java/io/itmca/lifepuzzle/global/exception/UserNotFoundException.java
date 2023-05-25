@@ -8,24 +8,15 @@ public class UserNotFoundException extends NotFoundException {
     super(msg);
   }
 
-  public static UserNotFoundException notFoundByUserNo(Long userNo) {
+  public static UserNotFoundException byUserNo(Long userNo) {
     return new UserNotFoundException(String.format("User is not found - userNo: %d", userNo));
   }
 
-  public static UserNotFoundException notFoundById(String userId) {
+  public static UserNotFoundException byId(String userId) {
     return new UserNotFoundException(String.format("User is not found - userId: %s", userId));
   }
 
-  public static UserNotFoundException notFoundByEmail(String email) {
+  public static UserNotFoundException byEmail(String email) {
     return new UserNotFoundException(String.format("User is not found - email: %s", email));
   }
-
-  public static UserNotFoundException notFoundByKakaoId(String kakaoId) {
-    return new UserNotFoundException(String.format("User is not found - kakaoId: %s", kakaoId));
-  }
-
-  public static UserNotFoundException notFoundByAppleId(String appleId) {
-    return new UserNotFoundException(String.format("User is not found - appleId: %s", appleId));
-  }
-
 }

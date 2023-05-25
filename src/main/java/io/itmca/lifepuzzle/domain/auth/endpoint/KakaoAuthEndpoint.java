@@ -29,19 +29,19 @@ public class KakaoAuthEndpoint {
   @Operation(summary = "카카오 로그인")
   public LoginResponse login(@RequestHeader("kakao-access-token") String kakaoAccessToken) {
     var kakaoId = getKakaoId(kakaoAccessToken);
-    return tryKakaoLogin(kakaoId);
-  }
-
-  private LoginResponse tryKakaoLogin(String kakaoId) {
     try {
-      var kakaoUser = userQueryService.findByKakaoId(kakaoId);
-      return loginService.getLoginResponse(
-          Login.builder()
-              .user(kakaoUser)
-              .build());
+      return tryKakaoLogin(kakaoId);
     } catch (NotFoundException e) {
       return loginAfterRegistration(kakaoId);
     }
+  }
+
+  private LoginResponse tryKakaoLogin(String kakaoId) throws NotFoundException {
+    var kakaoUser = userQueryService.findByKakaoId(kakaoId);
+    return loginService.getLoginResponse(
+        Login.builder()
+            .user(kakaoUser)
+            .build());
   }
 
   private String getKakaoId(String kakaoAccessToken) {

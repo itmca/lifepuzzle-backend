@@ -6,6 +6,7 @@ import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.itmca.lifepuzzle.global.exception.PasswordMismatchException;
 import io.itmca.lifepuzzle.global.exception.UserAlreadyExistsException;
+import io.itmca.lifepuzzle.global.exception.handler.NotFoundException;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class RegisterService {
   private final UserQueryService userQueryService;
 
   public void register(User user) {
-    if (isExist(user)) {
+    if (isAlreadyExist(user)) {
       throw new UserAlreadyExistsException(user.getUserId());
     }
 
@@ -31,9 +32,13 @@ public class RegisterService {
     registerPostActionService.doAfterRegisterActions(registeredUser);
   }
 
-  private boolean isExist(User user) {
-    var findUser = userQueryService.findByUserId(user.getUserId());
-    return findUser != null ? true : false;
+  private boolean isAlreadyExist(User user) {
+    try {
+      userQueryService.findByUserId(user.getUserId());
+    } catch (NotFoundException e) {
+      return false;
+    }
+    return true;
   }
 
   private User registerInternally(User user) {

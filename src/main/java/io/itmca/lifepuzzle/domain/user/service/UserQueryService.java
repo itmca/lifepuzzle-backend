@@ -2,6 +2,8 @@ package io.itmca.lifepuzzle.domain.user.service;
 
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.repository.UserRepository;
+import io.itmca.lifepuzzle.global.exception.AppleUserNotFoundException;
+import io.itmca.lifepuzzle.global.exception.KakaoUserNotFoundException;
 import io.itmca.lifepuzzle.global.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,26 +16,26 @@ public class UserQueryService {
 
   public User findByUserNo(long userNo) {
     return userRepository.findById(userNo)
-        .orElseThrow(() -> UserNotFoundException.notFoundByUserNo(userNo));
+        .orElseThrow(() -> UserNotFoundException.byUserNo(userNo));
   }
 
   public User findByUserId(String userId) {
     return userRepository.findByUserId(userId)
-        .orElseThrow(() -> UserNotFoundException.notFoundById(userId));
+        .orElseThrow(() -> UserNotFoundException.byId(userId));
   }
 
   public User findByEmail(String email) {
     return userRepository.findByEmail(email)
-        .orElseThrow(() -> UserNotFoundException.notFoundByEmail(email));
+        .orElseThrow(() -> UserNotFoundException.byEmail(email));
   }
 
   public User findByKakaoId(String kakaoId) {
     return userRepository.findByKakaoId(kakaoId)
-        .orElseThrow(() -> UserNotFoundException.notFoundByKakaoId(kakaoId));
+        .orElseThrow(() -> new KakaoUserNotFoundException(kakaoId));
   }
 
   public User findByAppleId(String appleId) {
     return userRepository.findByAppleId(appleId)
-        .orElseThrow(() -> UserNotFoundException.notFoundByAppleId(appleId));
+        .orElseThrow(() -> new AppleUserNotFoundException(appleId));
   }
 }
