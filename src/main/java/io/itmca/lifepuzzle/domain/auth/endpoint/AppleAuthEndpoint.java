@@ -7,10 +7,10 @@ import io.itmca.lifepuzzle.domain.auth.service.AppleValidateService;
 import io.itmca.lifepuzzle.domain.auth.service.LoginService;
 import io.itmca.lifepuzzle.domain.register.service.SocialRegisterService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
+import io.itmca.lifepuzzle.global.exception.handler.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.text.ParseException;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,16 +30,19 @@ public class AppleAuthEndpoint {
   @Operation(summary = "애플 로그인")
   public LoginResponse login(@RequestBody AppleAuthBody appleAuthBody) throws ParseException {
     verify(appleAuthBody);
+    try {
+      return tryAppleLogin(appleAuthBody);
+    } catch (NotFoundException e) {
+      return loginAfterRegistration(appleAuthBody);
+    }
+  }
 
+  private LoginResponse tryAppleLogin(AppleAuthBody appleAuthBody) throws NotFoundException {
     var appleUser = userQueryService.findByAppleId(appleAuthBody.getAppleUserId());
     var loginType = Login.builder()
         .user(appleUser)
         .build();
-
-    return !Objects.isNull(appleUser)
-        ? loginService.getLoginResponse(loginType)
-        : loginAfterRegistration(appleAuthBody);
-
+    return loginService.getLoginResponse(loginType);
   }
 
   private void verify(AppleAuthBody appleAuthBody) throws ParseException {
