@@ -30,19 +30,19 @@ public class AppleAuthEndpoint {
   @Operation(summary = "애플 로그인")
   public LoginResponse login(@RequestBody AppleAuthBody appleAuthBody) throws ParseException {
     verify(appleAuthBody);
-    return tryAppleLogin(appleAuthBody);
-  }
-
-  private LoginResponse tryAppleLogin(AppleAuthBody appleAuthBody) {
     try {
-      var appleUser = userQueryService.findByAppleId(appleAuthBody.getAppleUserId());
-      var loginType = Login.builder()
-          .user(appleUser)
-          .build();
-      return loginService.getLoginResponse(loginType);
+      return tryAppleLogin(appleAuthBody);
     } catch (NotFoundException e) {
       return loginAfterRegistration(appleAuthBody);
     }
+  }
+
+  private LoginResponse tryAppleLogin(AppleAuthBody appleAuthBody) throws NotFoundException {
+    var appleUser = userQueryService.findByAppleId(appleAuthBody.getAppleUserId());
+    var loginType = Login.builder()
+        .user(appleUser)
+        .build();
+    return loginService.getLoginResponse(loginType);
   }
 
   private void verify(AppleAuthBody appleAuthBody) throws ParseException {
