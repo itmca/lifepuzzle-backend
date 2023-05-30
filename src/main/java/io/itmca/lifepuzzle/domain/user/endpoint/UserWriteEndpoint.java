@@ -6,6 +6,8 @@ import io.itmca.lifepuzzle.domain.user.endpoint.request.UserPasswordUpdateReques
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
+import io.itmca.lifepuzzle.global.exception.PasswordMismatchException;
+import io.itmca.lifepuzzle.global.exception.UserNoMismatchException;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +32,7 @@ public class UserWriteEndpoint {
                          @CurrentUser User user,
                          @RequestBody UserUpdateRequest userUpdateRequest) {
     if (id != user.getUserNo()) {
-      // TODO throw exception
+      throw new UserNoMismatchException();
     }
 
     user.updateUserInfo(userUpdateRequest);
@@ -44,7 +46,7 @@ public class UserWriteEndpoint {
                                  @CurrentUser User user,
                                  @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest) {
     if (id != user.getUserNo()) {
-      // TODO throw exception
+      throw new UserNoMismatchException();
     }
 
     var isMatch = PasswordUtil.matches(
@@ -55,9 +57,8 @@ public class UserWriteEndpoint {
             .build()
     );
 
-
     if (!isMatch) {
-      // TODO throw exception
+      throw new PasswordMismatchException();
     }
 
     userWriteService.updateUserPassword(user, userPasswordUpdateRequest.getNewPassword());
