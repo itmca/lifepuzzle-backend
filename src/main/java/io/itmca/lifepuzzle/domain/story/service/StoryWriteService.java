@@ -1,18 +1,17 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
+import static io.itmca.lifepuzzle.global.constant.FileConstant.FILE_NAMES_SEPARATOR;
+
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
-import io.itmca.lifepuzzle.global.constant.FileConstant;
-import io.itmca.lifepuzzle.global.infra.file.S3Repository;
-import io.itmca.lifepuzzle.global.util.FileUtil;
-import java.io.File;
+import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
+import io.itmca.lifepuzzle.global.infra.file.repository.S3Repository;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -24,53 +23,34 @@ public class StoryWriteService {
     return storyRepository.save(story);
   }
 
-  ;
-
   public void update(Story story) {
     storyRepository.save(story);
   }
 
-  ;
-
-  public void saveStoryFiles(Story story, List<MultipartFile> photos, List<MultipartFile> voices)
-      throws IOException {
-    var photoFolder = story.getImageFolder();
-    var imageFileNames = story.getImageFiles();
-    var photoFileNames = StringUtils.hasText(imageFileNames)
-        ? List.of(imageFileNames.split("\\|\\|"))
-        : Collections.<String>emptyList();
-    var voiceFolder = story.getAudioFolder();
-    var audioFileNames = story.getAudioFiles();
-    var voiceFileNames = StringUtils.hasText(audioFileNames)
-        ? List.of(audioFileNames.split("\\|\\|"))
-        : Collections.<String>emptyList();
-
-    if (!FileUtil.isExistFolder(FileConstant.TEMP_FOLDER_PATH)) {
-      FileUtil.createAllFolder(FileConstant.TEMP_FOLDER_PATH);
+  public void saveFile(Story story, List<? extends CustomFile> customFiles) throws IOException {
+    for (CustomFile customFile : customFiles) {
+      s3Repository.upload(customFile);
     }
 
-    saveFiles(photoFolder, photoFileNames, photos);
-    saveFiles(voiceFolder, voiceFileNames, voices);
+    addFileInStory(story, customFiles);
   }
 
-  ;
+  private void addFileInStory(Story story, List<? extends CustomFile> customFiles) {
+    if (customFiles.isEmpty()) {
+      return;
+    }
 
-  private void saveFiles(String folderPath, List<String> filePaths, List<MultipartFile> files)
-      throws IOException {
-    var len = files.size();
-    System.out.println(len);
+    var firstFile = customFiles.get(0);
+    var basePath = firstFile.getBasePath();
+    var fileNames = customFiles
+        .stream()
+        .map(customFile -> customFile.getFileName())
+        .collect(Collectors.joining(FILE_NAMES_SEPARATOR));
 
-    for (var i = 0; i < len; i++) {
-      var targetMultiPartFile = files.get(i);
-      var tempFilePath =
-          String.format(FileConstant.TEMP_FOLDER_PATH + File.separator + filePaths.get(i));
-      var saveS3FilePath = String.format("%s/%s", folderPath, filePaths.get(i));
-
-      var localFile = FileUtil.saveMultiPartFileInLocal(targetMultiPartFile, tempFilePath);
-
-      s3Repository.upload(localFile, saveS3FilePath);
-
-      FileUtil.deleteLocalFile(localFile);
+    if (firstFile instanceof ImageCustomFile) {
+      story.setImage(basePath, fileNames);
+    } else {
+      story.setAudio(basePath, fileNames);
     }
   }
 }

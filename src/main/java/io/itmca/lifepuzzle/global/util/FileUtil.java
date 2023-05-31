@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,10 +48,14 @@ public class FileUtil {
   public static File saveMultiPartFileInLocal(MultipartFile multipartFile, String fileURL)
       throws IOException {
     var file = new File(fileURL);
-
     multipartFile.transferTo(file);
 
     return file;
+  }
+
+  public static File saveMultiPartFileInLocal(byte[] bytes, String fileURL)
+      throws IOException {
+    return Files.write(Path.of(fileURL), bytes).toFile();
   }
 
   public static void deleteLocalFile(File file) {

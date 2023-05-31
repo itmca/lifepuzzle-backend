@@ -8,4 +8,5 @@ import lombok.NoArgsConstructor;
 public class FileConstant {
   public static final String TEMP_FOLDER_PATH =
       String.format("%s%stmp", System.getProperty("user.dir"), File.separator);
+  public static final String FILE_NAMES_SEPARATOR = "||";
 }

@@ -7,7 +7,7 @@ import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
-import io.itmca.lifepuzzle.global.util.FileUtil;
+import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
@@ -35,13 +35,16 @@ public class HeroWriteEndpoint {
   @PostMapping("/heroes")
   public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest heroWriteRequest,
                                  @RequestPart(value = "photo", required = false)
-                                 MultipartFile photo,
+                                 MultipartFile multiPhoto,
                                  @AuthenticationPrincipal AuthPayload authPayload)
       throws IOException {
 
-    var hero = heroWriteService.create(heroWriteRequest.toHeroOf(photo));
+    var hero = heroWriteService.create(heroWriteRequest.toHeroOf(multiPhoto));
 
-    if (FileUtil.isMultiPartFile(photo)) {
+    if (multiPhoto != null) {
+      var photo = new ImageCustomFile(
+          String.format("hero/profile/%d", hero.getHeroNo()),
+          multiPhoto);
       heroWriteService.saveHeroProfile(hero, photo);
     }
 
@@ -76,13 +79,17 @@ public class HeroWriteEndpoint {
   public HeroQueryDTO saveHeroPhoto(@PathVariable("heroNo") Long heroNo,
                                     @RequestPart("toUpdate") HeroWriteRequest heroWriteRequest,
                                     @RequestPart(name = "photo", required = false)
-                                    MultipartFile photo,
+                                    MultipartFile multiPhoto,
                                     @AuthenticationPrincipal AuthPayload authPayload)
       throws IOException {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
-    var hero = heroWriteRequest.toHeroOf(heroNo, photo);
-    if (FileUtil.isMultiPartFile(photo)) {
+    var hero = heroWriteRequest.toHeroOf(heroNo, multiPhoto);
+
+    if (multiPhoto != null) {
+      var photo = new ImageCustomFile(
+          String.format("hero/profile/%d", hero.getHeroNo()),
+          multiPhoto);
       heroWriteService.saveHeroProfile(hero, photo);
     }
 

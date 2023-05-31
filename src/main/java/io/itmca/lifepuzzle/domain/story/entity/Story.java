@@ -52,6 +52,16 @@ public class Story {
   @UpdateTimestamp
   private LocalDateTime updatedAt;
 
+  public void setImage(String basePath, String fileNames) {
+    imageFolder = basePath;
+    imageFiles = fileNames;
+  }
+
+  public void setAudio(String basePath, String fileNames) {
+    audioFolder = basePath;
+    audioFiles = fileNames;
+  }
+
   public AgeGroup getTag(Hero hero) {
     var age = Integer.valueOf(date.getYear() - hero.getBirthday().getYear() + 1);
     return AgeGroup.of(age);

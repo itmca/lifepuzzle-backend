@@ -3,11 +3,14 @@ package io.itmca.lifepuzzle.domain.story.endpoint;
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
+import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
+import io.itmca.lifepuzzle.global.infra.file.VoiceCustomFile;
 import io.itmca.lifepuzzle.global.util.FileUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,21 +28,27 @@ public class StoryWriteEndpoint {
   @Operation(summary = "스토리 등록")
   @PostMapping(value = "/story")
   public void writeStory(@RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
-                         @RequestPart(value = "photos", required = false) MultipartFile[] photos,
-                         @RequestPart(value = "voice", required = false) MultipartFile[] voice,
+                         @RequestPart(value = "photos", required = false)
+                         List<MultipartFile> multiImages,
+                         @RequestPart(value = "voice", required = false)
+                         List<MultipartFile> multiVoices,
                          @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
+    var story = storyWriteRequest.toStory(authPayload.getUserNo());
+    var baseFolder = FileUtil.getBaseFolderPath() + File.separator + story.getStoryKey();
+    var images = multiImages == null
+        ? Collections.EMPTY_LIST
+        : multiImages.stream()
+        .map(photo -> new ImageCustomFile((baseFolder + "/images"), photo))
+        .toList();
+    var voices = multiVoices == null
+        ? Collections.EMPTY_LIST
+        : multiVoices.stream()
+        .map(voice -> new VoiceCustomFile((baseFolder + "/voice"), voice))
+        .toList();
 
-    var userNo = authPayload.getUserNo();
-    var photoList = photos != null ? List.of(photos) : new ArrayList<MultipartFile>();
-    var voiceList = voice != null ? List.of(voice) : new ArrayList<MultipartFile>();
-    var photoFiles = FileUtil.getFilePaths(photoList);
-    var voiceFiles = FileUtil.getFilePaths(voiceList);
-    var story = storyWriteRequest.toStory(userNo,
-        String.join("||", photoFiles),
-        String.join("||", voiceFiles));
+    storyWriteService.saveFile(story, images);
+    storyWriteService.saveFile(story, voices);
 
-    storyWriteService.saveStoryFiles(story, photoList, voiceList);
     storyWriteService.create(story);
   }
-
 }
