@@ -1,25 +1,33 @@
 pipeline {
   agent any
+
   stages {
-    stage('Build War') {
+    stage('Test') {
       steps {
         sh 'pwd'
-        sh './gradlew clean buildZip'
+        sh './gradlew clean test'
       }
     }
 
-    stage('Upload S3') {
+    stage('Build') {
+      steps {
+        sh 'pwd'
+        sh './gradlew buildZip'
+      }
+    }
+
+    stage('S3 Upload') {
       steps {
         echo 'Uploading'
-        sh 'aws s3 cp /var/lib/jenkins/workspace/lifepuzzle-api/build/lifepuzzle.zip s3://itmca-deploy/${JOB_NAME}-${GIT_BRANCH}-${BUILD_NUMBER}.war                     --acl public-read-write                     --region ***REMOVED***'
+        sh 'aws s3 cp build/lifepuzzle.zip s3://itmca-deploy/${JOB_NAME}-${BUILD_TIMESTAMP}.zip --region ***REMOVED***'
       }
     }
 
     stage('Deploy') {
       steps {
         echo 'Deploying'
-        sh 'aws elasticbeanstalk create-application-version --region ***REMOVED***                     --application-name lifepuzzle-api                     --version-label ${JOB_NAME}-${BUILD_NUMBER}                     --description ${BUILD_TAG}                     --source-bundle S3Bucket="itmca-deploy",S3Key="${JOB_NAME}-${GIT_BRANCH}-${BUILD_NUMBER}.war"'
-        sh 'aws elasticbeanstalk update-environment --region ***REMOVED***                     --environment-name Lifepuzzleapi-env                     --version-label ${JOB_NAME}-${BUILD_NUMBER}'
+        sh 'aws elasticbeanstalk create-application-version --region ***REMOVED*** --application-name lifepuzzle-api --version-label ${JOB_NAME}-${BUILD_TIMESTAMP} --description ${BUILD_TAG} --source-bundle S3Bucket="itmca-deploy",S3Key="${JOB_NAME}-${BUILD_TIMESTAMP}.zip"'
+        sh 'aws elasticbeanstalk update-environment --region ***REMOVED*** --environment-name Lifepuzzleapi-env --version-label ${JOB_NAME}-${BUILD_TIMESTAMP}'
       }
     }
 
