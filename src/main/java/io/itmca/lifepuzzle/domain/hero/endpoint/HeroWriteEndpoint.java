@@ -42,9 +42,7 @@ public class HeroWriteEndpoint {
     var hero = heroWriteService.create(heroWriteRequest.toHeroOf(multiPhoto));
 
     if (multiPhoto != null) {
-      var photo = new ImageCustomFile(
-          String.format("hero/profile/%d", hero.getHeroNo()),
-          multiPhoto);
+      var photo = new ImageCustomFile(multiPhoto);
       heroWriteService.saveHeroProfile(hero, photo);
     }
 
@@ -87,9 +85,7 @@ public class HeroWriteEndpoint {
     var hero = heroWriteRequest.toHeroOf(heroNo, multiPhoto);
 
     if (multiPhoto != null) {
-      var photo = new ImageCustomFile(
-          String.format("hero/profile/%d", hero.getHeroNo()),
-          multiPhoto);
+      var photo = new ImageCustomFile(multiPhoto);
       heroWriteService.saveHeroProfile(hero, photo);
     }
 

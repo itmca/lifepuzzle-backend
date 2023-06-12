@@ -6,9 +6,7 @@ import org.springframework.stereotype.Service;
 public interface CustomFile {
   CustomFile resize();
 
-  String getBasePath();
-
-  String getTempPath();
+  String getBase();
 
   String getFileName();
 

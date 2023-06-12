@@ -5,10 +5,8 @@ import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
 import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
 import io.itmca.lifepuzzle.global.infra.file.VoiceCustomFile;
-import io.itmca.lifepuzzle.global.util.FileUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -34,16 +32,15 @@ public class StoryWriteEndpoint {
                          List<MultipartFile> multiVoices,
                          @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
     var story = storyWriteRequest.toStory(authPayload.getUserNo());
-    var baseFolder = FileUtil.getBaseFolderPath() + File.separator + story.getStoryKey();
     var images = multiImages == null
         ? Collections.EMPTY_LIST
         : multiImages.stream()
-        .map(photo -> new ImageCustomFile((baseFolder + "/images"), photo))
+        .map(photo -> new ImageCustomFile(photo))
         .toList();
     var voices = multiVoices == null
         ? Collections.EMPTY_LIST
         : multiVoices.stream()
-        .map(voice -> new VoiceCustomFile((baseFolder + "/voice"), voice))
+        .map(voice -> new VoiceCustomFile(voice))
         .toList();
 
     storyWriteService.saveFile(story, images);

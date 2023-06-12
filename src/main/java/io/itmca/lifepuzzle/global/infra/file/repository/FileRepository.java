@@ -4,5 +4,5 @@ import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import java.io.IOException;
 
 public interface FileRepository {
-  public void upload(CustomFile customFile) throws IOException;
+  public void upload(CustomFile customFile, String path) throws IOException;
 }

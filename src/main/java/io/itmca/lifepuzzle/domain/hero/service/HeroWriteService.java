@@ -2,10 +2,8 @@ package io.itmca.lifepuzzle.domain.hero.service;
 
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
-import io.itmca.lifepuzzle.global.constant.FileConstant;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import io.itmca.lifepuzzle.global.infra.file.repository.S3Repository;
-import io.itmca.lifepuzzle.global.util.FileUtil;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,11 +27,8 @@ public class HeroWriteService {
   }
 
   public void saveHeroProfile(Hero hero, CustomFile customFile) throws IOException {
-    if (!FileUtil.isExistFolder(FileConstant.TEMP_FOLDER_PATH)) {
-      FileUtil.createAllFolder(FileConstant.TEMP_FOLDER_PATH);
-    }
 
-    s3Repository.upload(customFile);
+    s3Repository.upload(customFile, "hero/profile/" + hero.getHeroNo());
 
     hero.setImage(customFile.getFileName());
   }

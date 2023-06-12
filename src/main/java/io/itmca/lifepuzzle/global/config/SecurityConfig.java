@@ -31,7 +31,7 @@ public class SecurityConfig {
                     "/swagger-ui/**")
                 .permitAll()
                 .anyRequest()
-                .permitAll()
+                .authenticated()
         )
         .httpBasic(Customizer.withDefaults())
         .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
