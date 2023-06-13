@@ -1,16 +1,16 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.FILE_NAMES_SEPARATOR;
+import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
 
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
+import io.itmca.lifepuzzle.global.infra.file.VoiceCustomFile;
 import io.itmca.lifepuzzle.global.infra.file.repository.S3Repository;
-import io.itmca.lifepuzzle.global.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,33 +28,21 @@ public class StoryWriteService {
     storyRepository.save(story);
   }
 
-  public void saveFile(Story story, List<? extends CustomFile> customFiles) throws IOException {
-    var savePath = FileUtil.getBaseFolderPath() + File.separator + story.getStoryKey();
-
-    for (CustomFile customFile : customFiles) {
-      s3Repository.upload(customFile, savePath);
-    }
-
-    addFileInStory(story, customFiles, savePath);
+  public void saveImage(Story story, List<ImageCustomFile> imageFiles) throws IOException {
+    saveFile(story, imageFiles);
+    story.addImage(imageFiles);
   }
 
-  private void addFileInStory(Story story, List<? extends CustomFile> customFiles,
-                              String savePath) {
-    if (customFiles.isEmpty()) {
-      return;
-    }
+  public void saveVoice(Story story, List<VoiceCustomFile> voiceFiles) throws IOException {
+    saveFile(story, voiceFiles);
+    story.addVoice(voiceFiles);
+  }
 
-    var fileBase = customFiles.get(0).getBase();
-    var folderPath = savePath + File.separator + fileBase;
-    var fileNames = customFiles
-        .stream()
-        .map(customFile -> customFile.getFileName())
-        .collect(Collectors.joining(FILE_NAMES_SEPARATOR));
+  private void saveFile(Story story, List<? extends CustomFile> customFiles) throws IOException {
+    var base = STORY_BASE_PATH + File.separator + story.getStoryKey();
 
-    if (fileBase.equals("image")) {
-      story.setImage(folderPath, fileNames);
-    } else if (fileBase.equals("voice")) {
-      story.setAudio(folderPath, fileNames);
+    for (CustomFile customFile : customFiles) {
+      s3Repository.upload(customFile, base);
     }
   }
 }

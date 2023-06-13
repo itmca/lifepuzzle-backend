@@ -1,8 +1,16 @@
 package io.itmca.lifepuzzle.domain.story.entity;
 
+import static io.itmca.lifepuzzle.global.constant.FileConstant.FILE_NAMES_SEPARATOR;
+import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
+import static java.util.stream.Collectors.joining;
+
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.story.AgeGroup;
 import io.itmca.lifepuzzle.global.constant.ServerConstant;
+import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
+import io.itmca.lifepuzzle.global.infra.file.VoiceCustomFile;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -52,14 +60,34 @@ public class Story {
   @UpdateTimestamp
   private LocalDateTime updatedAt;
 
-  public void setImage(String basePath, String fileNames) {
-    imageFolder = basePath;
-    imageFiles = fileNames;
+
+  public void addImage(List<ImageCustomFile> imageCustomFiles) {
+    if (imageCustomFiles.isEmpty()) {
+      return;
+    }
+
+    this.imageFolder = getFolder(imageCustomFiles.get(0));
+    this.imageFiles = getFiles(imageCustomFiles);
   }
 
-  public void setAudio(String basePath, String fileNames) {
-    audioFolder = basePath;
-    audioFiles = fileNames;
+  public void addVoice(List<VoiceCustomFile> voiceCustomFiles) {
+    if (voiceCustomFiles.isEmpty()) {
+      return;
+    }
+
+    this.audioFolder = getFolder(voiceCustomFiles.get(0));
+    this.audioFiles = getFiles(voiceCustomFiles);
+  }
+
+  private String getFolder(CustomFile customFile) {
+    return STORY_BASE_PATH + File.separator + this.storyKey + File.separator + customFile.getBase();
+  }
+
+  private String getFiles(List<? extends CustomFile> customFiles) {
+    return customFiles
+        .stream()
+        .map(customFile -> customFile.getFileName())
+        .collect(joining(FILE_NAMES_SEPARATOR));
   }
 
   public AgeGroup getTag(Hero hero) {

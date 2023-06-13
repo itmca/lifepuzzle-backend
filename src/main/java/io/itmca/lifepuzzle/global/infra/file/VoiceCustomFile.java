@@ -1,7 +1,6 @@
 package io.itmca.lifepuzzle.global.infra.file;
 
 import static io.itmca.lifepuzzle.global.util.FileUtil.addRandomValueFilePrefix;
-import static io.itmca.lifepuzzle.global.util.FileUtil.encodingToUTF8;
 
 import java.io.IOException;
 import lombok.Getter;
@@ -17,7 +16,7 @@ public class VoiceCustomFile implements CustomFile {
 
   public VoiceCustomFile(MultipartFile multipartFile) {
     this.multipartFile = multipartFile;
-    this.fileName = addRandomValueFilePrefix(encodingToUTF8(multipartFile.getOriginalFilename()));
+    this.fileName = addRandomValueFilePrefix(multipartFile);
     this.base = "voice";
 
     try {
@@ -25,7 +24,6 @@ public class VoiceCustomFile implements CustomFile {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-
   }
 
   @Override

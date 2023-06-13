@@ -18,7 +18,7 @@ public class S3Repository implements FileRepository {
   @Value("${cloud.aws.s3.bucket}")
   private String bucket;
 
-  public void upload(CustomFile customFile, String path) throws IOException {
+  public void upload(CustomFile customFile, String base) throws IOException {
     var tempFolder = FileConstant.TEMP_FOLDER_PATH + File.separator + customFile.getBase();
 
     if (!FileUtil.isExistFolder(tempFolder)) {
@@ -29,11 +29,11 @@ public class S3Repository implements FileRepository {
         tempFolder + File.separator + customFile.getFileName());
 
     amazonS3Client.putObject(new PutObjectRequest(bucket,
-        path + File.separator + customFile.getBase() + File.separator + customFile.getFileName(),
+        base + File.separator + customFile.getBase() + File.separator + customFile.getFileName(),
         localFile));
 
     System.out.println(amazonS3Client.getUrl(bucket,
-            path + File.separator + customFile.getBase()
+            base + File.separator + customFile.getBase()
                 + File.separator + customFile.getFileName())
         .toString());
 
