@@ -2,7 +2,6 @@ package io.itmca.lifepuzzle.domain.hero.endpoint.request;
 
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.global.constant.ServerConstant;
-import io.itmca.lifepuzzle.global.util.FileUtil;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -41,10 +40,6 @@ public class HeroWriteRequest {
 
   public Hero toHeroOf(Long heroNo, MultipartFile photo) {
     var imageURL = StringUtils.hasText(this.imageURL) ? removeFileServerHostInImage() : null;
-
-    if (FileUtil.isMultiPartFile(photo)) {
-      imageURL = FileUtil.addRandomValueFilePrefix(photo.getOriginalFilename());
-    }
 
     return Hero.builder()
         .heroNo(heroNo)
