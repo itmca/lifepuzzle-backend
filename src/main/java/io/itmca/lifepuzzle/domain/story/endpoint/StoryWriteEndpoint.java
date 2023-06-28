@@ -6,6 +6,7 @@ import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
 import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
+import io.itmca.lifepuzzle.global.infra.file.VideoCustomFile;
 import io.itmca.lifepuzzle.global.infra.file.VoiceCustomFile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,6 +32,8 @@ public class StoryWriteEndpoint {
                          List<MultipartFile> multiImages,
                          @RequestPart(value = "voice", required = false)
                          List<MultipartFile> multiVoices,
+                         @RequestPart(value = "videos", required = false)
+                         List<MultipartFile> multiVideos,
                          @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
     var story = storyWriteRequest.toStory(authPayload.getUserNo());
     var images = multiImages == null
@@ -43,9 +46,15 @@ public class StoryWriteEndpoint {
         : multiVoices.stream()
         .map(voice -> new VoiceCustomFile(voice))
         .toList();
+    var videos = multiVideos == null
+        ? EMPTY_LIST
+        : multiVideos.stream()
+        .map(video -> new VideoCustomFile(video).resize())
+        .toList();
 
     storyWriteService.saveImage(story, images);
     storyWriteService.saveVoice(story, voices);
+    storyWriteService.saveVideo(story, videos);
 
     storyWriteService.create(story);
   }

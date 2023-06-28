@@ -6,6 +6,7 @@ import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
+import io.itmca.lifepuzzle.global.infra.file.VideoCustomFile;
 import io.itmca.lifepuzzle.global.infra.file.VoiceCustomFile;
 import io.itmca.lifepuzzle.global.infra.file.repository.S3Repository;
 import java.io.File;
@@ -36,6 +37,11 @@ public class StoryWriteService {
   public void saveVoice(Story story, List<VoiceCustomFile> voiceFiles) throws IOException {
     saveFile(story, voiceFiles);
     story.addVoice(voiceFiles);
+  }
+
+  public void saveVideo(Story story, List<VideoCustomFile> videoFiles) throws IOException {
+    saveFile(story, videoFiles);
+    story.addVideo(videoFiles);
   }
 
   private void saveFile(Story story, List<? extends CustomFile> customFiles) throws IOException {

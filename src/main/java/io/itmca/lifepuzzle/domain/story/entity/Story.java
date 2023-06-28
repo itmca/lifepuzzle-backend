@@ -9,6 +9,7 @@ import io.itmca.lifepuzzle.domain.story.AgeGroup;
 import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
+import io.itmca.lifepuzzle.global.infra.file.VideoCustomFile;
 import io.itmca.lifepuzzle.global.infra.file.VoiceCustomFile;
 import java.io.File;
 import java.time.LocalDate;
@@ -49,6 +50,8 @@ public class Story {
   private String imageFiles;
   private String audioFolder;
   private String audioFiles;
+  private String videoFolder;
+  private String videoFiles;
   private String hashtag;
   private LocalDate date;
 
@@ -77,6 +80,15 @@ public class Story {
 
     this.audioFolder = getFolder(voiceCustomFiles.get(0));
     this.audioFiles = getFiles(voiceCustomFiles);
+  }
+
+  public void addVideo(List<VideoCustomFile> videoCustomFiles) {
+    if (videoCustomFiles.isEmpty()) {
+      return;
+    }
+
+    this.audioFolder = getFolder(videoCustomFiles.get(0));
+    this.audioFiles = getFiles(videoCustomFiles);
   }
 
   private String getFolder(CustomFile customFile) {

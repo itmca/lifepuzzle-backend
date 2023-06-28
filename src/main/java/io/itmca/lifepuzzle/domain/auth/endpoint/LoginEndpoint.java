@@ -29,7 +29,7 @@ public class LoginEndpoint {
     var username = loginRequest.getUsername();
     var user = userQueryService.findByUserId(username);
 
-    PasswordVerification passwordVerification = PasswordVerification.builder()
+    var passwordVerification = PasswordVerification.builder()
         .plainPassword(loginRequest.getPassword())
         .salt(user.getSalt())
         .hashedPassword(user.getPassword())
@@ -46,4 +46,3 @@ public class LoginEndpoint {
             .build());
   }
 }
-
