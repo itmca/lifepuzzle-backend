@@ -26,4 +26,9 @@ public class CustomExceptionHandler {
   public ResponseEntity handleAlreadyExistsException(AlreadyExistsException e) {
     return ResponseEntity.status(HttpStatus.CONFLICT).build();
   }
+
+  @ExceptionHandler(ServerExecutionFailException.class)
+  public ResponseEntity handleServerExecutionFailException(ServerExecutionFailException e) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
 }

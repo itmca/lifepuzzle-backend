@@ -1,16 +1,14 @@
 package io.itmca.lifepuzzle.domain.story.entity;
 
 import static io.itmca.lifepuzzle.global.constant.FileConstant.FILE_NAMES_SEPARATOR;
-import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
 import static java.util.stream.Collectors.joining;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.story.AgeGroup;
+import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
-import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
-import io.itmca.lifepuzzle.global.infra.file.VoiceCustomFile;
-import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -61,26 +59,26 @@ public class Story {
   private LocalDateTime updatedAt;
 
 
-  public void addImage(List<ImageCustomFile> imageCustomFiles) {
-    if (imageCustomFiles.isEmpty()) {
-      return;
+  public void addStoryFile(StoryFile storyFile) {
+    if (!isEmpty(storyFile.images())) {
+      var storyImages = storyFile.images();
+
+      this.imageFolder = storyImages.get(0).getBase();
+      this.imageFiles = getFiles(storyImages);
+    } else {
+      this.imageFolder = "";
+      this.imageFiles = "";
     }
 
-    this.imageFolder = getFolder(imageCustomFiles.get(0));
-    this.imageFiles = getFiles(imageCustomFiles);
-  }
+    if (!isEmpty(storyFile.voices())) {
+      var storyVoices = storyFile.voices();
 
-  public void addVoice(List<VoiceCustomFile> voiceCustomFiles) {
-    if (voiceCustomFiles.isEmpty()) {
-      return;
+      this.audioFolder = storyVoices.get(0).getBase();
+      this.audioFiles = getFiles(storyVoices);
+    } else {
+      this.audioFolder = "";
+      this.audioFiles = "";
     }
-
-    this.audioFolder = getFolder(voiceCustomFiles.get(0));
-    this.audioFiles = getFiles(voiceCustomFiles);
-  }
-
-  private String getFolder(CustomFile customFile) {
-    return STORY_BASE_PATH + File.separator + this.storyKey + File.separator + customFile.getBase();
   }
 
   private String getFiles(List<? extends CustomFile> customFiles) {

@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.hero.entity;
 
+import io.itmca.lifepuzzle.domain.hero.file.HeroProfileImage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -52,8 +53,8 @@ public class Hero {
         .build();
   }
 
-  public void setImage(String image) {
-    this.image = image;
+  public void setImage(HeroProfileImage heroProfileImage) {
+    this.image = heroProfileImage.getFileName();
   }
 
 }
