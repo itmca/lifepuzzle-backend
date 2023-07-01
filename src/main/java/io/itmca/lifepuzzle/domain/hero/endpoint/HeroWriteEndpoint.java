@@ -4,13 +4,13 @@ import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
+import io.itmca.lifepuzzle.domain.hero.file.HeroProfileImage;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
-import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
+import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,20 +30,23 @@ public class HeroWriteEndpoint {
   private final HeroValidationService heroValidationService;
   private final HeroWriteService heroWriteService;
   private final HeroUserAuthWriteService heroUserAuthWriteService;
+  private final S3UploadService s3UploadService;
 
   @Operation(summary = "주인공 등록")
   @PostMapping("/heroes")
   public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest heroWriteRequest,
                                  @RequestPart(value = "photo", required = false)
-                                 MultipartFile multiPhoto,
-                                 @AuthenticationPrincipal AuthPayload authPayload)
-      throws IOException {
+                                 MultipartFile reqeustPhoto,
+                                 @AuthenticationPrincipal AuthPayload authPayload) {
 
-    var hero = heroWriteService.create(heroWriteRequest.toHeroOf(multiPhoto));
+    var hero = heroWriteService.create(heroWriteRequest.toHeroOf(reqeustPhoto));
 
-    if (multiPhoto != null) {
-      var photo = new ImageCustomFile(multiPhoto);
-      heroWriteService.saveHeroProfile(hero, photo);
+    if (reqeustPhoto != null) {
+      var heroProfileImage = new HeroProfileImage(hero, reqeustPhoto);
+
+      hero.setImage(heroProfileImage);
+
+      s3UploadService.upload(heroProfileImage);
     }
 
     heroUserAuthWriteService.create(HeroUserAuth.builder()
@@ -77,16 +80,18 @@ public class HeroWriteEndpoint {
   public HeroQueryDTO saveHeroPhoto(@PathVariable("heroNo") Long heroNo,
                                     @RequestPart("toUpdate") HeroWriteRequest heroWriteRequest,
                                     @RequestPart(name = "photo", required = false)
-                                    MultipartFile multiPhoto,
-                                    @AuthenticationPrincipal AuthPayload authPayload)
-      throws IOException {
+                                    MultipartFile requestPhoto,
+                                    @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
-    var hero = heroWriteRequest.toHeroOf(heroNo, multiPhoto);
+    var hero = heroWriteRequest.toHeroOf(heroNo, requestPhoto);
 
-    if (multiPhoto != null) {
-      var photo = new ImageCustomFile(multiPhoto);
-      heroWriteService.saveHeroProfile(hero, photo);
+    if (requestPhoto != null) {
+      var heroProfileImage = new HeroProfileImage(hero, requestPhoto);
+
+      hero.setImage(heroProfileImage);
+
+      s3UploadService.upload(heroProfileImage);
     }
 
     return HeroQueryDTO.from(heroWriteService.update(hero));
