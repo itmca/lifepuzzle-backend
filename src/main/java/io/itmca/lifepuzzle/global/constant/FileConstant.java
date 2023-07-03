@@ -12,4 +12,7 @@ public class FileConstant {
   public static final String HERO_PROFILE_BASE_PATH = "hero/profile";
   public static final String STORY_BASE_PATH = "stories";
   public static final String FILE_NAMES_SEPARATOR = "||";
+
+  public static final int VIDEO_RESIZING_WIDTH = 854;
+  public static final int VIDEO_RESIZING_HEIGHT = 480;
 }

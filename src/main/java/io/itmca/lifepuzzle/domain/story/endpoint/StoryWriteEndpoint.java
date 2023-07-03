@@ -1,13 +1,15 @@
 package io.itmca.lifepuzzle.domain.story.endpoint;
 
-import static java.util.Collections.EMPTY_LIST;
+import static io.itmca.lifepuzzle.global.util.StreamUtil.toStream;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
+import io.itmca.lifepuzzle.domain.story.file.StoryFile;
+import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
+import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
+import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
-import io.itmca.lifepuzzle.global.infra.file.ImageCustomFile;
-import io.itmca.lifepuzzle.global.infra.file.VideoCustomFile;
-import io.itmca.lifepuzzle.global.infra.file.VoiceCustomFile;
+import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
@@ -24,38 +26,33 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "스토리 등록")
 public class StoryWriteEndpoint {
   private final StoryWriteService storyWriteService;
+  private final S3UploadService s3UploadService;
 
   @Operation(summary = "스토리 등록")
   @PostMapping(value = "/story")
   public void writeStory(@RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
                          @RequestPart(value = "photos", required = false)
-                         List<MultipartFile> multiImages,
+                         List<MultipartFile> images,
                          @RequestPart(value = "voice", required = false)
-                         List<MultipartFile> multiVoices,
+                         List<MultipartFile> voices,
                          @RequestPart(value = "videos", required = false)
-                         List<MultipartFile> multiVideos,
+                         List<MultipartFile> videos,
                          @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
+
     var story = storyWriteRequest.toStory(authPayload.getUserNo());
-    var images = multiImages == null
-        ? EMPTY_LIST
-        : multiImages.stream()
-        .map(photo -> new ImageCustomFile(photo))
-        .toList();
-    var voices = multiVoices == null
-        ? EMPTY_LIST
-        : multiVoices.stream()
-        .map(voice -> new VoiceCustomFile(voice))
-        .toList();
-    var videos = multiVideos == null
-        ? EMPTY_LIST
-        : multiVideos.stream()
-        .map(video -> new VideoCustomFile(video).resize())
-        .toList();
 
-    storyWriteService.saveImage(story, images);
-    storyWriteService.saveVoice(story, voices);
-    storyWriteService.saveVideo(story, videos);
+    var storyFile = StoryFile.builder()
+        .images(toStream(images)
+            .map(image -> new StoryImageFile(story, image))
+            .toList())
+        .voices(toStream(voices)
+            .map(voice -> new StoryVoiceFile(story, voice))
+            .toList())
+        .videos(toStream(videos)
+            .map(video -> new StoryVideoFile(story, video).resize())
+            .toList())
+        .build();
 
-    storyWriteService.create(story);
+    storyWriteService.create(story, storyFile);
   }
 }

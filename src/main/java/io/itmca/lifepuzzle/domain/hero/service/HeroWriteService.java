@@ -1,7 +1,5 @@
 package io.itmca.lifepuzzle.domain.hero.service;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_BASE_PATH;
-
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
@@ -28,10 +26,7 @@ public class HeroWriteService {
     heroRepository.deleteById(heroNo);
   }
 
-  public void saveHeroProfile(Hero hero, CustomFile customFile) throws IOException {
-
-    s3Repository.upload(customFile, HERO_PROFILE_BASE_PATH + hero.getHeroNo());
-
-    hero.setImage(customFile.getFileName());
+  public void saveHeroProfile(CustomFile customFile) throws IOException {
+    s3Repository.upload(customFile);
   }
 }

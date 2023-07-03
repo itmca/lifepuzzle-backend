@@ -1,11 +1,17 @@
-package io.itmca.lifepuzzle.global.infra.file;
+package io.itmca.lifepuzzle.domain.story.file;
 
+import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
+import static io.itmca.lifepuzzle.global.constant.FileConstant.VIDEO_RESIZING_HEIGHT;
+import static io.itmca.lifepuzzle.global.constant.FileConstant.VIDEO_RESIZING_WIDTH;
 import static io.itmca.lifepuzzle.global.util.FileUtil.addRandomValueFilePrefix;
 
 import io.github.techgnious.IVCompressor;
 import io.github.techgnious.dto.IVSize;
 import io.github.techgnious.dto.VideoFormats;
 import io.github.techgnious.exception.VideoException;
+import io.itmca.lifepuzzle.domain.story.entity.Story;
+import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import java.io.File;
 import java.io.IOException;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,14 +21,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Builder
 @RequiredArgsConstructor
-public class VideoCustomFile implements CustomFile {
+public class StoryVideoFile implements CustomFile {
   private final byte[] bytes;
   private final String base;
   private final String fileName;
 
-  public VideoCustomFile(MultipartFile multipartFile) {
+  public StoryVideoFile(Story story, MultipartFile multipartFile) {
     this.fileName = addRandomValueFilePrefix(multipartFile);
-    this.base = "video";
+    this.base = String.join(File.separator, STORY_BASE_PATH, story.getStoryKey(), "video");
 
     try {
       this.bytes = multipartFile.getBytes();
@@ -34,14 +40,14 @@ public class VideoCustomFile implements CustomFile {
   @Override
   public CustomFile resize() {
     var customRes = new IVSize();
-    customRes.setWidth(854);
-    customRes.setHeight(480);
+    customRes.setWidth(VIDEO_RESIZING_WIDTH);
+    customRes.setHeight(VIDEO_RESIZING_HEIGHT);
 
     try {
       var resizedVideo =
           new IVCompressor().reduceVideoSizeWithCustomRes(bytes, VideoFormats.MP4, customRes);
-      
-      return VideoCustomFile.builder()
+
+      return StoryVideoFile.builder()
           .bytes(resizedVideo)
           .base(base)
           .fileName(fileName)
