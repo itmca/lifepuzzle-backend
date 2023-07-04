@@ -1,5 +1,7 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
@@ -22,12 +24,16 @@ public class StoryWriteService {
   }
 
   private void uploadStoryFile(StoryFile storyFile) {
-    if (storyFile.images() != null) {
+    if (!isEmpty(storyFile.images())) {
       s3UploadService.upload(storyFile.images());
     }
 
-    if (storyFile.voices() != null) {
+    if (!isEmpty(storyFile.voices())) {
       s3UploadService.upload(storyFile.voices());
+    }
+
+    if (!isEmpty(storyFile.videos())) {
+      s3UploadService.upload(storyFile.videos());
     }
   }
 

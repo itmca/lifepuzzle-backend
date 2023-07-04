@@ -31,11 +31,9 @@ public class KakaoValidateService {
       System.out.println(responseCode);
     }
 
-    // TODO type 명시를 일괄적으로 하는 것이 좋을 것 같아요. 저희는 var로 통일하기로 했으니 var 쓰는 것이 어떠할까요?
-    //  아니면 이렇게 쓰신 이유가 있을까요?
-    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-    StringBuilder sb = new StringBuilder();
-    String line = "";
+    var br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    var sb = new StringBuilder();
+    var line = "";
 
     while ((line = br.readLine()) != null) {
       sb.append(line);

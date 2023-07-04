@@ -47,6 +47,8 @@ public class Story {
   private String imageFiles;
   private String audioFolder;
   private String audioFiles;
+  private String videoFolder;
+  private String videoFiles;
   private String hashtag;
   private LocalDate date;
 
@@ -78,6 +80,16 @@ public class Story {
     } else {
       this.audioFolder = "";
       this.audioFiles = "";
+    }
+
+    if (!isEmpty(storyFile.videos())) {
+      var storyVideos = storyFile.videos();
+
+      this.videoFolder = storyVideos.get(0).getBase();
+      this.videoFiles = getFiles(storyVideos);
+    } else {
+      this.videoFolder = "";
+      this.videoFiles = "";
     }
   }
 

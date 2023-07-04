@@ -31,11 +31,7 @@ public class S3Repository implements FileRepository {
     amazonS3Client.putObject(new PutObjectRequest(bucket,
         customFile.getBase() + File.separator + customFile.getFileName(),
         localFile));
-
-    System.out.println(amazonS3Client.getUrl(bucket,
-            customFile.getBase() + File.separator + customFile.getFileName())
-        .toString());
-
+    
     localFile.delete();
   }
 }
