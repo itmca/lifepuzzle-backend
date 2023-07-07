@@ -1,5 +1,7 @@
 package io.itmca.lifepuzzle.global.infra.file.service;
 
+import static java.io.File.separator;
+
 import io.itmca.lifepuzzle.global.exception.S3UploadFailException;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import io.itmca.lifepuzzle.global.infra.file.repository.S3Repository;
@@ -24,6 +26,20 @@ public class S3UploadService {
   public void upload(List<? extends CustomFile> customFiles) {
     for (var customFile : customFiles) {
       upload(customFile);
+    }
+  }
+
+  public void delete(String base) {
+    try {
+      s3Repository.delete(base);
+    } catch (IOException e) {
+      throw new S3UploadFailException(base, e);
+    }
+  }
+
+  public void delete(String base, List<String> fileNames) {
+    for (var fileName : fileNames) {
+      delete(String.join(separator, base, fileName));
     }
   }
 }

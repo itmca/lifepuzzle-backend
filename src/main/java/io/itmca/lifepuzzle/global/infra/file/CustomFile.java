@@ -10,6 +10,8 @@ public interface CustomFile {
 
   String getFileName();
 
+  String getOriginalFileName();
+
   byte[] getBytes();
 
 }

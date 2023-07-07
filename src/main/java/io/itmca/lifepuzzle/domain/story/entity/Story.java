@@ -6,6 +6,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.story.AgeGroup;
+import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
@@ -115,6 +116,14 @@ public class Story {
         .toList();
   }
 
+  public List<String> getImageNames() {
+    if (!StringUtils.hasText(imageFiles)) {
+      return Collections.emptyList();
+    }
+
+    return Arrays.stream(this.imageFiles.split("\\|\\|")).toList();
+  }
+
   public List<String> getAudios() {
     if (!StringUtils.hasText(audioFiles)) {
       return Collections.emptyList();
@@ -123,5 +132,43 @@ public class Story {
     return Arrays.stream(this.audioFiles.split("\\|\\|"))
         .map(file -> String.format("%s/%s/%s", ServerConstant.SERVER_HOST, this.audioFolder, file))
         .toList();
+  }
+
+  public List<String> getAudioNames() {
+    if (!StringUtils.hasText(audioFiles)) {
+      return Collections.emptyList();
+    }
+
+    return Arrays.stream(this.audioFiles.split("\\|\\|")).toList();
+  }
+
+  public List<String> getVideos() {
+    if (!StringUtils.hasText(videoFiles)) {
+      return Collections.emptyList();
+    }
+
+    return Arrays.stream(this.videoFiles.split("\\|\\|"))
+        .map(file -> String.format("%s/%s/%s", ServerConstant.SERVER_HOST, this.audioFolder, file))
+        .toList();
+  }
+
+  public List<String> getVideoNames() {
+    if (!StringUtils.hasText(videoFiles)) {
+      return Collections.emptyList();
+    }
+
+    return Arrays.stream(this.videoFiles.split("\\|\\|")).toList();
+  }
+
+  public void updateStoryInfo(StoryWriteRequest storyWriteRequest) {
+    this.recQuestionNo =
+        storyWriteRequest.getRecQuestionNo() == null ? -1 : storyWriteRequest.getRecQuestionNo();
+    this.isQuestionModified =
+        storyWriteRequest.getRecQuestionModified() == null ? false :
+            storyWriteRequest.getRecQuestionModified();
+    this.usedQuestion = storyWriteRequest.getHelpQuestionText();
+    this.date = storyWriteRequest.getDate();
+    this.title = storyWriteRequest.getTitle();
+    this.content = storyWriteRequest.getStoryText();
   }
 }

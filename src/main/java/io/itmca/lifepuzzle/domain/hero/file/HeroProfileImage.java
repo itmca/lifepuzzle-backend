@@ -12,12 +12,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 public class HeroProfileImage implements CustomFile {
+  private final byte[] bytes;
   private final String base;
   private final String fileName;
-  private final byte[] bytes;
+  private final String originalFileName;
 
   public HeroProfileImage(Hero hero, MultipartFile multipartFile) {
     this.fileName = addRandomValueFilePrefix(multipartFile);
+    this.originalFileName = multipartFile.getOriginalFilename();
     this.base =
         String.join(File.separator, HERO_PROFILE_BASE_PATH, hero.getHeroNo().toString(), "image");
 

@@ -8,15 +8,19 @@ import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
+import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
-import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
+import io.itmca.lifepuzzle.global.exception.HeroNotAccessibleToStoryException;
+import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToStoryException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "스토리 등록")
 public class StoryWriteEndpoint {
   private final StoryWriteService storyWriteService;
-  private final S3UploadService s3UploadService;
+  private final StoryQueryService storyQueryService;
 
   @Operation(summary = "스토리 등록")
   @PostMapping(value = "/story")
@@ -55,4 +59,46 @@ public class StoryWriteEndpoint {
 
     storyWriteService.create(story, storyFile);
   }
+
+  @Operation(summary = "스토리 수정")
+  @PutMapping(value = "/story/{storyKey}")
+  public void writeStory(@PathVariable("storyKey") String storyKey,
+                         @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
+                         @RequestPart(value = "photos", required = false)
+                         List<MultipartFile> images,
+                         @RequestPart(value = "voice", required = false)
+                         List<MultipartFile> voices,
+                         @RequestPart(value = "videos", required = false)
+                         List<MultipartFile> videos,
+                         @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
+
+    var story = storyQueryService.findById(storyKey);
+
+    if (story.getUserNo() != authPayload.getUserNo()) {
+      throw new UserNotAccessibleToStoryException(authPayload.getUserNo(), storyKey);
+    }
+
+    // storyWriteRequest에 있는 heroNo로 비교하는 것보다,
+    // authPayload에 있는 userNo로 heroNo를 조회하여 비교하는 게 맞을까요?
+    if (story.getHeroNo() != storyWriteRequest.getHeroNo()) {
+      throw new HeroNotAccessibleToStoryException(storyWriteRequest.getHeroNo(), storyKey);
+    }
+
+    story.updateStoryInfo(storyWriteRequest);
+
+    var storyFile = StoryFile.builder()
+        .images(toStream(images)
+            .map(image -> new StoryImageFile(story, image))
+            .toList())
+        .voices(toStream(voices)
+            .map(voice -> new StoryVoiceFile(story, voice))
+            .toList())
+        .videos(toStream(videos)
+            .map(video -> new StoryVideoFile(story, video).resize())
+            .toList())
+        .build();
+
+    storyWriteService.update(story, storyFile);
+  }
 }
+

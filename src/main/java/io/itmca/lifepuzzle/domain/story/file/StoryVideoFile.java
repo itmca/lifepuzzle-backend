@@ -25,9 +25,11 @@ public class StoryVideoFile implements CustomFile {
   private final byte[] bytes;
   private final String base;
   private final String fileName;
+  private final String originalFileName;
 
   public StoryVideoFile(Story story, MultipartFile multipartFile) {
     this.fileName = addRandomValueFilePrefix(multipartFile);
+    this.originalFileName = multipartFile.getOriginalFilename();
     this.base = String.join(File.separator, STORY_BASE_PATH, story.getStoryKey(), "video");
 
     try {
@@ -51,6 +53,7 @@ public class StoryVideoFile implements CustomFile {
           .bytes(resizedVideo)
           .base(base)
           .fileName(fileName)
+          .originalFileName(originalFileName)
           .build();
     } catch (VideoException e) {
       throw new RuntimeException(e);
