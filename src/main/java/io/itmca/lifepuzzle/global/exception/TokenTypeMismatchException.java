@@ -9,11 +9,13 @@ public class TokenTypeMismatchException extends AuthException {
   }
 
   public static TokenTypeMismatchException refreshTokenExpected(String token) {
-    return new TokenTypeMismatchException(String.format("Token: %s is not refresh token.", token));
+    return new TokenTypeMismatchException(
+        String.format("Token: %s is not a refresh token.", token));
   }
 
   public static TokenTypeMismatchException accessTokenExpected(String token) {
-    return new TokenTypeMismatchException(String.format("Token: %s is not access token.", token));
+    return new TokenTypeMismatchException(
+        String.format("Token: %s is not an access token.", token));
   }
 
 }

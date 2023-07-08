@@ -20,13 +20,8 @@ public class FileUtil {
     folder.mkdirs();
   }
 
-  public static String addRandomValueFilePrefix(MultipartFile multipartFile) {
-    return String.format("%d_%s", Math.round(Math.random() * 1000000),
-        encodingToUTF8(multipartFile.getOriginalFilename()));
-  }
-
-  public static String encodingToUTF8(String fileName) {
-    return URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+  public static String getNormalizedFileName(MultipartFile file) {
+    return URLDecoder.decode(file.getOriginalFilename(), StandardCharsets.UTF_8);
   }
 
   public static File saveMultiPartFileInLocal(byte[] bytes, String fileURL)
