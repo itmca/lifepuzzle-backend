@@ -28,17 +28,17 @@ public class S3Repository implements FileRepository {
     var localFile = FileUtil.saveMultiPartFileInLocal(customFile.getBytes(),
         tempFolder + File.separator + customFile.getFileName());
 
-    var key = customFile.getBase() + File.separator + customFile.getFileName();
-
     amazonS3Client.putObject(new PutObjectRequest(bucket,
-        key.replaceAll("\\\\", "\\/"),
+        customFile.getBase() + File.separator + customFile.getFileName(),
         localFile));
 
     localFile.delete();
   }
 
   public void delete(String base) throws IOException {
-    var key = base.replaceAll("\\\\", "\\/");
-    amazonS3Client.deleteObject(bucket, key);
+    var listObjectsV2Result = amazonS3Client.listObjectsV2(bucket, base);
+    for (var objectSummary : listObjectsV2Result.getObjectSummaries()) {
+      amazonS3Client.deleteObject(bucket, objectSummary.getKey());
+    }
   }
 }

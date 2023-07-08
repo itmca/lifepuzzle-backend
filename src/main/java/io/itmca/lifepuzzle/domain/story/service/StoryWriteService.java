@@ -1,6 +1,8 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
+import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
 import static io.itmca.lifepuzzle.global.util.StreamUtil.toStream;
+import static java.io.File.separator;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.story.entity.Story;
@@ -110,5 +112,11 @@ public class StoryWriteService {
     return toStream(files)
         .map(file -> file.getOriginalFileName())
         .toList();
+  }
+
+  public void delete(String storyKey) {
+    s3UploadService.delete(String.join(separator, STORY_BASE_PATH, storyKey));
+
+    storyRepository.deleteById(storyKey);
   }
 }

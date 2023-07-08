@@ -10,6 +10,7 @@ import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
+import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.global.exception.HeroNotAccessibleToStoryException;
 import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToStoryException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +18,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class StoryWriteEndpoint {
   private final StoryWriteService storyWriteService;
   private final StoryQueryService storyQueryService;
+  private final UserQueryService userQueryService;
 
   @Operation(summary = "스토리 등록")
   @PostMapping(value = "/story")
@@ -99,6 +103,27 @@ public class StoryWriteEndpoint {
         .build();
 
     storyWriteService.update(story, storyFile);
+  }
+
+  @Operation(summary = "스토리 삭제")
+  @DeleteMapping(value = "/story/{storyKey}")
+  public HttpStatus deleteStory(@PathVariable("storyKey") String storyKey,
+                                @AuthenticationPrincipal AuthPayload authPayload) {
+
+    var story = storyQueryService.findById(storyKey);
+
+    if (story.getUserNo() != authPayload.getUserNo()) {
+      throw new UserNotAccessibleToStoryException(authPayload.getUserNo(), storyKey);
+    }
+
+    var user = userQueryService.findByUserNo(authPayload.getUserNo());
+    if (story.getHeroNo() != user.getRecentHeroNo()) {
+      throw new HeroNotAccessibleToStoryException(user.getRecentHeroNo(), storyKey);
+    }
+
+    storyWriteService.delete(storyKey);
+
+    return HttpStatus.OK;
   }
 }
 
