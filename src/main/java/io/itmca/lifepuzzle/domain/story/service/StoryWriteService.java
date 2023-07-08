@@ -75,7 +75,7 @@ public class StoryWriteService {
   private List<? extends CustomFile> getNonDuplicateFiles(List<? extends CustomFile> files,
                                                           List<String> existingFileNames) {
     return toStream(files)
-        .filter(file -> !existingFileNames.contains(file.getOriginalFileName()))
+        .filter(file -> !existingFileNames.contains(file.getFileName()))
         .toList();
   }
 
@@ -110,7 +110,7 @@ public class StoryWriteService {
 
   private static List<String> getRequestFileNames(List<? extends CustomFile> files) {
     return toStream(files)
-        .map(file -> file.getOriginalFileName())
+        .map(file -> file.getFileName())
         .toList();
   }
 
