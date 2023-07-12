@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.auth;
+package io.itmca.lifepuzzle.domain.auth.type;
 
 public enum TokenType {
   ACCESS("access"), REFRESH("refresh");

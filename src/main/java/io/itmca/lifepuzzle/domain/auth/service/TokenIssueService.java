@@ -1,8 +1,9 @@
 package io.itmca.lifepuzzle.domain.auth.service;
 
 import io.itmca.lifepuzzle.domain.auth.Token;
-import io.itmca.lifepuzzle.domain.auth.TokenType;
 import io.itmca.lifepuzzle.domain.auth.jwt.JwtTokenProvider;
+import io.itmca.lifepuzzle.domain.auth.type.TokenPayload;
+import io.itmca.lifepuzzle.domain.auth.type.TokenType;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,18 +22,18 @@ public class TokenIssueService {
     var expiryDateOfRefreshToken = now.plusSeconds(REFRESH_TOKEN_DURATION_SECONDS);
 
     var accessTokenPayload = Map.of(
-        "userNo", userNo,
-        "type", TokenType.ACCESS.frontEndKey(),
-        "iat", now.getEpochSecond(),
-        "exp", expiryDateOfAccessToken.getEpochSecond()
+        TokenPayload.UserNo.key(), userNo,
+        TokenPayload.Type.key(), TokenType.ACCESS.frontEndKey(),
+        TokenPayload.IssueDate.key(), now.getEpochSecond(),
+        TokenPayload.ExpireDate.key(), expiryDateOfAccessToken.getEpochSecond()
     );
     var accessToken = JwtTokenProvider.generateToken(accessTokenPayload);
 
     var refreshTokenPayload = Map.of(
-        "userNo", userNo,
-        "type", TokenType.REFRESH.frontEndKey(),
-        "iat", now.getEpochSecond(),
-        "exp", expiryDateOfRefreshToken.getEpochSecond()
+        TokenPayload.UserNo.key(), userNo,
+        TokenPayload.Type.key(), TokenType.REFRESH.frontEndKey(),
+        TokenPayload.IssueDate.key(), now.getEpochSecond(),
+        TokenPayload.ExpireDate.key(), expiryDateOfRefreshToken.getEpochSecond()
     );
     var refreshToken = JwtTokenProvider.generateToken(refreshTokenPayload);
 
