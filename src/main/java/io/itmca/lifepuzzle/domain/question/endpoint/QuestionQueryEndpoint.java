@@ -4,7 +4,10 @@ import io.itmca.lifepuzzle.domain.question.endpoint.response.dto.RecommendQuesti
 import io.itmca.lifepuzzle.domain.question.service.QuestionQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
 import java.util.List;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuestionQueryEndpoint {
   private final QuestionQueryService questionQueryService;
 
+  @Deprecated
   @Operation(summary = "추천 질문 조회")
   @GetMapping("/recommend")
   public List<RecommendQuestionDTO> getRecommendedQuestion(
@@ -25,6 +29,24 @@ public class QuestionQueryEndpoint {
       @RequestParam(name = "heroNo") Long heroNo,
       @RequestParam(name = "size", defaultValue = "10") Long size) {
     var recommendQuestions = questionQueryService.getRecommendedQuestion(category, heroNo, size);
+
+    return recommendQuestions.stream()
+        .map(RecommendQuestionDTO::from)
+        .toList();
+  }
+
+  @Operation(summary = "월별 추천 질문 조회")
+  @GetMapping("/month-recommend")
+  public List<RecommendQuestionDTO> getRecommendedQuestion(
+      @Min(1) @Max(12)
+      @RequestParam(name = "heroNo") Long heroNo,
+      @RequestParam(name = "month", required = false) Integer month,
+      @RequestParam(name = "size", defaultValue = "4", required = false) Long size) {
+    if (month == null) {
+      month = LocalDate.now().getMonthValue();
+    }
+
+    var recommendQuestions = questionQueryService.getRecommendedQuestion(month + "월", heroNo, size);
 
     return recommendQuestions.stream()
         .map(RecommendQuestionDTO::from)
