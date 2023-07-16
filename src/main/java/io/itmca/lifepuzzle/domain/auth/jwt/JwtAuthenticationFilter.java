@@ -1,10 +1,10 @@
 package io.itmca.lifepuzzle.domain.auth.jwt;
 
-import static io.itmca.lifepuzzle.domain.auth.jwt.JwtTokenProvider.validateToken;
+import static io.itmca.lifepuzzle.domain.auth.jwt.JwtTokenProvider.toClaims;
 import static org.springframework.util.StringUtils.hasText;
 
-import io.itmca.lifepuzzle.domain.auth.TokenType;
-import io.itmca.lifepuzzle.global.exception.TokenTypeMismatchException;
+import io.itmca.lifepuzzle.domain.auth.type.TokenType;
+import io.jsonwebtoken.Claims;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,42 +21,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   FilterChain filterChain) throws ServletException, IOException {
     try {
       trySettingAuthentication(request);
-    } catch (Exception ex) {
-      logger.error("Could not set user authentication in security context", ex);
+    } catch (Exception ignored) {
+      logger.debug("Could not set user authentication in security context", ignored);
     }
 
     filterChain.doFilter(request, response);
   }
 
   private void trySettingAuthentication(HttpServletRequest request) {
-    var jwt = getJwtFromRequest(request);
+    var bearerToken = findBearerToken(request);
+    var claims = toClaims(bearerToken).orElse(null);
 
-    if (!hasText(jwt) || !validateToken(jwt)) {
+    if (claims == null || !isAccessTokenType(claims)) {
       return;
     }
 
-    if (!isAccessToken(jwt)) {
-      throw TokenTypeMismatchException.accessTokenExpected(jwt);
-    }
-
-    var userNo = JwtTokenProvider.parseUserNo(jwt);
-
+    var userNo = JwtTokenProvider.findUserNo(claims);
     var authentication = new UserAuthentication(userNo);
     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
-  private boolean isAccessToken(String token) {
-    return TokenType.ACCESS.frontEndKey().equals(JwtTokenProvider.parseTokenType(token));
+  public boolean isAccessTokenType(Claims claims) {
+    var tokenType = JwtTokenProvider.findTokenType(claims);
+
+    return TokenType.ACCESS.frontEndKey().equals(tokenType);
   }
 
-  private String getJwtFromRequest(HttpServletRequest request) {
+  private String findBearerToken(HttpServletRequest request) {
     var bearerToken = request.getHeader("Authorization");
+
     if (hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
       return bearerToken.substring("Bearer ".length());
     }
+
     return null;
   }
-
 }

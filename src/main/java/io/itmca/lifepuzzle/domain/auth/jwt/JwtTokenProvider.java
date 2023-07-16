@@ -1,5 +1,9 @@
 package io.itmca.lifepuzzle.domain.auth.jwt;
 
+import static org.springframework.util.StringUtils.hasText;
+
+import io.itmca.lifepuzzle.domain.auth.type.TokenPayload;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -10,6 +14,7 @@ import io.jsonwebtoken.security.SignatureException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -25,43 +30,38 @@ public class JwtTokenProvider {
         .compact();
   }
 
-  public static String parseTokenType(String token) {
-    return Jwts.parserBuilder()
-        .setSigningKey(SIGNING_KEY)
-        .build()
-        .parseClaimsJws(token)
-        .getBody()
-        .get("type", String.class);
-  }
-
-  public static Long parseUserNo(String token) {
-    return Jwts.parserBuilder()
-        .setSigningKey(SIGNING_KEY)
-        .build()
-        .parseClaimsJws(token)
-        .getBody()
-        .get("userNo", Long.class);
-  }
-
-  public static boolean validateToken(String token) {
+  public static Optional<Claims> toClaims(String token) {
+    if (!hasText(token)) {
+      return Optional.empty();
+    }
+    
     try {
-      Jwts.parserBuilder()
+      return Optional.of(Jwts.parserBuilder()
           .setSigningKey(SIGNING_KEY)
           .build()
-          .parseClaimsJws(token);
-      return true;
+          .parseClaimsJws(token)
+          .getBody());
     } catch (SignatureException ex) {
-      log.error("Invalid JWT signature", ex);
+      log.debug("Invalid JWT signature", ex);
     } catch (MalformedJwtException ex) {
-      log.error("Invalid JWT token", ex);
+      log.debug("Invalid JWT token", ex);
     } catch (ExpiredJwtException ex) {
-      log.error("Expired JWT token", ex);
+      log.debug("Expired JWT token", ex);
     } catch (UnsupportedJwtException ex) {
-      log.error("Unsupported JWT token", ex);
+      log.debug("Unsupported JWT token", ex);
     } catch (IllegalArgumentException ex) {
-      log.error("JWT claims string is empty.", ex);
+      log.debug("JWT claims string is empty.", ex);
     }
-    return false;
+
+    return Optional.empty();
+  }
+
+  public static String findTokenType(Claims claims) {
+    return claims.get(TokenPayload.Type.key(), String.class);
+  }
+
+  public static Long findUserNo(Claims claims) {
+    return claims.get(TokenPayload.UserNo.key(), Long.class);
   }
 
   public static Key getSigningKey() {
