@@ -56,6 +56,10 @@ processResources {
     duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
 }
 task buildZip(type: Zip) {
+    from('src/.platform') {
+        into '.platform'
+    }
+
     from(bootJar.outputs.files) {
         into "."
     }
