@@ -16,7 +16,9 @@ public class StoryDTO {
   Long heroNo;
   String title;
   String content;
+  String question;
   List<String> photos;
+  List<String> videos;
   List<String> audios;
   List<StoryTagDTO> tags;
   LocalDate date;
@@ -28,7 +30,9 @@ public class StoryDTO {
         .heroNo(story.getHeroNo())
         .title(story.getTitle())
         .content(story.getContent())
+        .question(story.getUsedQuestion())
         .photos(story.getImages())
+        .videos(story.getVideos())
         .audios(story.getAudios())
         .tags(List.of(StoryTagDTO.from(story.getTag(hero))))
         .date(story.getDate())
