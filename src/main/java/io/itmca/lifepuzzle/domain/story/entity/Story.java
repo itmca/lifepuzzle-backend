@@ -148,7 +148,7 @@ public class Story {
     }
 
     return Arrays.stream(this.videoFiles.split("\\|\\|"))
-        .map(file -> String.format("%s/%s/%s", ServerConstant.SERVER_HOST, this.audioFolder, file))
+        .map(file -> String.format("%s/%s/%s", ServerConstant.SERVER_HOST, this.videoFolder, file))
         .toList();
   }
 
