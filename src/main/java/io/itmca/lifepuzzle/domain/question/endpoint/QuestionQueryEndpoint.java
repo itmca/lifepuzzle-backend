@@ -10,12 +10,10 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("question")
 @RequiredArgsConstructor
 @Tag(name = "질문 조회")
 public class QuestionQueryEndpoint {
@@ -23,12 +21,12 @@ public class QuestionQueryEndpoint {
 
   @Deprecated
   @Operation(summary = "추천 질문 조회")
-  @GetMapping("/recommend")
+  @GetMapping("/question/recommend")
   public List<RecommendQuestionDTO> getRecommendedQuestion(
       @RequestParam(name = "category", required = false) String category,
       @RequestParam(name = "heroNo") Long heroNo,
       @RequestParam(name = "size", defaultValue = "10") Long size) {
-    var recommendQuestions = questionQueryService.getRecommendedQuestion(category, heroNo, size);
+    var recommendQuestions = questionQueryService.getRecommendQuestion(category, heroNo, size);
 
     return recommendQuestions.stream()
         .map(RecommendQuestionDTO::from)
@@ -36,9 +34,9 @@ public class QuestionQueryEndpoint {
   }
 
   @Operation(summary = "월별 추천 질문 조회")
-  @GetMapping("/month-recommend")
+  @GetMapping("/questions/month-recommend")
   public List<RecommendQuestionDTO> getRecommendedQuestion(
-      @Min(1) @Max(12)
+      @Min(-1) @Max(12)
       @RequestParam(name = "heroNo") Long heroNo,
       @RequestParam(name = "month", required = false) Integer month,
       @RequestParam(name = "size", defaultValue = "4", required = false) Long size) {
@@ -46,7 +44,7 @@ public class QuestionQueryEndpoint {
       month = LocalDate.now().getMonthValue();
     }
 
-    var recommendQuestions = questionQueryService.getRecommendedQuestion(month + "월", heroNo, size);
+    var recommendQuestions = questionQueryService.getRecommendQuestion(month + "월", heroNo, size);
 
     return recommendQuestions.stream()
         .map(RecommendQuestionDTO::from)
