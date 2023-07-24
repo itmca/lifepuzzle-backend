@@ -27,7 +27,9 @@ public class SecurityConfig {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
         .authorizeHttpRequests(
-            (request) -> request.antMatchers("/auth/**", "/", "/user", "/hc", "/v3/**",
+            (request) -> request.antMatchers(
+                    "/", "/hc", "/auth/**",
+                    "/user", "/v3/**", "/question/*", "/questions/*",
                     "/swagger-ui/**")
                 .permitAll()
                 .anyRequest()
