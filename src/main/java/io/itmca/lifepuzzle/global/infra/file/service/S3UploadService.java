@@ -25,6 +25,9 @@ public class S3UploadService {
 
   public void upload(List<? extends CustomFile> customFiles) {
     for (var customFile : customFiles) {
+      if (customFile.isUploaded()) {
+        continue;
+      }
       upload(customFile);
     }
   }

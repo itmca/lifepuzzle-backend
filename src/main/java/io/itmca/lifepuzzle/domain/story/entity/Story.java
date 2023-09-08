@@ -97,6 +97,7 @@ public class Story {
   private String getFiles(List<? extends CustomFile> customFiles) {
     return customFiles
         .stream()
+        .filter(customFile -> !customFile.isUploaded())
         .map(customFile -> customFile.getFileName())
         .collect(joining(FILE_NAMES_SEPARATOR));
   }

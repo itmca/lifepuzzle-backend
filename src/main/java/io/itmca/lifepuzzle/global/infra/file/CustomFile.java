@@ -1,5 +1,7 @@
 package io.itmca.lifepuzzle.global.infra.file;
 
+import static io.itmca.lifepuzzle.global.constant.FileConstant.FILE_DUPLICATE_PREFIX;
+
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -30,5 +32,9 @@ public abstract class CustomFile {
 
   private String normalizeFileName(String fileName) {
     return URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+  }
+
+  public Boolean isUploaded() {
+    return fileName.startsWith(FILE_DUPLICATE_PREFIX);
   }
 }

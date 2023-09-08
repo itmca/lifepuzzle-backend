@@ -29,13 +29,14 @@ public class S3Repository implements FileRepository {
         tempFolder + File.separator + customFile.getFileName());
 
     amazonS3Client.putObject(new PutObjectRequest(bucket,
-        customFile.getBase() + File.separator + customFile.getFileName(),
+        customFile.getBase() + File.separator + customFile.getFileName().replaceAll("\\\\", "\\/"),
         localFile));
 
     localFile.delete();
   }
 
   public void delete(String base) throws IOException {
+    base = base.replaceAll("\\\\", "\\/");
     var listObjectsV2Result = amazonS3Client.listObjectsV2(bucket, base);
     for (var objectSummary : listObjectsV2Result.getObjectSummaries()) {
       amazonS3Client.deleteObject(bucket, objectSummary.getKey());
