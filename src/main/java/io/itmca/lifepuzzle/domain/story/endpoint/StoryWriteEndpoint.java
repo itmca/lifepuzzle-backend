@@ -17,6 +17,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,9 +51,21 @@ public class StoryWriteEndpoint {
 
     var story = storyWriteRequest.toStory(authPayload.getUserNo());
 
+    // TODO 2023.09.09 Solmioh 이름 중복일 때 처리 필요. 주온이 사진만 임시코드만 추가 해 놓음
     var storyFile = StoryFile.builder()
         .images(toStream(images)
-            .map(image -> new StoryImageFile(story, image))
+            .collect(Collectors.groupingBy(image -> image.getOriginalFilename()))
+            .values()
+            .stream()
+            .flatMap(grouped -> {
+              if (grouped.size() < 1) {
+                return grouped.stream().map((image) -> new StoryImageFile(story, image));
+              }
+
+              AtomicInteger postfix = new AtomicInteger();
+              return grouped.stream().map((image) -> new StoryImageFile(story, image,
+                  String.valueOf(postfix.getAndAdd(1))));
+            })
             .toList())
         .voices(toStream(voices)
             .map(voice -> new StoryVoiceFile(story, voice))
@@ -90,9 +104,21 @@ public class StoryWriteEndpoint {
 
     story.updateStoryInfo(storyWriteRequest);
 
+    // TODO 2023.09.09 Solmioh 이름 중복일 때 처리 필요. 주온이 사진만 임시코드만 추가 해 놓음
     var storyFile = StoryFile.builder()
         .images(toStream(images)
-            .map(image -> new StoryImageFile(story, image))
+            .collect(Collectors.groupingBy(image -> image.getOriginalFilename()))
+            .values()
+            .stream()
+            .flatMap(grouped -> {
+              if (grouped.size() < 1) {
+                return grouped.stream().map((image) -> new StoryImageFile(story, image));
+              }
+
+              AtomicInteger postfix = new AtomicInteger();
+              return grouped.stream().map((image) -> new StoryImageFile(story, image,
+                  String.valueOf(postfix.getAndAdd(1))));
+            })
             .toList())
         .voices(toStream(voices)
             .map(voice -> new StoryVoiceFile(story, voice))

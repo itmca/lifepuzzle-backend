@@ -13,10 +13,17 @@ public abstract class CustomFile {
   protected final String base;
   protected final String fileName;
   protected final byte[] bytes;
+  private final boolean uploaded;
 
   public CustomFile(String base, MultipartFile file) {
+    this(base, file, "");
+  }
+
+  public CustomFile(String base, MultipartFile file, String postfix) {
     this.base = base;
-    this.fileName = normalizeFileName(file.getOriginalFilename());
+    this.fileName = normalizeFileName(file.getOriginalFilename(), postfix);
+    this.uploaded = fileName.startsWith(FILE_DUPLICATE_PREFIX);
+
     try {
       this.bytes = file.getBytes();
     } catch (IOException e) {
@@ -28,13 +35,13 @@ public abstract class CustomFile {
     this.base = base;
     this.fileName = fileName;
     this.bytes = bytes;
+    this.uploaded = fileName.startsWith(FILE_DUPLICATE_PREFIX);
   }
 
-  private String normalizeFileName(String fileName) {
-    return URLDecoder.decode(fileName, StandardCharsets.UTF_8);
-  }
+  private String normalizeFileName(String fileName, String postfix) {
+    var normalized = URLDecoder.decode(fileName, StandardCharsets.UTF_8)
+        .replaceFirst("^" + FILE_DUPLICATE_PREFIX, "");
 
-  public Boolean isUploaded() {
-    return fileName.startsWith(FILE_DUPLICATE_PREFIX);
+    return fileName.startsWith(FILE_DUPLICATE_PREFIX) ? normalized : normalized + postfix;
   }
 }

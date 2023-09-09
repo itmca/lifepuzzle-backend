@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("question")
+@RequestMapping("questions")
 @RequiredArgsConstructor
 @Tag(name = "질문 조회")
 public class QuestionQueryEndpoint {

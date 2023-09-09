@@ -45,7 +45,8 @@ public class StoryWriteService {
 
   @Transactional
   public void update(Story story, StoryFile storyFile) {
-    deleteStoryFile(story, storyFile);
+    // TODO 2023.09.09 Solmioh 삭제 로직 확인 필요
+    // deleteStoryFile(story, storyFile);
 
     uploadStoryFile(storyFile);
 
