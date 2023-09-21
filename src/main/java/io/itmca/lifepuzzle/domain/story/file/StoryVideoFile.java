@@ -20,7 +20,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class StoryVideoFile extends CustomFile implements Resizable<StoryVideoFile> {
 
   public StoryVideoFile(Story story, MultipartFile file) {
-    super(String.join(File.separator, STORY_BASE_PATH, story.getStoryKey(), "video"), file);
+    this(story, file, "");
+  }
+
+  public StoryVideoFile(Story story, MultipartFile file, String postfix) {
+    super(
+        String.join(File.separator, STORY_BASE_PATH, story.getStoryKey(), "video"),
+        file,
+        postfix
+    );
   }
 
   @Builder

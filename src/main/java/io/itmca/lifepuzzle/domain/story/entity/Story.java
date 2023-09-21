@@ -95,10 +95,8 @@ public class Story {
   }
 
   private String getFiles(List<? extends CustomFile> customFiles) {
-    // TODO 2023.09.09 Solmioh 저장 로직 확인 필요
     return customFiles
         .stream()
-        //  .filter(customFile -> !customFile.isUploaded())
         .map(customFile -> customFile.getFileName())
         .collect(joining(FILE_NAMES_SEPARATOR));
   }

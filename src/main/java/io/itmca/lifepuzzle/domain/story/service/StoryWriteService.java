@@ -1,7 +1,7 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.FILE_DUPLICATE_PREFIX;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
+import static io.itmca.lifepuzzle.global.util.StreamUtil.toStream;
 import static java.io.File.separator;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -46,7 +46,7 @@ public class StoryWriteService {
   @Transactional
   public void update(Story story, StoryFile storyFile) {
     // TODO 2023.09.09 Solmioh 삭제 로직 확인 필요
-    // deleteStoryFile(story, storyFile);
+    deleteStoryFile(story, storyFile);
 
     uploadStoryFile(storyFile);
 
@@ -70,12 +70,15 @@ public class StoryWriteService {
     }
   }
 
-  private List<String> getFileNamesToDelete(List<String> fileNames,
+  private List<String> getFileNamesToDelete(List<String> uploadedFileNames,
                                             List<? extends CustomFile> customFiles) {
-    return customFiles.stream()
-        .filter(CustomFile::isUploaded)
-        .map(customFile -> customFile.getFileName().substring(FILE_DUPLICATE_PREFIX.length()))
-        .filter(uploadedFileName -> !fileNames.contains(uploadedFileName))
+
+    var requestFileNames = toStream(customFiles)
+        .map(file -> file.getFileName())
+        .toList();
+
+    return toStream(uploadedFileNames)
+        .filter(fileName -> !requestFileNames.contains(fileName))
         .toList();
   }
 

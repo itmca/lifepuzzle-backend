@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.endpoint;
 
-import static io.itmca.lifepuzzle.global.util.StreamUtil.toStream;
+import static io.itmca.lifepuzzle.global.util.FileUtil.getGroupByFileName;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
@@ -18,9 +18,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,55 +40,71 @@ public class StoryWriteEndpoint {
 
   @Operation(summary = "스토리 등록")
   @PostMapping(value = "/story")
-  public void writeStory(@RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
-                         @RequestPart(value = "photos", required = false)
-                         List<MultipartFile> images,
-                         @RequestPart(value = "voice", required = false)
-                         List<MultipartFile> voices,
-                         @RequestPart(value = "videos", required = false)
-                         List<MultipartFile> videos,
-                         @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
+  public ResponseEntity<String> writeStory(
+      @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
+      @RequestPart(value = "photos", required = false)
+      List<MultipartFile> images,
+      @RequestPart(value = "voice", required = false)
+      List<MultipartFile> voices,
+      @RequestPart(value = "videos", required = false)
+      List<MultipartFile> videos,
+      @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
 
     var story = storyWriteRequest.toStory(authPayload.getUserNo());
 
     // TODO 2023.09.09 Solmioh 이름 중복일 때 처리 필요. 주온이 사진만 임시코드만 추가 해 놓음
     var storyFile = StoryFile.builder()
-        .images(toStream(images)
-            .collect(Collectors.groupingBy(image -> image.getOriginalFilename()))
-            .values()
-            .stream()
+        .images(getGroupByFileName(images)
             .flatMap(grouped -> {
-              if (grouped.size() < 1) {
+              if (grouped.size() <= 1) {
                 return grouped.stream().map((image) -> new StoryImageFile(story, image));
               }
 
-              AtomicInteger postfix = new AtomicInteger();
+              var postfix = new AtomicInteger();
               return grouped.stream().map((image) -> new StoryImageFile(story, image,
                   String.valueOf(postfix.getAndAdd(1))));
             })
             .toList())
-        .voices(toStream(voices)
-            .map(voice -> new StoryVoiceFile(story, voice))
+        .voices(getGroupByFileName(voices)
+            .flatMap(grouped -> {
+              if (grouped.size() <= 1) {
+                return grouped.stream().map((voice) -> new StoryVoiceFile(story, voice));
+              }
+
+              var postfix = new AtomicInteger();
+              return grouped.stream().map((voice) -> new StoryVoiceFile(story, voice,
+                  String.valueOf(postfix.getAndAdd(1))));
+            })
             .toList())
-        .videos(toStream(videos)
-            .map(video -> new StoryVideoFile(story, video).resize())
+        .videos(getGroupByFileName(videos)
+            .flatMap(grouped -> {
+              if (grouped.size() <= 1) {
+                return grouped.stream().map((video) -> new StoryVideoFile(story, video));
+              }
+
+              var postfix = new AtomicInteger();
+              return grouped.stream().map((video) -> new StoryVideoFile(story, video,
+                  String.valueOf(postfix.getAndAdd(1))));
+            })
             .toList())
         .build();
 
     storyWriteService.create(story, storyFile);
+
+    return ResponseEntity.ok(story.getStoryKey());
   }
 
   @Operation(summary = "스토리 수정")
   @PutMapping(value = "/story/{storyKey}")
-  public void writeStory(@PathVariable("storyKey") String storyKey,
-                         @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
-                         @RequestPart(value = "photos", required = false)
-                         List<MultipartFile> images,
-                         @RequestPart(value = "voice", required = false)
-                         List<MultipartFile> voices,
-                         @RequestPart(value = "videos", required = false)
-                         List<MultipartFile> videos,
-                         @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
+  public void updateStory(@PathVariable("storyKey") String storyKey,
+                          @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
+                          @RequestPart(value = "photos", required = false)
+                          List<MultipartFile> images,
+                          @RequestPart(value = "voice", required = false)
+                          List<MultipartFile> voices,
+                          @RequestPart(value = "videos", required = false)
+                          List<MultipartFile> videos,
+                          @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
 
     var story = storyQueryService.findById(storyKey);
 
@@ -106,25 +122,38 @@ public class StoryWriteEndpoint {
 
     // TODO 2023.09.09 Solmioh 이름 중복일 때 처리 필요. 주온이 사진만 임시코드만 추가 해 놓음
     var storyFile = StoryFile.builder()
-        .images(toStream(images)
-            .collect(Collectors.groupingBy(image -> image.getOriginalFilename()))
-            .values()
-            .stream()
+        .images(getGroupByFileName(images)
             .flatMap(grouped -> {
-              if (grouped.size() < 1) {
+              if (grouped.size() <= 1) {
                 return grouped.stream().map((image) -> new StoryImageFile(story, image));
               }
 
-              AtomicInteger postfix = new AtomicInteger();
+              var postfix = new AtomicInteger();
               return grouped.stream().map((image) -> new StoryImageFile(story, image,
                   String.valueOf(postfix.getAndAdd(1))));
             })
             .toList())
-        .voices(toStream(voices)
-            .map(voice -> new StoryVoiceFile(story, voice))
+        .voices(getGroupByFileName(voices)
+            .flatMap(grouped -> {
+              if (grouped.size() <= 1) {
+                return grouped.stream().map((voice) -> new StoryVoiceFile(story, voice));
+              }
+
+              var postfix = new AtomicInteger();
+              return grouped.stream().map((voice) -> new StoryVoiceFile(story, voice,
+                  String.valueOf(postfix.getAndAdd(1))));
+            })
             .toList())
-        .videos(toStream(videos)
-            .map(video -> new StoryVideoFile(story, video).resize())
+        .videos(getGroupByFileName(videos)
+            .flatMap(grouped -> {
+              if (grouped.size() <= 1) {
+                return grouped.stream().map((video) -> new StoryVideoFile(story, video));
+              }
+
+              var postfix = new AtomicInteger();
+              return grouped.stream().map((video) -> new StoryVideoFile(story, video,
+                  String.valueOf(postfix.getAndAdd(1))));
+            })
             .toList())
         .build();
 
