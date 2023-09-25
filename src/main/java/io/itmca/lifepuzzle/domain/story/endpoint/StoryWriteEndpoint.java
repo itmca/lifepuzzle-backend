@@ -1,9 +1,10 @@
 package io.itmca.lifepuzzle.domain.story.endpoint;
 
-import static io.itmca.lifepuzzle.global.util.FileUtil.getGroupByFileName;
+import static io.itmca.lifepuzzle.global.util.FileUtil.handleSameNameContents;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
+import io.itmca.lifepuzzle.domain.story.endpoint.response.StoryWriteResponse;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
@@ -17,7 +18,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +40,7 @@ public class StoryWriteEndpoint {
 
   @Operation(summary = "스토리 등록")
   @PostMapping(value = "/story")
-  public ResponseEntity<String> writeStory(
+  public ResponseEntity<StoryWriteResponse> writeStory(
       @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
       @RequestPart(value = "photos", required = false)
       List<MultipartFile> images,
@@ -54,44 +54,30 @@ public class StoryWriteEndpoint {
 
     // TODO 2023.09.09 Solmioh 이름 중복일 때 처리 필요. 주온이 사진만 임시코드만 추가 해 놓음
     var storyFile = StoryFile.builder()
-        .images(getGroupByFileName(images)
-            .flatMap(grouped -> {
-              if (grouped.size() <= 1) {
-                return grouped.stream().map((image) -> new StoryImageFile(story, image));
-              }
-
-              var postfix = new AtomicInteger();
-              return grouped.stream().map((image) -> new StoryImageFile(story, image,
-                  String.valueOf(postfix.getAndAdd(1))));
-            })
-            .toList())
-        .voices(getGroupByFileName(voices)
-            .flatMap(grouped -> {
-              if (grouped.size() <= 1) {
-                return grouped.stream().map((voice) -> new StoryVoiceFile(story, voice));
-              }
-
-              var postfix = new AtomicInteger();
-              return grouped.stream().map((voice) -> new StoryVoiceFile(story, voice,
-                  String.valueOf(postfix.getAndAdd(1))));
-            })
-            .toList())
-        .videos(getGroupByFileName(videos)
-            .flatMap(grouped -> {
-              if (grouped.size() <= 1) {
-                return grouped.stream().map((video) -> new StoryVideoFile(story, video));
-              }
-
-              var postfix = new AtomicInteger();
-              return grouped.stream().map((video) -> new StoryVideoFile(story, video,
-                  String.valueOf(postfix.getAndAdd(1))));
-            })
-            .toList())
+        .images(handleSameNameContents(
+            images,
+            (image) -> new StoryImageFile(story, image),
+            (image, postfix) -> new StoryImageFile(story, image, postfix))
+        )
+        .voices(handleSameNameContents(
+            voices,
+            (voice) -> new StoryVoiceFile(story, voice),
+            (voice, postfix) -> new StoryVoiceFile(story, voice, postfix))
+        )
+        .videos(handleSameNameContents(
+            videos,
+            (video) -> new StoryVideoFile(story, video),
+            (video, postfix) -> new StoryVideoFile(story, video, postfix))
+        )
         .build();
 
     storyWriteService.create(story, storyFile);
 
-    return ResponseEntity.ok(story.getStoryKey());
+    return ResponseEntity.ok(
+        StoryWriteResponse.builder()
+            .storyKey(story.getStoryKey())
+            .build()
+    );
   }
 
   @Operation(summary = "스토리 수정")
@@ -122,39 +108,21 @@ public class StoryWriteEndpoint {
 
     // TODO 2023.09.09 Solmioh 이름 중복일 때 처리 필요. 주온이 사진만 임시코드만 추가 해 놓음
     var storyFile = StoryFile.builder()
-        .images(getGroupByFileName(images)
-            .flatMap(grouped -> {
-              if (grouped.size() <= 1) {
-                return grouped.stream().map((image) -> new StoryImageFile(story, image));
-              }
-
-              var postfix = new AtomicInteger();
-              return grouped.stream().map((image) -> new StoryImageFile(story, image,
-                  String.valueOf(postfix.getAndAdd(1))));
-            })
-            .toList())
-        .voices(getGroupByFileName(voices)
-            .flatMap(grouped -> {
-              if (grouped.size() <= 1) {
-                return grouped.stream().map((voice) -> new StoryVoiceFile(story, voice));
-              }
-
-              var postfix = new AtomicInteger();
-              return grouped.stream().map((voice) -> new StoryVoiceFile(story, voice,
-                  String.valueOf(postfix.getAndAdd(1))));
-            })
-            .toList())
-        .videos(getGroupByFileName(videos)
-            .flatMap(grouped -> {
-              if (grouped.size() <= 1) {
-                return grouped.stream().map((video) -> new StoryVideoFile(story, video));
-              }
-
-              var postfix = new AtomicInteger();
-              return grouped.stream().map((video) -> new StoryVideoFile(story, video,
-                  String.valueOf(postfix.getAndAdd(1))));
-            })
-            .toList())
+        .images(handleSameNameContents(
+            images,
+            (image) -> new StoryImageFile(story, image),
+            (image, postfix) -> new StoryImageFile(story, image, postfix))
+        )
+        .voices(handleSameNameContents(
+            voices,
+            (voice) -> new StoryVoiceFile(story, voice),
+            (voice, postfix) -> new StoryVoiceFile(story, voice, postfix))
+        )
+        .videos(handleSameNameContents(
+            videos,
+            (video) -> new StoryVideoFile(story, video),
+            (video, postfix) -> new StoryVideoFile(story, video, postfix))
+        )
         .build();
 
     storyWriteService.update(story, storyFile);
@@ -181,4 +149,3 @@ public class StoryWriteEndpoint {
     return HttpStatus.OK;
   }
 }
-

@@ -1,7 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
 import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
-import static io.itmca.lifepuzzle.global.util.StreamUtil.toStream;
 import static java.io.File.separator;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -70,15 +69,14 @@ public class StoryWriteService {
     }
   }
 
-  private List<String> getFileNamesToDelete(List<String> uploadedFileNames,
-                                            List<? extends CustomFile> customFiles) {
-
-    var requestFileNames = toStream(customFiles)
+  private List<String> getFileNamesToDelete(List<String> oldFileNames,
+                                            List<? extends CustomFile> newFiles) {
+    var newFileNames = newFiles.stream()
         .map(file -> file.getFileName())
         .toList();
 
-    return toStream(uploadedFileNames)
-        .filter(fileName -> !requestFileNames.contains(fileName))
+    return oldFileNames.stream()
+        .filter(fileName -> !newFileNames.contains(fileName))
         .toList();
   }
 

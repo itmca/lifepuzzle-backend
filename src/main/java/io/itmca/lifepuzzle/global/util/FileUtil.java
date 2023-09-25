@@ -1,7 +1,9 @@
 package io.itmca.lifepuzzle.global.util;
 
-import static io.itmca.lifepuzzle.global.util.StreamUtil.toStream;
+import static io.itmca.lifepuzzle.global.util.StreamUtil.toStreamOrEmptyStream;
+import static java.util.stream.Collectors.groupingBy;
 
+import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -9,8 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUtil {
@@ -34,10 +37,25 @@ public class FileUtil {
     return Files.write(Path.of(fileURL), bytes).toFile();
   }
 
-  public static Stream<List<MultipartFile>> getGroupByFileName(List<MultipartFile> files) {
-    return toStream(files)
-        .collect(Collectors.groupingBy(file -> file.getOriginalFilename()))
+  public static <R extends CustomFile> List<R> handleSameNameContents(
+      List<MultipartFile> files,
+      Function<MultipartFile, R> normalCaseHandler,
+      BiFunction<MultipartFile, String, R> duplicateHandler) {
+    return toStreamOrEmptyStream(files)
+        .collect(groupingBy(file -> file.getOriginalFilename()))
         .values()
-        .stream();
+        .stream()
+        .flatMap(sameNameContents -> {
+          if (sameNameContents.size() <= 1) {
+            return sameNameContents.stream()
+                .map(normalCaseHandler::apply);
+          }
+
+          var postfix = new AtomicInteger();
+
+          return sameNameContents.stream()
+              .map(c -> duplicateHandler.apply(c, String.valueOf(postfix.getAndAdd(1))));
+        })
+        .toList();
   }
 }
