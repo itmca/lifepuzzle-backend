@@ -11,6 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 public class StoryImageFile extends CustomFile {
   public StoryImageFile(Story story, MultipartFile file) {
-    super(String.join(File.separator, STORY_BASE_PATH, story.getStoryKey(), "image"), file);
+    this(story, file, "");
+  }
+
+  public StoryImageFile(Story story, MultipartFile file, String postfix) {
+    super(
+        String.join(File.separator, STORY_BASE_PATH, story.getStoryKey(), "image"),
+        file,
+        postfix
+    );
   }
 }

@@ -1,9 +1,10 @@
 package io.itmca.lifepuzzle.domain.story.endpoint;
 
-import static io.itmca.lifepuzzle.global.util.StreamUtil.toStream;
+import static io.itmca.lifepuzzle.global.util.FileUtil.handleSameNameContents;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
+import io.itmca.lifepuzzle.domain.story.endpoint.response.StoryWriteResponse;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,43 +40,57 @@ public class StoryWriteEndpoint {
 
   @Operation(summary = "스토리 등록")
   @PostMapping(value = "/story")
-  public void writeStory(@RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
-                         @RequestPart(value = "photos", required = false)
-                         List<MultipartFile> images,
-                         @RequestPart(value = "voice", required = false)
-                         List<MultipartFile> voices,
-                         @RequestPart(value = "videos", required = false)
-                         List<MultipartFile> videos,
-                         @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
+  public ResponseEntity<StoryWriteResponse> writeStory(
+      @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
+      @RequestPart(value = "photos", required = false)
+      List<MultipartFile> images,
+      @RequestPart(value = "voice", required = false)
+      List<MultipartFile> voices,
+      @RequestPart(value = "videos", required = false)
+      List<MultipartFile> videos,
+      @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
 
     var story = storyWriteRequest.toStory(authPayload.getUserNo());
 
+    // TODO 2023.09.09 Solmioh 이름 중복일 때 처리 필요. 주온이 사진만 임시코드만 추가 해 놓음
     var storyFile = StoryFile.builder()
-        .images(toStream(images)
-            .map(image -> new StoryImageFile(story, image))
-            .toList())
-        .voices(toStream(voices)
-            .map(voice -> new StoryVoiceFile(story, voice))
-            .toList())
-        .videos(toStream(videos)
-            .map(video -> new StoryVideoFile(story, video).resize())
-            .toList())
+        .images(handleSameNameContents(
+            images,
+            (image) -> new StoryImageFile(story, image),
+            (image, postfix) -> new StoryImageFile(story, image, postfix))
+        )
+        .voices(handleSameNameContents(
+            voices,
+            (voice) -> new StoryVoiceFile(story, voice),
+            (voice, postfix) -> new StoryVoiceFile(story, voice, postfix))
+        )
+        .videos(handleSameNameContents(
+            videos,
+            (video) -> new StoryVideoFile(story, video),
+            (video, postfix) -> new StoryVideoFile(story, video, postfix))
+        )
         .build();
 
     storyWriteService.create(story, storyFile);
+
+    return ResponseEntity.ok(
+        StoryWriteResponse.builder()
+            .storyKey(story.getStoryKey())
+            .build()
+    );
   }
 
   @Operation(summary = "스토리 수정")
   @PutMapping(value = "/story/{storyKey}")
-  public void writeStory(@PathVariable("storyKey") String storyKey,
-                         @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
-                         @RequestPart(value = "photos", required = false)
-                         List<MultipartFile> images,
-                         @RequestPart(value = "voice", required = false)
-                         List<MultipartFile> voices,
-                         @RequestPart(value = "videos", required = false)
-                         List<MultipartFile> videos,
-                         @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
+  public void updateStory(@PathVariable("storyKey") String storyKey,
+                          @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
+                          @RequestPart(value = "photos", required = false)
+                          List<MultipartFile> images,
+                          @RequestPart(value = "voice", required = false)
+                          List<MultipartFile> voices,
+                          @RequestPart(value = "videos", required = false)
+                          List<MultipartFile> videos,
+                          @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
 
     var story = storyQueryService.findById(storyKey);
 
@@ -90,16 +106,23 @@ public class StoryWriteEndpoint {
 
     story.updateStoryInfo(storyWriteRequest);
 
+    // TODO 2023.09.09 Solmioh 이름 중복일 때 처리 필요. 주온이 사진만 임시코드만 추가 해 놓음
     var storyFile = StoryFile.builder()
-        .images(toStream(images)
-            .map(image -> new StoryImageFile(story, image))
-            .toList())
-        .voices(toStream(voices)
-            .map(voice -> new StoryVoiceFile(story, voice))
-            .toList())
-        .videos(toStream(videos)
-            .map(video -> new StoryVideoFile(story, video).resize())
-            .toList())
+        .images(handleSameNameContents(
+            images,
+            (image) -> new StoryImageFile(story, image),
+            (image, postfix) -> new StoryImageFile(story, image, postfix))
+        )
+        .voices(handleSameNameContents(
+            voices,
+            (voice) -> new StoryVoiceFile(story, voice),
+            (voice, postfix) -> new StoryVoiceFile(story, voice, postfix))
+        )
+        .videos(handleSameNameContents(
+            videos,
+            (video) -> new StoryVideoFile(story, video),
+            (video, postfix) -> new StoryVideoFile(story, video, postfix))
+        )
         .build();
 
     storyWriteService.update(story, storyFile);
@@ -126,4 +149,3 @@ public class StoryWriteEndpoint {
     return HttpStatus.OK;
   }
 }
-

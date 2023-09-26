@@ -1,15 +1,11 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
 import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
-import static io.itmca.lifepuzzle.global.util.StreamUtil.toStream;
 import static java.io.File.separator;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
-import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
-import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
-import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
@@ -48,69 +44,39 @@ public class StoryWriteService {
 
   @Transactional
   public void update(Story story, StoryFile storyFile) {
-    deleteFileFromS3(story, storyFile);
+    // TODO 2023.09.09 Solmioh 삭제 로직 확인 필요
+    deleteStoryFile(story, storyFile);
 
-    uploadStoryFile(getStoryFileToUpload(story, storyFile));
+    uploadStoryFile(storyFile);
 
     story.addStoryFile(storyFile);
   }
 
-  private StoryFile getStoryFileToUpload(Story story, StoryFile storyFile) {
-    var images =
-        (List<StoryImageFile>) getNonDuplicateFiles(storyFile.images(), story.getImageNames());
-
-    var voices =
-        (List<StoryVoiceFile>) getNonDuplicateFiles(storyFile.voices(), story.getAudios());
-
-    var videos =
-        (List<StoryVideoFile>) getNonDuplicateFiles(storyFile.videos(), story.getVideoNames());
-
-    return StoryFile.builder()
-        .images(images)
-        .voices(voices)
-        .videos(videos)
-        .build();
-  }
-
-  private List<? extends CustomFile> getNonDuplicateFiles(List<? extends CustomFile> files,
-                                                          List<String> existingFileNames) {
-    return toStream(files)
-        .filter(file -> !existingFileNames.contains(file.getFileName()))
-        .toList();
-  }
-
-  private void deleteFileFromS3(Story story, StoryFile storyFile) {
-    var imageNames =
-        getFileNamesToDelete(storyFile.images(), story.getImageNames());
-    if (!isEmpty(imageNames)) {
+  private void deleteStoryFile(Story story, StoryFile storyFile) {
+    if (!isEmpty(storyFile.images())) {
+      var imageNames = getFileNamesToDelete(story.getImageNames(), storyFile.images());
       s3UploadService.delete(story.getImageFolder(), imageNames);
     }
 
-    var voiceNames =
-        getFileNamesToDelete(storyFile.voices(), story.getAudioNames());
-    if (!isEmpty(voiceNames)) {
+    if (!isEmpty(storyFile.voices())) {
+      var voiceNames = getFileNamesToDelete(story.getAudioNames(), storyFile.voices());
       s3UploadService.delete(story.getAudioFolder(), voiceNames);
     }
 
-    var videoNames =
-        getFileNamesToDelete(storyFile.videos(), story.getVideoNames());
-    if (!isEmpty(videoNames)) {
+    if (!isEmpty(storyFile.videos())) {
+      var videoNames = getFileNamesToDelete(story.getVideoNames(), storyFile.videos());
       s3UploadService.delete(story.getVideoFolder(), videoNames);
     }
   }
 
-  private static List<String> getFileNamesToDelete(List<? extends CustomFile> files,
-                                                   List<String> existingFileNames) {
-    var requestFileNames = getRequestFileNames(files);
-
-    return toStream(existingFileNames)
-        .filter(name -> !requestFileNames.contains(name))
-        .toList();
-  }
-
-  private static List<String> getRequestFileNames(List<? extends CustomFile> files) {
-    return toStream(files)
+  private List<String> getFileNamesToDelete(List<String> oldFileNames,
+                                            List<? extends CustomFile> newFiles) {
+    var newFileNames = newFiles.stream()
         .map(file -> file.getFileName())
+        .toList();
+
+    return oldFileNames.stream()
+        .filter(fileName -> !newFileNames.contains(fileName))
         .toList();
   }
 
