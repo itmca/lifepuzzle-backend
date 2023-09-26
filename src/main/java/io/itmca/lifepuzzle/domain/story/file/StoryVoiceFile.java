@@ -11,6 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 public class StoryVoiceFile extends CustomFile {
   public StoryVoiceFile(Story story, MultipartFile file) {
-    super(String.join(File.separator, STORY_BASE_PATH, story.getStoryKey(), "voice"), file);
+    this(story, file, "");
+  }
+
+  public StoryVoiceFile(Story story, MultipartFile file, String postfix) {
+    super(
+        String.join(File.separator, STORY_BASE_PATH, story.getStoryKey(), "voice"),
+        file,
+        postfix
+    );
   }
 }

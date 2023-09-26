@@ -13,7 +13,6 @@ public class HeroProfileImage extends CustomFile {
   public HeroProfileImage(Hero hero, MultipartFile file) {
     super(
         String.join(File.separator, HERO_PROFILE_BASE_PATH, hero.getHeroNo().toString(), "image"),
-        file
-    );
+        file);
   }
 }
