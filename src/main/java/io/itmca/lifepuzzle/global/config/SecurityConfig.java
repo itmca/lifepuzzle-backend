@@ -28,7 +28,7 @@ public class SecurityConfig {
         .and()
         .authorizeHttpRequests(
           (request) -> request.antMatchers(
-              "/", "/hc", "error-test", "/auth/**",
+              "/", "/hc", "/error-test", "/auth/**",
               "/user", "/v3/**", "/question/*", "/questions/*",
               "/swagger-ui/**")
             .permitAll()
