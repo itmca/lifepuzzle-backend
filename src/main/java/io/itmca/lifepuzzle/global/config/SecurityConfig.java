@@ -27,13 +27,13 @@ public class SecurityConfig {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
         .authorizeHttpRequests(
-            (request) -> request.antMatchers(
-                    "/", "/hc", "/auth/**",
-                    "/user", "/v3/**", "/question/*", "/questions/*",
-                    "/swagger-ui/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+          (request) -> request.antMatchers(
+              "/", "/hc", "error-test", "/auth/**",
+              "/user", "/v3/**", "/question/*", "/questions/*",
+              "/swagger-ui/**")
+            .permitAll()
+            .anyRequest()
+            .authenticated()
         )
         .httpBasic(Customizer.withDefaults())
         .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
