@@ -12,4 +12,10 @@ public class HealthEndpoint {
   public String healthCheck() {
     return "ok";
   }
+
+  @Operation(hidden = true)
+  @RequestMapping("error-test")
+  public String errorTest() {
+    throw new RuntimeException("예외 테스트 입니다.");
+  }
 }

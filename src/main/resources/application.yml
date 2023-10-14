@@ -55,3 +55,11 @@ springdoc:
       paths-to-match: /question/**
     - group: 주인공
       paths-to-match: /hero/**, /heroes/**
+
+sentry:
+  dsn: ***REMOVED***
+  enable-tracing: true
+  logging:
+    enabled: true
+    minimum-event-level: warn
+    minimum-breadcrumb-level: info
