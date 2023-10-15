@@ -32,8 +32,8 @@ public class StoryVideoFile extends CustomFile implements Resizable<StoryVideoFi
   }
 
   @Builder
-  private StoryVideoFile(String base, String fileName, byte[] bytes) {
-    super(base, fileName, bytes);
+  private StoryVideoFile(StoryVideoFile storyVideoFile, byte[] bytes) {
+    super(storyVideoFile, bytes);
   }
 
   @Override
@@ -47,9 +47,8 @@ public class StoryVideoFile extends CustomFile implements Resizable<StoryVideoFi
           new IVCompressor().reduceVideoSizeWithCustomRes(bytes, VideoFormats.MP4, customRes);
 
       return StoryVideoFile.builder()
+          .storyVideoFile(this)
           .bytes(resizedVideo)
-          .base(base)
-          .fileName(fileName)
           .build();
     } catch (VideoException e) {
       throw new RuntimeException(e);

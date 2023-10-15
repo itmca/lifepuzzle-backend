@@ -33,11 +33,11 @@ public abstract class CustomFile {
     }
   }
 
-  protected CustomFile(String base, String fileName, byte[] bytes) {
-    this.base = base;
-    this.fileName = fileName;
+  protected CustomFile(CustomFile customFile, byte[] bytes) {
+    this.base = customFile.getBase();
+    this.fileName = customFile.getFileName();
     this.bytes = bytes;
-    this.uploaded = fileName.startsWith(FILE_DUPLICATE_PREFIX);
+    this.uploaded = customFile.uploaded;
   }
 
   private String normalizeFileName(String fileName, String postfix) {

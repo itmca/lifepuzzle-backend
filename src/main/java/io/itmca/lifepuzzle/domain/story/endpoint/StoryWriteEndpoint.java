@@ -66,8 +66,8 @@ public class StoryWriteEndpoint {
         )
         .videos(handleSameNameContents(
             videos,
-            (video) -> new StoryVideoFile(story, video),
-            (video, postfix) -> new StoryVideoFile(story, video, postfix))
+            (video) -> new StoryVideoFile(story, video).resize(),
+            (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
         )
         .build();
 
@@ -120,8 +120,8 @@ public class StoryWriteEndpoint {
         )
         .videos(handleSameNameContents(
             videos,
-            (video) -> new StoryVideoFile(story, video),
-            (video, postfix) -> new StoryVideoFile(story, video, postfix))
+            (video) -> new StoryVideoFile(story, video).resize(),
+            (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
         )
         .build();
 
