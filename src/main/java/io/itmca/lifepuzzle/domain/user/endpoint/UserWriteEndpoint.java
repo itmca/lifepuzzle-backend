@@ -4,10 +4,13 @@ import io.itmca.lifepuzzle.domain.register.PasswordVerification;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserPasswordUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
+import io.itmca.lifepuzzle.domain.user.endpoint.response.UserQueryDto;
 import io.itmca.lifepuzzle.domain.user.entity.User;
+import io.itmca.lifepuzzle.domain.user.file.UserProfileImage;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.itmca.lifepuzzle.global.exception.PasswordMismatchException;
 import io.itmca.lifepuzzle.global.exception.UserNoMismatchException;
+import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +19,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -25,19 +30,30 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserWriteEndpoint {
 
   private final UserWriteService userWriteService;
+  private final S3UploadService s3UploadService;
 
   @RequestMapping(value = "/{id}", method = {RequestMethod.PUT, RequestMethod.PATCH})
   @Operation(summary = "유저 수정")
-  public void updateUser(@PathVariable("id") Long id,
-                         @CurrentUser User user,
-                         @RequestBody UserUpdateRequest userUpdateRequest) {
+  public UserQueryDto updateUser(@PathVariable("id") Long id,
+                                 @CurrentUser User user,
+                                 @RequestPart(name = "photo", required = false)
+                                 MultipartFile requestPhoto,
+                                 @RequestPart UserUpdateRequest userUpdateRequest) {
     if (id != user.getUserNo()) {
       throw new UserNoMismatchException();
     }
 
+    if (requestPhoto != null) {
+      var userProfileImage = new UserProfileImage(user, requestPhoto);
+
+      user.setImage(userProfileImage);
+
+      s3UploadService.upload(userProfileImage);
+    }
+
     user.updateUserInfo(userUpdateRequest);
 
-    userWriteService.save(user);
+    return UserQueryDto.from(userWriteService.save(user));
   }
 
   @RequestMapping(value = "/{id}/password", method = {RequestMethod.PUT, RequestMethod.PATCH})

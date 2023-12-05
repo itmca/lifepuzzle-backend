@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.domain.user.endpoint.response;
 
 import io.itmca.lifepuzzle.domain.user.entity.User;
+import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,6 +18,7 @@ public class UserQueryDto {
   private String userType;
   private String email;
   private LocalDate birthday;
+  private String imageURL;
 
   public static UserQueryDto from(User user) {
     return UserQueryDto.builder()
@@ -27,6 +29,16 @@ public class UserQueryDto {
         .email(user.getEmail())
         .birthday(user.getBirthday())
         .userType(user.getUserType())
+        .imageURL(addServerHostInImage(user.getUserNo(), user.getImage()))
         .build();
+  }
+
+  private static String addServerHostInImage(Long userNo, String imageURL) {
+    if (imageURL == null || imageURL.trim().equals("")) {
+      return String.format("%s/user/profile/default.jpg", ServerConstant.SERVER_HOST);
+    }
+
+    return String.format("%s/user/profile/%d/image/%s", ServerConstant.SERVER_HOST, userNo,
+        imageURL);
   }
 }
