@@ -2,6 +2,7 @@ package io.itmca.lifepuzzle.domain.user.entity;
 
 import io.itmca.lifepuzzle.domain.user.UserType;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
+import io.itmca.lifepuzzle.domain.user.file.UserProfileImage;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,6 +54,7 @@ public class User {
   private Boolean kakaoNotice;
   @Column(name = "inapp_notice")
   private Boolean inappNotice;
+  private String image;
 
   @Column(name = "created_at")
   @CreationTimestamp
@@ -95,5 +97,9 @@ public class User {
     this.email = userUpdateRequest.getEmail();
     this.birthday = userUpdateRequest.getBirthday();
     this.nickName = userUpdateRequest.getNickName();
+  }
+
+  public void setImage(UserProfileImage userProfileImage) {
+    this.image = userProfileImage.getFileName();
   }
 }
