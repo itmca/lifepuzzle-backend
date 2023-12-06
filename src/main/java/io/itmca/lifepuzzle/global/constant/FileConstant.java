@@ -10,6 +10,7 @@ public class FileConstant {
       String.format("%s%stmp", System.getProperty("user.dir"), File.separator);
 
   public static final String HERO_PROFILE_BASE_PATH = "hero/profile";
+  public static final String USER_PROFILE_BASE_PATH = "user/profile";
   public static final String STORY_BASE_PATH = "stories";
   public static final String FILE_NAMES_SEPARATOR = "||";
 

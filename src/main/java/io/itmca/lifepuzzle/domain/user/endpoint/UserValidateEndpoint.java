@@ -5,6 +5,7 @@ import io.itmca.lifepuzzle.domain.user.entity.UserEmailValidation;
 import io.itmca.lifepuzzle.domain.user.service.MailService;
 import io.itmca.lifepuzzle.domain.user.service.UserEmailValidationService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
+import io.itmca.lifepuzzle.global.exception.handler.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Random;
@@ -29,25 +30,25 @@ public class UserValidateEndpoint {
   @GetMapping("/dupcheck/email")
   @Operation(summary = "이메일 중복 체크")
   public boolean checkEmail(@RequestParam("email") String email) {
-    var isDuplicated = false;
-    var user = userQueryService.findByEmail(email);
-    if (user != null) {
-      isDuplicated = true;
+    try {
+      userQueryService.findByEmail(email);
+    } catch (NotFoundException e) {
+      return false;
     }
 
-    return isDuplicated;
+    return true;
   }
 
   @GetMapping("/dupcheck/id")
   @Operation(summary = "아이디 중복 체크")
   public boolean checkId(@RequestParam("id") String id) {
-    var isDuplicated = false;
-    var user = userQueryService.findByUserId(id);
-    if (user != null) {
-      isDuplicated = true;
+    try {
+      userQueryService.findByUserId(id);
+    } catch (NotFoundException e) {
+      return false;
     }
 
-    return isDuplicated;
+    return true;
   }
 
   @PostMapping("/email/verification")
