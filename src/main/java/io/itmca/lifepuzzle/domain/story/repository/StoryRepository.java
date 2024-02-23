@@ -12,4 +12,6 @@ public interface StoryRepository extends JpaRepository<Story, String> {
   @Query("SELECT s FROM Story s WHERE s.heroNo = :heroNo "
       + "ORDER BY s.createdAt DESC")
   List<Story> findAllByHeroNo(@Param("heroNo") Long heroNo);
+
+  int countByHeroNo(Long heroNo);
 }

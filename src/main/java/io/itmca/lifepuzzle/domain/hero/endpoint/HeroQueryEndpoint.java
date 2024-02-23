@@ -1,13 +1,17 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
+import io.itmca.lifepuzzle.global.exception.handler.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,10 +35,15 @@ public class HeroQueryEndpoint {
 
   @Operation(summary = "주인공 조회")
   @GetMapping("/heroes/{heroNo}")
-  public HeroQueryDTO getHeroDetail(@PathVariable("heroNo") Long heroNo,
-                                    @AuthenticationPrincipal AuthPayload authPayload) {
+  public ResponseEntity<HeroQueryResponse> getHeroDetail(
+      @PathVariable("heroNo") @Schema(description = "주인공키") Long heroNo,
+      @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
-    return HeroQueryDTO.from(heroQueryService.findHeroByHeroNo(heroNo));
+    var heroUserAuth = heroQueryService.findHeroUserAuthByHeroNo(heroNo);
+    var heroQueryResponse = heroQueryService.createHeroQueryResponse(heroUserAuth);
+
+    return ResponseEntity.ok()
+        .body(heroQueryResponse);
   }
 }
