@@ -28,4 +28,12 @@ public class HeroQueryResponse {
         .puzzleCnt(puzzleCnt)
         .build();
   }
+
+  public static class HeroQueryDto {
+    private Long heroNo;
+    private String heroName;
+    private String heroNickName;
+    private String title;
+    private String imageURL;
+  }
 }
