@@ -12,6 +12,11 @@ public interface HeroUserAuthRepository extends JpaRepository<HeroUserAuth, Long
 
   List<HeroUserAuth> findAllByUser_UserNo(Long userNo);
 
+  @Query("SELECT auth FROM HeroUserAuth auth "
+      + "WHERE EXISTS (SELECT 1 FROM HeroUserAuth auth2 WHERE auth.user.userNo = :userNo "
+      + "AND auth2.hero.heroNo = auth.hero.heroNo)")
+  List<HeroUserAuth> findByUserNo(@Param("userNo") Long userNo);
+
   @Query(value = "SELECT auth FROM HeroUserAuth auth "
       + "WHERE auth.user.userNo = :userNo AND auth.hero.heroNo = :heroNo")
   List<HeroUserAuth> findByUserNoAndHeroNo(@Param("userNo") Long userNo,

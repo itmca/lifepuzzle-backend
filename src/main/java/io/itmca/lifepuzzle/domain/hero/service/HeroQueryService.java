@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.hero.service;
 
+import static java.util.stream.Collectors.groupingBy;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
@@ -22,30 +23,51 @@ public class HeroQueryService {
 
   public Hero findHeroByHeroNo(Long heroNo) {
     return this.heroRepository.findById(heroNo)
-        .orElseThrow(() -> new HeroNotFoundException(heroNo));
+        .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
   }
 
   public List<HeroUserAuth> findHeroUserAuthByHeroNo(Long heroNo) {
     var heroUserAuths = this.heroUserAuthRepository.findByHeroNo(heroNo);
 
     if (isEmpty(heroUserAuths)) {
-      throw new HeroNotFoundException(heroNo);
+      throw HeroNotFoundException.byHeroNo(heroNo);
     }
 
     return heroUserAuths;
   }
 
-  public List<Hero> findHeroesByUserNo(Long userNo) {
-    var heroUserAuths = this.heroUserAuthRepository.findAllByUser_UserNo(userNo);
+  public List<HeroUserAuth> findHeroUserAuthByUserNo(Long userNo) {
+    var heroUserAuths = this.heroUserAuthRepository.findByUserNo(userNo);
 
-    return heroUserAuths.stream()
-        .map(HeroUserAuth::getHero)
-        .toList();
+    if (isEmpty(heroUserAuths)) {
+      throw HeroNotFoundException.byUserNo(userNo);
+    }
+
+    return heroUserAuths;
   }
 
-  public HeroQueryResponse createHeroQueryResponse(List<HeroUserAuth> heroUserAuths) {
-    int puzzleCnt = storyQueryService.countByHeroNo(heroUserAuths.get(0).getHero().getHeroNo());
+  public HeroQueryResponse createHeroQueryResponse(List<HeroUserAuth> heroUserAuths, Long heroNo) {
+    var hero = heroUserAuths.stream()
+        .findFirst()
+        .map(HeroUserAuth::getHero)
+        .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
 
-    return HeroQueryResponse.from(heroUserAuths, puzzleCnt);
+    int puzzleCnt = storyQueryService.countByHeroNo(heroNo);
+
+    return HeroQueryResponse.from(heroUserAuths, hero, puzzleCnt);
+  }
+
+  public List<HeroQueryResponse> createHeroQueryResponseList(List<HeroUserAuth> heroUserAuths) {
+    var groupByHeroNo = heroUserAuths.stream()
+        .collect(groupingBy(heroUserAuth -> heroUserAuth.getHero().getHeroNo()));
+
+    return groupByHeroNo.entrySet().stream()
+        .map(heroGroup -> {
+          var heroNo = heroGroup.getKey();
+          var userAuths = heroGroup.getValue();
+
+          return createHeroQueryResponse(userAuths, heroNo);
+        })
+        .toList();
   }
 }
