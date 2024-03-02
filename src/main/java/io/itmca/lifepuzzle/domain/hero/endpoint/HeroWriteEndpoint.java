@@ -8,6 +8,8 @@ import io.itmca.lifepuzzle.domain.hero.file.HeroProfileImage;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
+import io.itmca.lifepuzzle.domain.user.CurrentUser;
+import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +39,7 @@ public class HeroWriteEndpoint {
   public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest heroWriteRequest,
                                  @RequestPart(value = "photo", required = false)
                                  MultipartFile reqeustPhoto,
-                                 @AuthenticationPrincipal AuthPayload authPayload) {
+                                 @CurrentUser User user) {
 
     var hero = heroWriteService.create(heroWriteRequest.toHeroOf(reqeustPhoto));
 
@@ -50,7 +52,7 @@ public class HeroWriteEndpoint {
     }
 
     heroUserAuthWriteService.create(HeroUserAuth.builder()
-        .userNo(authPayload.getUserNo())
+        .user(user)
         .hero(hero)
         .build());
 

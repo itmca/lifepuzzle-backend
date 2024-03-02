@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.hero.entity;
 
+import io.itmca.lifepuzzle.domain.user.entity.User;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,7 +30,9 @@ public class HeroUserAuth {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long seq;
-  private Long userNo;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "userNo")
+  private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "heroNo")

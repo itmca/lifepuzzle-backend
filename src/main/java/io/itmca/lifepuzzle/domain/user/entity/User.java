@@ -1,16 +1,19 @@
 package io.itmca.lifepuzzle.domain.user.entity;
 
+import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.user.UserType;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.file.UserProfileImage;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -55,6 +58,9 @@ public class User {
   @Column(name = "inapp_notice")
   private Boolean inappNotice;
   private String image;
+
+  @OneToMany(mappedBy = "user")
+  private List<HeroUserAuth> heroUserAuths;
 
   @Column(name = "created_at")
   @CreationTimestamp

@@ -26,7 +26,7 @@ public class RegisterPostActionService {
 
     heroUserAuthWriteService.create(
         HeroUserAuth.builder()
-            .userNo(user.getUserNo())
+            .user(user)
             .hero(hero)
             .build());
 
