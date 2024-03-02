@@ -5,6 +5,8 @@ import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroListQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
+import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
+import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -42,4 +45,13 @@ public class HeroQueryEndpoint {
 
     return heroQueryService.toQueryResponse(hero);
   }
+
+  @Operation(summary = "주인공 권한 링크 조회")
+  @GetMapping("/heroes/auth/{heroNo}/link")
+  public String getHeroAuthLink(@PathVariable("heroNo") Long heroNo,
+                                @RequestParam("auth") HeroAuthStatus heroAuthStatus,
+                                @AuthenticationPrincipal AuthPayload authPayload) {
+    return ServerConstant.SERVER_HOST + "/" + heroNo + "/" + heroAuthStatus;
+  }
+
 }
