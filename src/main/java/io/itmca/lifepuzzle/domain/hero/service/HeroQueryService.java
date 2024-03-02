@@ -2,8 +2,8 @@ package io.itmca.lifepuzzle.domain.hero.service;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroListQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponses;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
@@ -32,7 +32,7 @@ public class HeroQueryService {
     return HeroQueryResponse.from(hero, puzzleCnt);
   }
 
-  public HeroQueryResponses toQueryResponses(User user) {
+  public HeroListQueryResponse toQueryResponses(User user) {
     var heroUserAuths = user.getHeroUserAuths();
     if (isEmpty(heroUserAuths)) {
       throw HeroNotFoundException.byUserNo(user.getUserNo());
@@ -43,7 +43,7 @@ public class HeroQueryService {
         .map(this::toQueryResponse)
         .toList();
 
-    return HeroQueryResponses.builder()
+    return HeroListQueryResponse.builder()
         .heroes(heroQueryResponses)
         .build();
   }

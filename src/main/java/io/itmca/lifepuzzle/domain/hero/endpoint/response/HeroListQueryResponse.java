@@ -6,6 +6,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class HeroQueryResponses {
+public class HeroListQueryResponse {
   private List<HeroQueryResponse> heroes;
 }

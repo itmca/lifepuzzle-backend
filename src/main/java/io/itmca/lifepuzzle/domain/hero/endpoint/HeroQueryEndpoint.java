@@ -1,8 +1,8 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroListQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponses;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
@@ -25,7 +25,7 @@ public class HeroQueryEndpoint {
 
   @Operation(summary = "주인공 전체 목록 조회")
   @GetMapping("/heroes")
-  public HeroQueryResponses getHeroes(@AuthenticationPrincipal AuthPayload authPayload) {
+  public HeroListQueryResponse getHeroes(@AuthenticationPrincipal AuthPayload authPayload) {
     var user = userQueryService.findByUserNo(authPayload.getUserNo());
 
     return heroQueryService.toQueryResponses(user);
