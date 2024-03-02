@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
+import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
@@ -98,5 +99,16 @@ public class HeroWriteEndpoint {
 
     return HeroQueryDTO.from(heroWriteService.update(hero));
 
+  }
+
+  @Operation(summary = "유저의 주인공 권한 변경")
+  @PutMapping("heroes/auth/{heroNo}")
+  public void changeHeroAuthOfUser(@PathVariable("heroNo") Long heroNo,
+                                   @RequestBody HeroChangeAuthRequest heroChangeAuthRequest,
+                                   @AuthenticationPrincipal AuthPayload authPayload) {
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
+    heroUserAuthWriteService.update(heroChangeAuthRequest.userNo(),
+        heroNo,
+        heroChangeAuthRequest.heroAuthStatus());
   }
 }

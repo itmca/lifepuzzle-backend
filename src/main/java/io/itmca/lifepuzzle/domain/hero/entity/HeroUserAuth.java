@@ -1,9 +1,12 @@
 package io.itmca.lifepuzzle.domain.hero.entity;
 
+import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -37,7 +40,8 @@ public class HeroUserAuth {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "heroNo")
   private Hero hero;
-  private String auth;
+  @Enumerated(EnumType.STRING)
+  private HeroAuthStatus auth;
 
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
@@ -46,5 +50,9 @@ public class HeroUserAuth {
   @Column(nullable = false)
   @UpdateTimestamp
   private LocalDateTime updatedAt;
+
+  public void changeAuth(HeroAuthStatus heroAuthStatus) {
+    auth = heroAuthStatus;
+  }
 
 }
