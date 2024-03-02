@@ -1,16 +1,16 @@
 package io.itmca.lifepuzzle.domain.hero.service;
 
-import static java.util.stream.Collectors.groupingBy;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponses;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroUserAuthRepository;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
+import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.global.exception.HeroNotFoundException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,48 +26,25 @@ public class HeroQueryService {
         .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
   }
 
-  public List<HeroUserAuth> findHeroUserAuthByHeroNo(Long heroNo) {
-    var heroUserAuths = this.heroUserAuthRepository.findByHeroNo(heroNo);
+  public HeroQueryResponse toQueryResponse(Hero hero) {
+    int puzzleCnt = storyQueryService.countByHeroNo(hero.getHeroNo());
 
-    if (isEmpty(heroUserAuths)) {
-      throw HeroNotFoundException.byHeroNo(heroNo);
-    }
-
-    return heroUserAuths;
+    return HeroQueryResponse.from(hero, puzzleCnt);
   }
 
-  public List<HeroUserAuth> findHeroUserAuthByUserNo(Long userNo) {
-    var heroUserAuths = this.heroUserAuthRepository.findByUserNo(userNo);
-
+  public HeroQueryResponses toQueryResponses(User user) {
+    var heroUserAuths = user.getHeroUserAuths();
     if (isEmpty(heroUserAuths)) {
-      throw HeroNotFoundException.byUserNo(userNo);
+      throw HeroNotFoundException.byUserNo(user.getUserNo());
     }
 
-    return heroUserAuths;
-  }
-
-  public HeroQueryResponse createHeroQueryResponse(List<HeroUserAuth> heroUserAuths, Long heroNo) {
-    var hero = heroUserAuths.stream()
-        .findFirst()
+    var heroQueryResponses = heroUserAuths.stream()
         .map(HeroUserAuth::getHero)
-        .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
-
-    int puzzleCnt = storyQueryService.countByHeroNo(heroNo);
-
-    return HeroQueryResponse.from(heroUserAuths, hero, puzzleCnt);
-  }
-
-  public List<HeroQueryResponse> createHeroQueryResponseList(List<HeroUserAuth> heroUserAuths) {
-    var groupByHeroNo = heroUserAuths.stream()
-        .collect(groupingBy(heroUserAuth -> heroUserAuth.getHero().getHeroNo()));
-
-    return groupByHeroNo.entrySet().stream()
-        .map(heroGroup -> {
-          var heroNo = heroGroup.getKey();
-          var userAuths = heroGroup.getValue();
-
-          return createHeroQueryResponse(userAuths, heroNo);
-        })
+        .map(this::toQueryResponse)
         .toList();
+
+    return HeroQueryResponses.builder()
+        .heroes(heroQueryResponses)
+        .build();
   }
 }
