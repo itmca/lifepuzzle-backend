@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
+import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ public class HeroUserAuthQueryDTO {
   @Schema(description = "대표이미지")
   private String imageURL;
   @Schema(description = "권한")
-  private String auth;
+  private HeroAuthStatus auth;
 
   public static HeroUserAuthQueryDTO from(HeroUserAuth heroUserAuth) {
     var user = heroUserAuth.getUser();

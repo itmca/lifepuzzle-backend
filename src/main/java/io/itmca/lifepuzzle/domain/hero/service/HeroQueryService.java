@@ -7,7 +7,6 @@ import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
-import io.itmca.lifepuzzle.domain.hero.repository.HeroUserAuthRepository;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.global.exception.HeroNotFoundException;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class HeroQueryService {
   private final HeroRepository heroRepository;
-  private final HeroUserAuthRepository heroUserAuthRepository;
   private final StoryQueryService storyQueryService;
 
   public Hero findHeroByHeroNo(Long heroNo) {
