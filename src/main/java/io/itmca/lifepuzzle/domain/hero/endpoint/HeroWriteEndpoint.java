@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
+import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
@@ -8,6 +9,8 @@ import io.itmca.lifepuzzle.domain.hero.file.HeroProfileImage;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
+import io.itmca.lifepuzzle.domain.user.CurrentUser;
+import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +40,7 @@ public class HeroWriteEndpoint {
   public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest heroWriteRequest,
                                  @RequestPart(value = "photo", required = false)
                                  MultipartFile reqeustPhoto,
-                                 @AuthenticationPrincipal AuthPayload authPayload) {
+                                 @CurrentUser User user) {
 
     var hero = heroWriteService.create(heroWriteRequest.toHeroOf(reqeustPhoto));
 
@@ -50,7 +53,7 @@ public class HeroWriteEndpoint {
     }
 
     heroUserAuthWriteService.create(HeroUserAuth.builder()
-        .userNo(authPayload.getUserNo())
+        .user(user)
         .hero(hero)
         .build());
 
@@ -96,5 +99,16 @@ public class HeroWriteEndpoint {
 
     return HeroQueryDTO.from(heroWriteService.update(hero));
 
+  }
+
+  @Operation(summary = "유저의 주인공 권한 변경")
+  @PutMapping("heroes/auth/{heroNo}")
+  public void changeHeroAuthOfUser(@PathVariable("heroNo") Long heroNo,
+                                   @RequestBody HeroChangeAuthRequest heroChangeAuthRequest,
+                                   @AuthenticationPrincipal AuthPayload authPayload) {
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
+    heroUserAuthWriteService.update(heroChangeAuthRequest.userNo(),
+        heroNo,
+        heroChangeAuthRequest.heroAuthStatus());
   }
 }

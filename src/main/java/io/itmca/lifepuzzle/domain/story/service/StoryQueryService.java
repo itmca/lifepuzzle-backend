@@ -16,11 +16,11 @@ public class StoryQueryService {
     return storyRepository.findAllByHeroNo(heroNo);
   }
 
-  ;
-
   public Story findById(String storyKey) {
     return storyRepository.findById(storyKey).get();
   }
 
-  ;
+  public int countByHeroNo(Long heroNo) {
+    return storyRepository.countByHeroNo(heroNo);
+  }
 }
