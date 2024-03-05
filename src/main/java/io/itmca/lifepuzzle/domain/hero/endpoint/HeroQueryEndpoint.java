@@ -3,6 +3,7 @@ package io.itmca.lifepuzzle.domain.hero.endpoint;
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroListQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
@@ -11,6 +12,7 @@ import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +28,17 @@ public class HeroQueryEndpoint {
   private final HeroValidationService heroValidationService;
   private final UserQueryService userQueryService;
 
-  @Operation(summary = "주인공 전체 목록 조회")
+  @Deprecated
   @GetMapping("/heroes")
-  public HeroListQueryResponse getHeroes(@AuthenticationPrincipal AuthPayload authPayload) {
+  public List<HeroQueryDTO> getHeroes(@AuthenticationPrincipal AuthPayload authPayload) {
+    var heroes = heroQueryService.findHeroesByUserNo(authPayload.getUserNo());
+
+    return heroes.stream().map(HeroQueryDTO::from).toList();
+  }
+
+  @Operation(summary = "주인공 전체 목록 조회")
+  @GetMapping("/heroes/v2")
+  public HeroListQueryResponse getHeroesV2(@AuthenticationPrincipal AuthPayload authPayload) {
     var user = userQueryService.findByUserNo(authPayload.getUserNo());
 
     return heroQueryService.toQueryResponses(user);
