@@ -9,6 +9,7 @@ import io.itmca.lifepuzzle.domain.hero.file.HeroProfileImage;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
+import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,6 +58,7 @@ public class HeroWriteEndpoint {
     heroUserAuthWriteService.create(HeroUserAuth.builder()
         .user(user)
         .hero(hero)
+        .auth(OWNER)
         .build());
 
     return HeroQueryDTO.from(hero);
