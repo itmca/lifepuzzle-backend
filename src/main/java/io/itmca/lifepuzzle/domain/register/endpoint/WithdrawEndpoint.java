@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.register.endpoint;
 
+import io.itmca.lifepuzzle.domain.register.endpoint.request.UserWithdrawRequest;
 import io.itmca.lifepuzzle.domain.register.service.WithdrawService;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
@@ -21,13 +22,12 @@ public class WithdrawEndpoint {
 
   @DeleteMapping("/users/{id}")
   @Operation(summary = "회원탈퇴")
-  public void withdraw(@PathVariable("id") Long id,
-                       @CurrentUser User user,
-                       @RequestBody String socialToken) {
+  public void withdraw(@PathVariable("id") Long id, @CurrentUser User user,
+                       @RequestBody(required = false) UserWithdrawRequest userWithdrawRequest) {
     if (id != user.getUserNo()) {
       throw new UserNoMismatchException();
     }
 
-    withdrawService.withdraw(user, socialToken);
+    withdrawService.withdraw(user, userWithdrawRequest);
   }
 }
