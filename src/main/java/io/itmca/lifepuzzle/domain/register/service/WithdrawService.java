@@ -1,5 +1,9 @@
 package io.itmca.lifepuzzle.domain.register.service;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
+import io.itmca.lifepuzzle.domain.register.endpoint.request.UserWithdrawRequest;
+import io.itmca.lifepuzzle.domain.user.UserType;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.jsonwebtoken.Jwts;
@@ -16,11 +20,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +32,14 @@ public class WithdrawService {
 
   private final UserWriteService userWriteService;
 
-  public void withdraw(User user, String socialToken) {
-    if (user.getUserType().equals("apple") && StringUtils.hasText(socialToken)) {
+  public void withdraw(User user, UserWithdrawRequest userWithdrawRequest) {
+    var socialToken = getSocialToken(userWithdrawRequest);
+
+    if (UserType.APPLE.frontEndKey().equals(user.getUserType())) {
+      if (isEmpty(socialToken)) {
+        throw new IllegalArgumentException("socialToken is required for an Apple user.");
+      }
+
       try {
         revokeAppleToken(socialToken);
       } catch (IOException e) {
@@ -38,6 +48,12 @@ public class WithdrawService {
     }
 
     userWriteService.deleteByUserNo(user.getUserNo());
+  }
+
+  private String getSocialToken(UserWithdrawRequest userWithdrawRequest) {
+    return Optional.ofNullable(userWithdrawRequest)
+        .map(UserWithdrawRequest::getSocialToken)
+        .orElse(null);
   }
 
   private void revokeAppleToken(String socialToken) throws IOException {

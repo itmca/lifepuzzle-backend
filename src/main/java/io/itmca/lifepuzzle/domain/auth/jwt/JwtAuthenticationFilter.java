@@ -5,11 +5,14 @@ import static org.springframework.util.StringUtils.hasText;
 
 import io.itmca.lifepuzzle.domain.auth.type.TokenType;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,14 +24,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   FilterChain filterChain) throws ServletException, IOException {
     try {
       trySettingAuthentication(request);
-    } catch (Exception ignored) {
-      logger.debug("Could not set user authentication in security context", ignored);
+    } catch (JwtException e) {
+      setResponse(response);
     }
 
     filterChain.doFilter(request, response);
   }
 
-  private void trySettingAuthentication(HttpServletRequest request) {
+  private void trySettingAuthentication(HttpServletRequest request) throws JwtException {
     var bearerToken = findBearerToken(request);
     var claims = toClaims(bearerToken).orElse(null);
 
@@ -57,5 +60,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     return null;
+  }
+
+  private void setResponse(HttpServletResponse response) throws IOException {
+    var responseEntity = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    response.getWriter().print(responseEntity);
   }
 }

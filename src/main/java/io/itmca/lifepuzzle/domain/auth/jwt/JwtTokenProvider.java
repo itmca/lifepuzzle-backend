@@ -5,6 +5,7 @@ import static org.springframework.util.StringUtils.hasText;
 import io.itmca.lifepuzzle.domain.auth.type.TokenPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -34,7 +35,7 @@ public class JwtTokenProvider {
     if (!hasText(token)) {
       return Optional.empty();
     }
-    
+
     try {
       return Optional.of(Jwts.parserBuilder()
           .setSigningKey(SIGNING_KEY)
@@ -42,18 +43,16 @@ public class JwtTokenProvider {
           .parseClaimsJws(token)
           .getBody());
     } catch (SignatureException ex) {
-      log.debug("Invalid JWT signature", ex);
+      throw new JwtException("잘못된 JWT 서명입니다.");
     } catch (MalformedJwtException ex) {
-      log.debug("Invalid JWT token", ex);
+      throw new JwtException("잘못된 JWT 토큰입니다.");
     } catch (ExpiredJwtException ex) {
-      log.debug("Expired JWT token", ex);
+      throw new JwtException("만료된 JWT 토큰입니다.");
     } catch (UnsupportedJwtException ex) {
-      log.debug("Unsupported JWT token", ex);
+      throw new JwtException("지원되지 않는 JWT 토큰입니다.");
     } catch (IllegalArgumentException ex) {
-      log.debug("JWT claims string is empty.", ex);
+      throw new JwtException("잘못된 JWT 토큰입니다.");
     }
-
-    return Optional.empty();
   }
 
   public static String findTokenType(Claims claims) {

@@ -1,5 +1,7 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint;
 
+import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
+
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
@@ -55,6 +57,7 @@ public class HeroWriteEndpoint {
     heroUserAuthWriteService.create(HeroUserAuth.builder()
         .user(user)
         .hero(hero)
+        .auth(OWNER)
         .build());
 
     return HeroQueryDTO.from(hero);
