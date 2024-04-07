@@ -41,13 +41,13 @@ public class HeroWriteEndpoint {
   @PostMapping("/heroes")
   public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest heroWriteRequest,
                                  @RequestPart(value = "photo", required = false)
-                                 MultipartFile reqeustPhoto,
+                                 MultipartFile requestPhoto,
                                  @CurrentUser User user) {
 
-    var hero = heroWriteService.create(heroWriteRequest.toHeroOf(reqeustPhoto));
+    var hero = heroWriteService.create(heroWriteRequest.toHeroOf(requestPhoto));
 
-    if (reqeustPhoto != null) {
-      var heroProfileImage = new HeroProfileImage(hero, reqeustPhoto);
+    if (requestPhoto != null) {
+      var heroProfileImage = new HeroProfileImage(hero, requestPhoto);
 
       hero.setImage(heroProfileImage);
 

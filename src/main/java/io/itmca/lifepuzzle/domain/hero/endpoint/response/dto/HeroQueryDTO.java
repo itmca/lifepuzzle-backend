@@ -1,14 +1,16 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 
+import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_DEFAULT_IMAGE_PATH;
+import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
+import static io.itmca.lifepuzzle.global.constant.ServerConstant.SERVER_HOST;
+
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
-import io.itmca.lifepuzzle.global.constant.FileConstant;
-import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.io.File;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
@@ -39,10 +41,12 @@ public class HeroQueryDTO {
   }
 
   private static String addServerHostInImage(Long heroNo, String imageURL) {
-    return String.join(File.separator,
-                   ServerConstant.SERVER_HOST,
-                   FileConstant.HERO_PROFILE_BASE_PATH,
-                   String.valueOf(heroNo),
-                   imageURL);
+    if (StringUtils.isBlank(imageURL)) {
+      return SERVER_HOST + HERO_PROFILE_DEFAULT_IMAGE_PATH;
+    }
+
+    return SERVER_HOST
+        + HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(String.valueOf(heroNo))
+        + imageURL;
   }
 }

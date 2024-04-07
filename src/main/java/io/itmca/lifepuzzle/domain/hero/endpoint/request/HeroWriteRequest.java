@@ -1,7 +1,9 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint.request;
 
+import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
+import static io.itmca.lifepuzzle.global.constant.ServerConstant.SERVER_HOST;
+
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
-import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -52,7 +54,7 @@ public class HeroWriteRequest {
   }
 
   private String removeFileServerHostInImage() {
-    var fileServerURL = String.format("%s/hero/profile/%d/", ServerConstant.SERVER_HOST, heroNo);
+    var fileServerURL = SERVER_HOST + HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(heroNo);
     return imageURL.replace(fileServerURL, "");
   }
 }

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'io.itmca'
-version = '2022.09'
+version = '2024.03'
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
