@@ -1,5 +1,8 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 
+import static io.itmca.lifepuzzle.global.constant.FileConstant.USER_PROFILE_IMAGE_BASE_PATH_FORMAT;
+import static io.itmca.lifepuzzle.global.constant.ServerConstant.SERVER_HOST;
+
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +27,9 @@ public class HeroUserAuthQueryDTO {
     return HeroUserAuthQueryDTO.builder()
         .userNo(user.getUserNo())
         .nickName(user.getNickName())
-        .imageURL(user.getImage())
+        .imageURL(SERVER_HOST
+            + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(user.getUserNo())
+            + user.getImage())
         .auth(heroUserAuth.getAuth())
         .build();
   }

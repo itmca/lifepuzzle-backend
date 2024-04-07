@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.file;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
+import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_VIDEO_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.VIDEO_RESIZING_HEIGHT;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.VIDEO_RESIZING_WIDTH;
 
@@ -11,7 +11,6 @@ import io.github.techgnious.exception.VideoException;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import io.itmca.lifepuzzle.global.infra.file.Resizable;
-import java.io.File;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +24,7 @@ public class StoryVideoFile extends CustomFile implements Resizable<StoryVideoFi
 
   public StoryVideoFile(Story story, MultipartFile file, String postfix) {
     super(
-        String.join(File.separator, STORY_BASE_PATH, story.getStoryKey(), "video"),
+        STORY_VIDEO_BASE_PATH_FORMAT.formatted(story.getStoryKey()),
         file,
         postfix
     );

@@ -17,7 +17,6 @@ import java.util.function.Function;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUtil {
-
   public static Boolean isExistFolder(String folderPath) {
     var folder = new File(folderPath);
     return folder.exists();
@@ -58,4 +57,6 @@ public class FileUtil {
         })
         .toList();
   }
+
+
 }

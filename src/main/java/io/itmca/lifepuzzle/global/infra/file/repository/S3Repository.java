@@ -29,7 +29,7 @@ public class S3Repository implements FileRepository {
         tempFolder + File.separator + customFile.getFileName());
 
     amazonS3Client.putObject(new PutObjectRequest(bucket,
-        customFile.getBase() + File.separator + customFile.getFileName(),
+        customFile.getBase() + customFile.getFileName(),
         localFile));
 
     localFile.delete();
