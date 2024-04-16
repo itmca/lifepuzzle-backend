@@ -5,8 +5,12 @@ plugins {
     id 'checkstyle'
 }
 
+jar {
+    enabled = false
+}
+
 group = 'io.itmca'
-version = '2024.03'
+version = '2024.04'
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
