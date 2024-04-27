@@ -22,8 +22,8 @@ public class CustomBeforeSendCallback implements SentryOptions.BeforeSendCallbac
 
   private boolean isLocalEnvOrRunningOnMacWindow(SentryEvent event) {
     return "local".equals(event.getEnvironment())
-      || StringUtils.startsWithIgnoreCase(System.getProperty("os.name"), "mac")
-      || StringUtils.startsWithIgnoreCase(System.getProperty("os.name"), "windows");
+        || StringUtils.startsWithIgnoreCase(System.getProperty("os.name"), "mac")
+        || StringUtils.startsWithIgnoreCase(System.getProperty("os.name"), "windows");
   }
 
   private static boolean hasAlertDisabledException(SentryEvent event) {

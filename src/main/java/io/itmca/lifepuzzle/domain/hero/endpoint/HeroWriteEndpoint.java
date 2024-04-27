@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -105,13 +106,18 @@ public class HeroWriteEndpoint {
   }
 
   @Operation(summary = "유저의 주인공 권한 변경")
-  @PutMapping("heroes/auth/{heroNo}")
-  public void changeHeroAuthOfUser(@PathVariable("heroNo") Long heroNo,
-                                   @RequestBody HeroChangeAuthRequest heroChangeAuthRequest,
+  @PutMapping("heroes/auth")
+  public void changeHeroAuthOfUser(@RequestBody HeroChangeAuthRequest heroChangeAuthRequest,
                                    @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
-    heroUserAuthWriteService.update(heroChangeAuthRequest.userNo(),
-        heroNo,
-        heroChangeAuthRequest.heroAuthStatus());
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(),
+        heroChangeAuthRequest.heroNo());
+    heroUserAuthWriteService.update(heroChangeAuthRequest);
+  }
+
+  @Operation(summary = "유저의 주인공 권한 추가")
+  @PostMapping("heroes/auth")
+  public void createHeroAuthOfUser(@RequestParam String shareKey,
+                                   @CurrentUser User user) {
+    heroUserAuthWriteService.create(user, shareKey);
   }
 }

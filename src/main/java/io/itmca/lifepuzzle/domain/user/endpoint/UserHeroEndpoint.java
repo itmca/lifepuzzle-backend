@@ -1,6 +1,8 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
+import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
+import io.itmca.lifepuzzle.domain.user.endpoint.response.UserHeroShareResponse;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,8 +32,15 @@ public class UserHeroEndpoint {
     userWriteService.changeRecentHeroNo(user, recentHeroResponse.heroNo);
   }
 
-  // [Debugging] 클라이언트 쪽에서 Body로 데이터를 보내다보니 Response 생성
-  // RequestParm -> RequestBody로 변경
+  @Operation(summary = "주인공 권한 링크 조회")
+  @PostMapping("/user/hero/link")
+  public UserHeroShareResponse getHeroAuthLink(@RequestParam("heroNo") Long heroNo,
+                                               @RequestParam("auth") HeroAuthStatus shareAuth,
+                                               @CurrentUser User user) {
+    String shareLink = userWriteService.createHeroShareLink(user, heroNo, shareAuth);
+    return UserHeroShareResponse.builder().link(shareLink).build();
+  }
+
   @Getter
   @NoArgsConstructor
   @AllArgsConstructor(access = AccessLevel.PRIVATE)

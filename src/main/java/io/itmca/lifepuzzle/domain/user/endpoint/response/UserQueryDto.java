@@ -2,7 +2,7 @@ package io.itmca.lifepuzzle.domain.user.endpoint.response;
 
 import static io.itmca.lifepuzzle.global.constant.FileConstant.USER_PROFILE_DEFAULT_IMAGE_PATH;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.USER_PROFILE_IMAGE_BASE_PATH_FORMAT;
-import static io.itmca.lifepuzzle.global.constant.ServerConstant.SERVER_HOST;
+import static io.itmca.lifepuzzle.global.constant.ServerConstant.S3_SERVER_HOST;
 
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import java.time.LocalDate;
@@ -38,9 +38,9 @@ public class UserQueryDto {
 
   private static String addServerHostInImage(Long userNo, String imageURL) {
     if (imageURL == null || imageURL.trim().equals("")) {
-      return SERVER_HOST + USER_PROFILE_DEFAULT_IMAGE_PATH;
+      return S3_SERVER_HOST + USER_PROFILE_DEFAULT_IMAGE_PATH;
     }
 
-    return SERVER_HOST + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(userNo) + imageURL;
+    return S3_SERVER_HOST + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(userNo) + imageURL;
   }
 }

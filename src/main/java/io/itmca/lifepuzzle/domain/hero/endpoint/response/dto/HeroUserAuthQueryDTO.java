@@ -1,7 +1,7 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 
 import static io.itmca.lifepuzzle.global.constant.FileConstant.USER_PROFILE_IMAGE_BASE_PATH_FORMAT;
-import static io.itmca.lifepuzzle.global.constant.ServerConstant.SERVER_HOST;
+import static io.itmca.lifepuzzle.global.constant.ServerConstant.S3_SERVER_HOST;
 
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
@@ -27,7 +27,7 @@ public class HeroUserAuthQueryDTO {
     return HeroUserAuthQueryDTO.builder()
         .userNo(user.getUserNo())
         .nickName(user.getNickName())
-        .imageURL(SERVER_HOST
+        .imageURL(S3_SERVER_HOST
             + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(user.getUserNo())
             + user.getImage())
         .auth(heroUserAuth.getAuth())
