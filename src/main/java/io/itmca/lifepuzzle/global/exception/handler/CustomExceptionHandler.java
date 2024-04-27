@@ -12,8 +12,6 @@ public class CustomExceptionHandler {
 
   @ExceptionHandler(AuthException.class)
   public ResponseEntity handleUnAuthorizedException(AuthException e) {
-    log.error("handleUnAuthorizedException", e);
-
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
   }
 
@@ -30,5 +28,10 @@ public class CustomExceptionHandler {
   @ExceptionHandler(ServerExecutionFailException.class)
   public ResponseEntity handleServerExecutionFailException(ServerExecutionFailException e) {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @ExceptionHandler(ExpiredException.class)
+  public ResponseEntity handleExpiredException(ExpiredException e) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
   }
 }

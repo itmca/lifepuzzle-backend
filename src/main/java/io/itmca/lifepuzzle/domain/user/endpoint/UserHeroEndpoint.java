@@ -41,8 +41,6 @@ public class UserHeroEndpoint {
     return UserHeroShareResponse.builder().link(shareLink).build();
   }
 
-  // [Debugging] 클라이언트 쪽에서 Body로 데이터를 보내다보니 Response 생성
-  // RequestParm -> RequestBody로 변경
   @Getter
   @NoArgsConstructor
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
