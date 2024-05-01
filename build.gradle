@@ -54,6 +54,7 @@ dependencies {
     implementation 'org.json:json:20220924'
     implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.4'
     implementation 'io.github.techgnious:IVCompressor:2.0.2'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
 
     // Swagger
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
