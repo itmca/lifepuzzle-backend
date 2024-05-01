@@ -3,6 +3,7 @@ package io.itmca.lifepuzzle.global.exception.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -30,6 +31,16 @@ public class CustomExceptionHandler {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @ExceptionHandler(MissingArgumentException.class)
+  public ResponseEntity handleIllegalArgumentException(MissingArgumentException e) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity handleAccessDeniedException(AccessDeniedException e) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+  }
+    
   @ExceptionHandler(ExpiredException.class)
   public ResponseEntity handleExpiredException(ExpiredException e) {
     return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

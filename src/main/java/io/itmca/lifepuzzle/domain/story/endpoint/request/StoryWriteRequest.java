@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.request;
 
 import io.itmca.lifepuzzle.domain.story.entity.Story;
+import io.itmca.lifepuzzle.global.aop.HeroNo;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -16,6 +17,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StoryWriteRequest {
+  @HeroNo
   Long heroNo;
   Long recQuestionNo;
   Boolean recQuestionModified;

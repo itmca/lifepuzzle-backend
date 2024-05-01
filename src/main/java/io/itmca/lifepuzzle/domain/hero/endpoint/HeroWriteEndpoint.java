@@ -1,6 +1,8 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint;
 
+import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.ADMIN;
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
+import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.VIEWER;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
@@ -13,6 +15,8 @@ import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
+import io.itmca.lifepuzzle.global.aop.AuthCheck;
+import io.itmca.lifepuzzle.global.aop.HeroNo;
 import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -64,27 +68,30 @@ public class HeroWriteEndpoint {
     return HeroQueryDTO.from(hero);
   }
 
+  @AuthCheck(auths = { ADMIN, OWNER })
   @Operation(summary = "주인공 수정")
   @PutMapping("heroes/{heroNo}")
   public HeroQueryDTO updateHero(@RequestBody HeroWriteRequest heroWriteRequest,
-                                 @PathVariable("heroNo") Long heroNo,
+                                 @PathVariable("heroNo") @HeroNo Long heroNo,
                                  @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
     return HeroQueryDTO.from(heroWriteService.create(heroWriteRequest.toHeroOf(heroNo)));
   }
 
+  @AuthCheck(auths = { OWNER })
   @Operation(summary = "주인공 삭제")
   @DeleteMapping("heroes/{heroNo}")
-  public void deleteHero(@PathVariable("heroNo") Long heroNo,
+  public void deleteHero(@PathVariable("heroNo") @HeroNo Long heroNo,
                          @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
     heroWriteService.remove(heroNo);
   }
 
+  @AuthCheck(auths = { ADMIN, OWNER })
   @Operation(summary = "주인공 사진 수정")
   @PostMapping("heroes/profile/{heroNo}")
-  public HeroQueryDTO saveHeroPhoto(@PathVariable("heroNo") Long heroNo,
+  public HeroQueryDTO saveHeroPhoto(@PathVariable("heroNo") @HeroNo Long heroNo,
                                     @RequestPart("toUpdate") HeroWriteRequest heroWriteRequest,
                                     @RequestPart(name = "photo", required = false)
                                     MultipartFile requestPhoto,
@@ -113,7 +120,7 @@ public class HeroWriteEndpoint {
         heroChangeAuthRequest.heroNo());
     heroUserAuthWriteService.update(heroChangeAuthRequest);
   }
-
+  
   @Operation(summary = "유저의 주인공 권한 추가")
   @PostMapping("heroes/auth")
   public void createHeroAuthOfUser(@RequestParam String shareKey,

@@ -1,5 +1,8 @@
 package io.itmca.lifepuzzle.domain.story.endpoint;
 
+import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.ADMIN;
+import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
+import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.WRITER;
 import static io.itmca.lifepuzzle.global.util.FileUtil.handleSameNameContents;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
@@ -12,6 +15,8 @@ import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
+import io.itmca.lifepuzzle.global.aop.AuthCheck;
+import io.itmca.lifepuzzle.global.aop.HeroNoContainer;
 import io.itmca.lifepuzzle.global.exception.HeroNotAccessibleToStoryException;
 import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToStoryException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,10 +43,11 @@ public class StoryWriteEndpoint {
   private final StoryQueryService storyQueryService;
   private final UserQueryService userQueryService;
 
+  @AuthCheck(auths = { WRITER, ADMIN, OWNER })
   @Operation(summary = "스토리 등록")
   @PostMapping(value = "/story")
   public ResponseEntity<StoryWriteResponse> writeStory(
-      @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
+      @RequestPart("storyInfo") @HeroNoContainer StoryWriteRequest storyWriteRequest,
       @RequestPart(value = "photos", required = false)
       List<MultipartFile> images,
       @RequestPart(value = "voice", required = false)
@@ -52,7 +58,6 @@ public class StoryWriteEndpoint {
 
     var story = storyWriteRequest.toStory(authPayload.getUserNo());
 
-    // TODO 2023.09.09 Solmioh 이름 중복일 때 처리 필요. 주온이 사진만 임시코드만 추가 해 놓음
     var storyFile = StoryFile.builder()
         .images(handleSameNameContents(
             images,
