@@ -33,7 +33,7 @@ public class StoryQueryEndpoint {
   private final HeroValidationService heroValidationService;
   private final HeroQueryService heroQueryService;
 
-  @AuthCheck(auths = { VIEWER, COMMENTER, WRITER, ADMIN, OWNER })
+  @AuthCheck(auths = {VIEWER, COMMENTER, WRITER, ADMIN, OWNER})
   @GetMapping("/stories")
   @Operation(summary = "스토리 전체 목록 조회")
   public StoryQueryResponse findStories(@RequestParam("heroNo") @HeroNo Long heroNo,
