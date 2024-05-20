@@ -112,8 +112,7 @@ public class Story {
     }
 
     return Arrays.stream(this.imageFiles.split("\\|\\|"))
-        .map(file -> String.format("%s%s/%s", ServerConstant.S3_SERVER_HOST, this.imageFolder,
-            file))
+        .map(file -> ServerConstant.S3_SERVER_HOST + this.imageFolder + file)
         .toList();
   }
 
@@ -131,8 +130,7 @@ public class Story {
     }
 
     return Arrays.stream(this.audioFiles.split("\\|\\|"))
-        .map(file -> String.format("%s%s/%s", ServerConstant.S3_SERVER_HOST, this.audioFolder,
-            file))
+        .map(file -> ServerConstant.S3_SERVER_HOST + this.audioFolder + file)
         .toList();
   }
 
@@ -150,8 +148,7 @@ public class Story {
     }
 
     return Arrays.stream(this.videoFiles.split("\\|\\|"))
-        .map(file -> String.format("%s%s/%s", ServerConstant.S3_SERVER_HOST, this.videoFolder,
-            file))
+        .map(file -> ServerConstant.S3_SERVER_HOST + this.videoFolder + file)
         .toList();
   }
 
