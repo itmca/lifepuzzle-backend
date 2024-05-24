@@ -34,7 +34,15 @@ jobs:
           utcOffset: "+09:00"
 
       - name: Set artifact
-        run: echo "artifact=$(ls ./build/libs)" >> $GITHUB_ENV
+        run: echo "artifact=$(ls ./build/libs/*.jar)" >> $GITHUB_ENV
+
+      - name: Prepare deployment package
+        run: |
+          mkdir -p deploy
+          cp ./build/libs/${{env.artifact}} deploy/
+          cp -r .platform deploy/.platform
+          cd deploy && zip -r ../deploy-package.zip .
+        shell: bash
 
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v22
@@ -45,4 +53,4 @@ jobs:
           environment_name: Lifepuzzleapi-env
           version_label: github-action-${{steps.current-time.outputs.formattedTime}}
           region: ***REMOVED***
-          deployment_package: ./build/libs/${{env.artifact}}
+          deployment_package: ./deploy-package.zip
