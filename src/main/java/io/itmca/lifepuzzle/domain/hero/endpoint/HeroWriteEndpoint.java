@@ -54,7 +54,7 @@ public class HeroWriteEndpoint {
     var hero = heroWriteService.create(heroWriteRequest.toHeroOf(requestPhoto));
 
     if (requestPhoto != null) {
-      var heroProfileImage = new HeroProfileImage(hero, requestPhoto);
+      var heroProfileImage = new HeroProfileImage(hero, requestPhoto).resize();
 
       hero.setImage(heroProfileImage);
 

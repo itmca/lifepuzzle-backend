@@ -61,8 +61,8 @@ public class StoryWriteEndpoint {
     var storyFile = StoryFile.builder()
         .images(handleSameNameContents(
             images,
-            (image) -> new StoryImageFile(story, image),
-            (image, postfix) -> new StoryImageFile(story, image, postfix))
+            (image) -> new StoryImageFile(story, image).resize(),
+            (image, postfix) -> new StoryImageFile(story, image, postfix).resize())
         )
         .voices(handleSameNameContents(
             voices,
@@ -115,8 +115,8 @@ public class StoryWriteEndpoint {
     var storyFile = StoryFile.builder()
         .images(handleSameNameContents(
             images,
-            (image) -> new StoryImageFile(story, image),
-            (image, postfix) -> new StoryImageFile(story, image, postfix))
+            (image) -> new StoryImageFile(story, image).resize(),
+            (image, postfix) -> new StoryImageFile(story, image, postfix).resize())
         )
         .voices(handleSameNameContents(
             voices,

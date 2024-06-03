@@ -26,4 +26,9 @@ public class FileConstant {
   public static final int VIDEO_RESIZING_HEIGHT = 480;
 
   public static final String FILE_DUPLICATE_PREFIX = "lp-media-";
+
+  public static final int HERO_IMAGE_RESIZING_WIDTH = 128;
+  public static final int HERO_IMAGE_RESIZING_HEIGHT = 128;
+  public static final int STORY_IMAGE_RESIZING_WIDTH = 640;
+  public static final int STORY_IMAGE_RESIZING_HEIGHT = 480;
 }
