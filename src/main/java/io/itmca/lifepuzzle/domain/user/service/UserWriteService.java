@@ -74,7 +74,7 @@ public class UserWriteService {
         .build()
     );
 
-    return ServerConstant.DEEP_LINK_SERVER_HOST + "share/hero/" + shareKey;
+    return ServerConstant.DEEP_LINK_SERVER_HOST + "share/hero?shareKey" + shareKey;
   }
 
   private String createHeroAuthShareKey(long userNo) {

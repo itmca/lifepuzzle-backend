@@ -27,10 +27,10 @@ public class SecurityConfig {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
         .authorizeHttpRequests(
-          (request) -> request.antMatchers(
-              "/", "/hc", "/error-test", "/auth/**",
-              "/user", "/v3/**", "/question/*", "/questions/*",
-              "/swagger-ui/**")
+            (request) -> request.antMatchers(
+                    "/", "/hc", "/error-test", "/auth/**",
+                    "/user", "/v3/**", "/question/*", "/questions/*",
+                    "/share/hero", "/swagger-ui/**")
             .permitAll()
             .anyRequest()
             .authenticated()
