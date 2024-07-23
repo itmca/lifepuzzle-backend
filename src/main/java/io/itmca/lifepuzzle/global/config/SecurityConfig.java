@@ -30,7 +30,7 @@ public class SecurityConfig {
             (request) -> request.antMatchers(
                     "/", "/hc", "/error-test", "/auth/**",
                     "/user", "/v3/**", "/question/*", "/questions/*",
-                    "/share/hero", "/swagger-ui/**")
+                    "/share/hero", "/swagger-ui/**", "/.well-know/assetlinks.json")
             .permitAll()
             .anyRequest()
             .authenticated()
