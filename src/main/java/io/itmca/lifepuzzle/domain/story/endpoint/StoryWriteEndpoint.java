@@ -45,7 +45,8 @@ public class StoryWriteEndpoint {
 
   @AuthCheck(auths = { WRITER, ADMIN, OWNER })
   @Operation(summary = "스토리 등록")
-  @PostMapping(value = "/story")
+  @PostMapping({"/story", // TODO: FE 전환 후 제거
+      "/stories"})
   public ResponseEntity<StoryWriteResponse> writeStory(
       @RequestPart("storyInfo") @HeroNoContainer StoryWriteRequest storyWriteRequest,
       @RequestPart(value = "photos", required = false)
@@ -86,7 +87,8 @@ public class StoryWriteEndpoint {
   }
 
   @Operation(summary = "스토리 수정")
-  @PutMapping(value = "/story/{storyKey}")
+  @PutMapping({"/story/{storyKey}", // TODO: FE 전환 후 제거
+      "/stories/{storyKey}"})
   public void updateStory(@PathVariable("storyKey") String storyKey,
                           @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
                           @RequestPart(value = "photos", required = false)
@@ -111,7 +113,6 @@ public class StoryWriteEndpoint {
 
     story.updateStoryInfo(storyWriteRequest);
 
-    // TODO 2023.09.09 Solmioh 이름 중복일 때 처리 필요. 주온이 사진만 임시코드만 추가 해 놓음
     var storyFile = StoryFile.builder()
         .images(handleSameNameContents(
             images,
@@ -134,7 +135,8 @@ public class StoryWriteEndpoint {
   }
 
   @Operation(summary = "스토리 삭제")
-  @DeleteMapping(value = "/story/{storyKey}")
+  @DeleteMapping({"/story/{storyKey}", // TODO: FE 전환 후 제거
+      "/stories/{storyKey}"})
   public HttpStatus deleteStory(@PathVariable("storyKey") String storyKey,
                                 @AuthenticationPrincipal AuthPayload authPayload) {
 

@@ -21,7 +21,8 @@ public class QuestionQueryEndpoint {
 
   @Deprecated
   @Operation(summary = "추천 질문 조회")
-  @GetMapping("/question/recommend")
+  @GetMapping({"/question/recommend", // TODO: FE 전환 후 제거
+      "/questions/recommend"})
   public List<RecommendQuestionDTO> getRecommendedQuestion(
       @RequestParam(name = "category", required = false) String category,
       @RequestParam(name = "heroNo") Long heroNo,

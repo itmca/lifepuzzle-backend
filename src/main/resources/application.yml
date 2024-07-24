@@ -52,7 +52,7 @@ springdoc:
     - group: 유저
       paths-to-match: /user/**, /users/**
     - group: 질문
-      paths-to-match: /question/**
+      paths-to-match: /question/**, /questions/**
     - group: 주인공
       paths-to-match: /hero/**, /heroes/**
 

@@ -17,8 +17,9 @@ public class RegisterEndpoint {
 
   private final RegisterService registerService;
 
-  @PostMapping("/user")
   @Operation(summary = "회원가입")
+  @PostMapping({"/user", // TODO: FE 전환 후 제거
+      "/users"})
   public HttpStatus register(@RequestBody UserRegisterRequest userRegisterRequest) {
     var user = userRegisterRequest.toUser();
 

@@ -92,7 +92,10 @@ public class HeroWriteEndpoint {
 
   @AuthCheck(auths = {ADMIN, OWNER})
   @Operation(summary = "주인공 사진 수정")
-  @RequestMapping(value = "heroes/profile/{heroNo}", method = {POST, PUT})
+  @RequestMapping(
+      value = {"heroes/profile/{heroNo}", // TODO: FE 전환 후 제거
+          "heroes/{heroNo}/profile"},
+      method = {POST, PUT})
   public HeroQueryDTO saveHeroPhoto(@PathVariable("heroNo") @HeroNo Long heroNo,
                                     @RequestPart("toUpdate") HeroWriteRequest heroWriteRequest,
                                     @RequestPart(name = "photo", required = false)

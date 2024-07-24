@@ -25,15 +25,17 @@ public class UserHeroEndpoint {
   //[Feedback] 사용하지 않는 멤버 변수가 존재
   private final UserWriteService userWriteService;
 
-  @PostMapping("/user/hero/recent")
   @Operation(summary = "현재 주인공 변경")
+  @PostMapping({"/user/hero/recent", // TODO: FE 전환 후 제거
+      "/users/hero/recent"})
   public void updateRecentHero(@RequestBody RecentHeroResponse recentHeroResponse,
                                @CurrentUser User user) {
     userWriteService.changeRecentHeroNo(user, recentHeroResponse.heroNo);
   }
 
   @Operation(summary = "주인공 권한 링크 조회")
-  @PostMapping("/user/hero/link")
+  @PostMapping({"/user/hero/link", // TODO: FE 전환 후 제거
+      "/users/hero/link"})
   public UserHeroShareResponse getHeroAuthLink(@RequestParam("heroNo") Long heroNo,
                                                @RequestParam("auth") HeroAuthStatus shareAuth,
                                                @CurrentUser User user) {

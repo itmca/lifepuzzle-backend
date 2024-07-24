@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping({"user", // TODO: FE 전환 후 제거
+    "users"})
 @RequiredArgsConstructor
 @Tag(name = "유저 검증")
 public class UserValidateEndpoint {

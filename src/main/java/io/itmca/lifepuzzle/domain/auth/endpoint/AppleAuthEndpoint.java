@@ -26,8 +26,9 @@ public class AppleAuthEndpoint {
   private final LoginService loginService;
   private final SocialRegisterService socialRegisterService;
 
-  @PostMapping("/auth/social/apple")
   @Operation(summary = "애플 로그인")
+  @PostMapping({"/auth/social/apple", // TODO: FE 전환 후 제거
+      "/auth/login/apple"})
   public LoginResponse login(@RequestBody AppleAuthBody appleAuthBody) throws ParseException {
     verify(appleAuthBody);
     try {
