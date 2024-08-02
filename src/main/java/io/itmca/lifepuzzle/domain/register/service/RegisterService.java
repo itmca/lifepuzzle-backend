@@ -8,9 +8,9 @@ import io.itmca.lifepuzzle.global.exception.PasswordMismatchException;
 import io.itmca.lifepuzzle.global.exception.UserAlreadyExistsException;
 import io.itmca.lifepuzzle.global.exception.handler.NotFoundException;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
@@ -22,6 +22,7 @@ public class RegisterService {
   private final NicknameProvideService nicknameProvideService;
   private final UserQueryService userQueryService;
 
+  @Transactional
   public void register(User user) {
     if (isAlreadyExist(user)) {
       throw new UserAlreadyExistsException(user.getUserId());
@@ -51,7 +52,6 @@ public class RegisterService {
     return this.userWriteService.save(user);
   }
 
-  @Transactional
   private void setSaltAndEncodedPasswordToUser(User user) {
     var originPassword = user.getPassword();
     user.hashCredential(originPassword);

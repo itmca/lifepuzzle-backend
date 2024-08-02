@@ -4,7 +4,7 @@ import io.itmca.lifepuzzle.domain.auth.Token;
 import io.itmca.lifepuzzle.domain.auth.service.RefreshService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;

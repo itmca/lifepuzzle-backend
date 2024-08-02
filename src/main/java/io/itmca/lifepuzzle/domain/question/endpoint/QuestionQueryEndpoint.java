@@ -4,10 +4,10 @@ import io.itmca.lifepuzzle.domain.question.endpoint.response.dto.RecommendQuesti
 import io.itmca.lifepuzzle.domain.question.service.QuestionQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.List;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
