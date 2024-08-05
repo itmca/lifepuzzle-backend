@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class KakaoValidateService {
   }
 
   private String getKakaoProfile(String accessToken) throws IOException {
-    var url = new URL("https://kapi.kakao.com/v2/user/me");
+    var url = URI.create("https://kapi.kakao.com/v2/user/me").toURL();
     var conn = (HttpURLConnection) url.openConnection();
 
     conn.setRequestMethod("GET");

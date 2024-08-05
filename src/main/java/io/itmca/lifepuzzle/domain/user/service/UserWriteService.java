@@ -14,10 +14,10 @@ import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToHeroException;
 import io.itmca.lifepuzzle.global.exception.UserNotShareHeroAuthException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

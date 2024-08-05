@@ -3,9 +3,8 @@ package io.itmca.lifepuzzle.global.config;
 import io.itmca.lifepuzzle.domain.auth.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,25 +16,18 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-        .cors()
-        .and()
-        .csrf()
-        .disable()
-        .exceptionHandling()
-        .and()
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .cors(AbstractHttpConfigurer::disable)
+        .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
-            (request) -> request.antMatchers(
-                    "/", "/hc", "/error-test", "/auth/**",
-                    "/user", "/v3/**", "/question/*", "/questions/*",
-                    "/share/hero", "/swagger-ui/**", "/.well-know/assetlinks.json")
-            .permitAll()
-            .anyRequest()
-            .authenticated()
+            (request) -> request.requestMatchers(
+                  "/", "/hc", "/error-test", "/auth/**",
+                  "/user", "/v3/**", "/question/*", "/questions/*",
+                  "/share/hero", "/swagger-ui/**", "/.well-know/assetlinks.json")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
         )
-        .httpBasic(Customizer.withDefaults())
         .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();

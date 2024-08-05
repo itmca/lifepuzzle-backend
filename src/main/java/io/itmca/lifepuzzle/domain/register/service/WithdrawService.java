@@ -12,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -19,10 +20,10 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,7 @@ public class WithdrawService {
   }
 
   private void revokeAppleToken(String socialToken) throws IOException {
-    var url = new URL("https://appleid.apple.com/auth/revoke");
+    var url = URI.create("https://appleid.apple.com/auth/revoke").toURL();
     var conn = (HttpURLConnection) url.openConnection();
 
     conn.setRequestMethod("POST");
@@ -91,18 +92,20 @@ public class WithdrawService {
     var durationInSeconds = 60 * 5;
 
     return Jwts.builder()
-        .setHeaderParams(Map.of(
+        .header()
+        .add(Map.of(
             "algorithm", "ES256",
             "keyId", applePrivateKeyId
         ))
-        .setClaims(Map.of(
+        .and()
+        .claims(Map.of(
             "iss", appleTeamId,
             "iat", nowInSeconds,
             "exp", nowInSeconds + durationInSeconds,
             "aud", "https://appleid.apple.com",
             "sub", appleBundleId
         ))
-        .signWith(getApplePrivateKey(), SignatureAlgorithm.ES256)
+        .signWith(getApplePrivateKey(), Jwts.SIG.ES256)
         .compact();
   }
 
@@ -121,7 +124,7 @@ public class WithdrawService {
       var keyFactory = KeyFactory.getInstance("EC");
 
       return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(
-          Base64.decodeBase64(privateKey)));
+          Base64.getDecoder().decode(privateKey)));
     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
       throw new RuntimeException(e);
     }
