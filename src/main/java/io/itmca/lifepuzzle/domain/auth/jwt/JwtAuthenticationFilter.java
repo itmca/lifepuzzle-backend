@@ -25,7 +25,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     try {
       trySettingAuthentication(request);
     } catch (JwtException e) {
-      setResponse(response);
+      response.setStatus(HttpStatus.UNAUTHORIZED.value());
+      return;
     }
 
     filterChain.doFilter(request, response);
@@ -60,10 +61,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     return null;
-  }
-
-  private void setResponse(HttpServletResponse response) throws IOException {
-    var responseEntity = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    response.getWriter().print(responseEntity);
   }
 }
