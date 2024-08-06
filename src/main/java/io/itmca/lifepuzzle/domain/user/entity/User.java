@@ -100,9 +100,7 @@ public class User {
   }
 
   public void updateUserInfo(UserUpdateRequest userUpdateRequest) {
-    this.email = userUpdateRequest.getEmail();
-    this.birthday = userUpdateRequest.getBirthday();
-    this.nickName = userUpdateRequest.getNickName();
+    setNickname(userUpdateRequest.getUserNickName());
   }
 
   public void setImage(UserProfileImage userProfileImage) {

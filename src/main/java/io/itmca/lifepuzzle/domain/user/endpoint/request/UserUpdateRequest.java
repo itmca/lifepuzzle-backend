@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class UserUpdateRequest {
-  private String email;
-  private String name;
-  private LocalDate birthday;
-  private String nickName;
+  private Long userNo;
+  private String userNickName;
+  private String imageURL;
 }
