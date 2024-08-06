@@ -1,5 +1,8 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
+import static org.springframework.web.bind.annotation.RequestMethod.PATCH;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+
 import io.itmca.lifepuzzle.domain.register.PasswordVerification;
 import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserPasswordUpdateRequest;
@@ -18,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,13 +34,13 @@ public class UserWriteEndpoint {
   private final UserWriteService userWriteService;
   private final S3UploadService s3UploadService;
 
-  @RequestMapping(value = "/{id}", method = {RequestMethod.PUT, RequestMethod.PATCH})
+  @RequestMapping(value = "/{id}", method = {PUT, PATCH})
   @Operation(summary = "유저 수정")
   public UserQueryDto updateUser(@PathVariable("id") Long id,
-                                 @CurrentUser User user,
+                                 @RequestPart("toUpdate") UserUpdateRequest userUpdateRequest,
                                  @RequestPart(name = "photo", required = false)
                                  MultipartFile requestPhoto,
-                                 @RequestPart UserUpdateRequest userUpdateRequest) {
+                                 @CurrentUser User user) {
     if (id != user.getUserNo()) {
       throw new UserNoMismatchException();
     }
@@ -56,7 +58,7 @@ public class UserWriteEndpoint {
     return UserQueryDto.from(userWriteService.save(user));
   }
 
-  @RequestMapping(value = "/{id}/password", method = {RequestMethod.PUT, RequestMethod.PATCH})
+  @RequestMapping(value = "/{id}/password", method = {PUT, PATCH})
   @Operation(summary = "비밀번호 변경")
   public void updateUserPassword(@PathVariable("id") Long id,
                                  @CurrentUser User user,
