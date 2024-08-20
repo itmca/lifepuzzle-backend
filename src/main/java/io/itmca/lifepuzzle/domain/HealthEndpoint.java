@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthEndpoint {
 
   @Operation(hidden = true)
-  @RequestMapping({"", "hc"})
+  @RequestMapping({"/", "hc"})
   public String healthCheck() {
     return "ok";
   }
