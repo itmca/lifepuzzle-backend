@@ -22,7 +22,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             (request) -> request.requestMatchers(
                   "/", "/hc", "/error-test", "/auth/**",
-                  "/user", "/users", "/v3/**", "/question/*", "/questions/*",
+                  "/user", "/user/dupcheck/*", "/users", "/users/dupcheck/*",
+                  "/v3/**", "/question/*", "/questions/*",
                   "/share/hero", "/swagger-ui/**", "/.well-know/assetlinks.json")
                 .permitAll()
                 .anyRequest()
