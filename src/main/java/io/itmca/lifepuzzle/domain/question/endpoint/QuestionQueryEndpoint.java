@@ -9,13 +9,15 @@ import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "질문 조회")
+@Validated
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "질문 조회")
 public class QuestionQueryEndpoint {
   private final QuestionQueryService questionQueryService;
 
