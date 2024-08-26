@@ -61,3 +61,6 @@ sentry:
     enabled: true
     minimum-event-level: warn
     minimum-breadcrumb-level: info
+
+slack:
+  webhook-url : ***REMOVED***
