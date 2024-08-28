@@ -32,6 +32,9 @@ spring:
         static: ***REMOVED***
       stack:
         auto: false
+    deepgram:
+      credentials:
+        acessKey: ***REMOVED***
 
 springdoc:
   packages-to-scan: io.itmca.lifepuzzle.domain
@@ -63,4 +66,4 @@ sentry:
     minimum-breadcrumb-level: info
 
 slack:
-  webhook-url : ***REMOVED***
+  webhook-url: ***REMOVED***
