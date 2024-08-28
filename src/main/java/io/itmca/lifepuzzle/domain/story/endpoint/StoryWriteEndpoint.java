@@ -8,6 +8,7 @@ import static io.itmca.lifepuzzle.global.util.FileUtil.handleSameNameContents;
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.endpoint.response.StoryWriteResponse;
+import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
@@ -15,6 +16,7 @@ import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
+import io.itmca.lifepuzzle.global.ai.stt.DeepgramSttService;
 import io.itmca.lifepuzzle.global.aop.AuthCheck;
 import io.itmca.lifepuzzle.global.aop.HeroNoContainer;
 import io.itmca.lifepuzzle.global.exception.HeroNotAccessibleToStoryException;
@@ -43,7 +45,7 @@ public class StoryWriteEndpoint {
   private final StoryQueryService storyQueryService;
   private final UserQueryService userQueryService;
 
-  @AuthCheck(auths = { WRITER, ADMIN, OWNER })
+  @AuthCheck(auths = {WRITER, ADMIN, OWNER})
   @Operation(summary = "스토리 등록")
   @PostMapping({"/story", // TODO: FE 전환 후 제거
       "/stories"})
@@ -154,5 +156,12 @@ public class StoryWriteEndpoint {
     storyWriteService.delete(storyKey);
 
     return HttpStatus.OK;
+  }
+
+  @PostMapping({"/stories/stt"})
+  public String convertSpeechToText(@RequestPart(value = "voice", required = false)
+                                    List<MultipartFile> voices) {
+    StoryVoiceFile storyVoiceFile = new StoryVoiceFile(new Story(), voices.get(0));
+    return (new DeepgramSttService()).transcribeAudio(storyVoiceFile);
   }
 }
