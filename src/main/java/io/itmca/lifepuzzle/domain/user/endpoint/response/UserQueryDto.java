@@ -1,6 +1,5 @@
 package io.itmca.lifepuzzle.domain.user.endpoint.response;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.USER_PROFILE_DEFAULT_IMAGE_PATH;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.USER_PROFILE_IMAGE_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constant.ServerConstant.S3_SERVER_HOST;
 
@@ -9,6 +8,7 @@ import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
@@ -37,8 +37,8 @@ public class UserQueryDto {
   }
 
   private static String addServerHostInImage(Long userNo, String imageURL) {
-    if (imageURL == null || imageURL.trim().equals("")) {
-      return S3_SERVER_HOST + USER_PROFILE_DEFAULT_IMAGE_PATH;
+    if (StringUtils.isBlank(imageURL)) {
+      return "";
     }
 
     return S3_SERVER_HOST + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(userNo) + imageURL;
