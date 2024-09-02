@@ -8,6 +8,8 @@ import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+
 
 @Getter
 @Builder
@@ -27,10 +29,16 @@ public class HeroUserAuthQueryDTO {
     return HeroUserAuthQueryDTO.builder()
         .userNo(user.getUserNo())
         .nickName(user.getNickName())
-        .imageURL(S3_SERVER_HOST
-            + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(user.getUserNo())
-            + user.getImage())
+        .imageURL(addServerHostInImage(user.getUserNo(), user.getImage()))
         .auth(heroUserAuth.getAuth())
         .build();
+  }
+
+  private static String addServerHostInImage(Long userNo, String imageURL) {
+    if (StringUtils.isBlank(imageURL)) {
+      return "";
+    }
+
+    return S3_SERVER_HOST + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(userNo) + imageURL;
   }
 }
