@@ -4,6 +4,7 @@ import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
+import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class RegisterPostActionService {
         HeroUserAuth.builder()
             .user(user)
             .hero(hero)
+            .auth(HeroAuthStatus.OWNER)
             .build());
 
     userWriteService.changeRecentHeroNo(user, hero.getHeroNo());
