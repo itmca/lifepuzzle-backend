@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +52,8 @@ public class StoryWriteEndpoint {
       "/stories"})
   public ResponseEntity<StoryWriteResponse> writeStory(
       @RequestPart("storyInfo") @HeroNoContainer StoryWriteRequest storyWriteRequest,
+      @RequestPart(value = "gallery", required = false)
+      List<MultipartFile> gallery,
       @RequestPart(value = "photos", required = false)
       List<MultipartFile> images,
       @RequestPart(value = "voice", required = false)
@@ -61,7 +64,49 @@ public class StoryWriteEndpoint {
 
     var story = storyWriteRequest.toStory(authPayload.getUserNo());
 
-    var storyFile = StoryFile.builder()
+    var storyFile = CollectionUtils.isEmpty(gallery)
+        ? buildStoryFile(images, voices, videos, story)
+        : buildStoryFileWithGallery(gallery, voices, story);
+
+    storyWriteService.create(story, storyFile);
+
+    return ResponseEntity.ok(
+        StoryWriteResponse.builder()
+            .storyKey(story.getStoryKey())
+            .build()
+    );
+  }
+
+  private static StoryFile buildStoryFileWithGallery(List<MultipartFile> gallery,
+                                                     List<MultipartFile> voices,
+                                                     Story story) {
+    return StoryFile.builder()
+        .images(handleSameNameContents(
+            gallery.stream().filter(
+                    file -> file.getContentType() != null && file.getContentType().startsWith("image"))
+                .toList(),
+            (image) -> new StoryImageFile(story, image).resize(),
+            (image, postfix) -> new StoryImageFile(story, image, postfix).resize())
+        )
+        .voices(handleSameNameContents(
+            voices,
+            (voice) -> new StoryVoiceFile(story, voice),
+            (voice, postfix) -> new StoryVoiceFile(story, voice, postfix))
+        )
+        .videos(handleSameNameContents(
+            gallery.stream().filter(
+                    file -> file.getContentType() != null && file.getContentType().startsWith("video"))
+                .toList(),
+            (video) -> new StoryVideoFile(story, video).resize(),
+            (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
+        ).build();
+  }
+
+  // TODO: FE에서 gallery로 전환 후 제거
+  @Deprecated
+  private static StoryFile buildStoryFile(List<MultipartFile> images, List<MultipartFile> voices,
+                                          List<MultipartFile> videos, Story story) {
+    return StoryFile.builder()
         .images(handleSameNameContents(
             images,
             (image) -> new StoryImageFile(story, image).resize(),
@@ -78,14 +123,6 @@ public class StoryWriteEndpoint {
             (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
         )
         .build();
-
-    storyWriteService.create(story, storyFile);
-
-    return ResponseEntity.ok(
-        StoryWriteResponse.builder()
-            .storyKey(story.getStoryKey())
-            .build()
-    );
   }
 
   @Operation(summary = "스토리 수정")
@@ -93,6 +130,8 @@ public class StoryWriteEndpoint {
       "/stories/{storyKey}"})
   public void updateStory(@PathVariable("storyKey") String storyKey,
                           @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
+                          @RequestPart(value = "gallery", required = false)
+                          List<MultipartFile> gallery,
                           @RequestPart(value = "photos", required = false)
                           List<MultipartFile> images,
                           @RequestPart(value = "voice", required = false)
@@ -115,23 +154,9 @@ public class StoryWriteEndpoint {
 
     story.updateStoryInfo(storyWriteRequest);
 
-    var storyFile = StoryFile.builder()
-        .images(handleSameNameContents(
-            images,
-            (image) -> new StoryImageFile(story, image).resize(),
-            (image, postfix) -> new StoryImageFile(story, image, postfix).resize())
-        )
-        .voices(handleSameNameContents(
-            voices,
-            (voice) -> new StoryVoiceFile(story, voice),
-            (voice, postfix) -> new StoryVoiceFile(story, voice, postfix))
-        )
-        .videos(handleSameNameContents(
-            videos,
-            (video) -> new StoryVideoFile(story, video).resize(),
-            (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
-        )
-        .build();
+    var storyFile = CollectionUtils.isEmpty(gallery)
+        ? buildStoryFile(images, voices, videos, story)
+        : buildStoryFileWithGallery(gallery, voices, story);
 
     storyWriteService.update(story, storyFile);
   }
