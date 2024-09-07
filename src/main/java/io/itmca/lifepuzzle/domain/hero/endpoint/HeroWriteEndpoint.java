@@ -56,7 +56,7 @@ public class HeroWriteEndpoint {
   @PutMapping("heroes/{heroNo}")
   public HeroQueryDTO updateHero(
       @PathVariable("heroNo") @HeroNo Long heroNo,
-      @RequestBody
+      @RequestPart("toWrite")
       HeroWriteRequest request,
       @RequestPart(value = "photo", required = false)
       MultipartFile profile,
