@@ -183,7 +183,7 @@ public class StoryWriteEndpoint {
     return HttpStatus.OK;
   }
 
-  @PostMapping({"/stories/stt"})
+  @PostMapping({"/stories/speech-to-text"})
   public String convertSpeechToText(@RequestPart(value = "voice", required = false)
                                     List<MultipartFile> voices) {
     StoryVoiceFile storyVoiceFile = new StoryVoiceFile(new Story(), voices.get(0));
