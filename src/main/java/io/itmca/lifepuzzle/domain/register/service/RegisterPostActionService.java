@@ -23,14 +23,7 @@ public class RegisterPostActionService {
   }
 
   private void createHeroOfUser(User user) {
-    var hero = heroWriteService.create(Hero.defaultHero());
-
-    heroUserAuthWriteService.create(
-        HeroUserAuth.builder()
-            .user(user)
-            .hero(hero)
-            .auth(HeroAuthStatus.OWNER)
-            .build());
+    var hero = heroWriteService.createDefaultHero(user);
 
     userWriteService.changeRecentHeroNo(user, hero.getHeroNo());
   }

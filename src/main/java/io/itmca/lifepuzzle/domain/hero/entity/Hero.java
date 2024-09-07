@@ -15,8 +15,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Getter
@@ -29,13 +31,19 @@ public class Hero {
   @Column(name = "seq")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long heroNo;
+  @Nullable
   private Long parentNo;
+  @Nullable
   private Long spouseNo;
+  @Setter
   private String name;
+  @Setter
   private String nickname;
+  @Setter
   private LocalDate birthday;
-  private String image;
+  @Setter
   private String title;
+  private String image;
 
   @OneToMany(mappedBy = "hero")
   private List<HeroUserAuth> heroUserAuths;
@@ -58,8 +66,11 @@ public class Hero {
         .build();
   }
 
-  public void setImage(HeroProfileImage heroProfileImage) {
+  public void setProfileImage(@Nullable HeroProfileImage heroProfileImage) {
+    if (heroProfileImage == null) {
+      return;
+    }
+
     this.image = heroProfileImage.getFileName();
   }
-
 }

@@ -9,7 +9,6 @@ import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
-import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.file.HeroProfileImage;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
@@ -18,7 +17,6 @@ import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.global.aop.AuthCheck;
 import io.itmca.lifepuzzle.global.aop.HeroNo;
-import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -38,34 +36,17 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @Tag(name = "주인공 등록")
 public class HeroWriteEndpoint {
-
   private final HeroValidationService heroValidationService;
   private final HeroWriteService heroWriteService;
   private final HeroUserAuthWriteService heroUserAuthWriteService;
-  private final S3UploadService s3UploadService;
 
   @Operation(summary = "주인공 등록")
   @PostMapping("/heroes")
-  public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest heroWriteRequest,
+  public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest request,
                                  @RequestPart(value = "photo", required = false)
-                                 MultipartFile requestPhoto,
+                                 MultipartFile profile,
                                  @CurrentUser User user) {
-
-    var hero = heroWriteService.create(heroWriteRequest.toHeroOf(requestPhoto));
-
-    if (requestPhoto != null) {
-      var heroProfileImage = new HeroProfileImage(hero, requestPhoto).resize();
-
-      hero.setImage(heroProfileImage);
-
-      s3UploadService.upload(heroProfileImage);
-    }
-
-    heroUserAuthWriteService.create(HeroUserAuth.builder()
-        .user(user)
-        .hero(hero)
-        .auth(OWNER)
-        .build());
+    var hero = heroWriteService.create(request, user, profile);
 
     return HeroQueryDTO.from(hero);
   }
@@ -78,7 +59,7 @@ public class HeroWriteEndpoint {
                                  @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
-    return HeroQueryDTO.from(heroWriteService.create(heroWriteRequest.toHeroOf(heroNo)));
+    return HeroQueryDTO.from(heroWriteService.update(heroNo, heroWriteRequest));
   }
 
   @AuthCheck(auths = {OWNER})
@@ -97,23 +78,14 @@ public class HeroWriteEndpoint {
           "heroes/{heroNo}/profile"},
       method = {POST, PUT})
   public HeroQueryDTO saveHeroPhoto(@PathVariable("heroNo") @HeroNo Long heroNo,
-                                    @RequestPart("toUpdate") HeroWriteRequest heroWriteRequest,
-                                    @RequestPart(name = "photo", required = false)
-                                    MultipartFile requestPhoto,
+                                    @RequestPart(name = "photo")
+                                    MultipartFile profile,
                                     @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
-    var hero = heroWriteRequest.toHeroOf(heroNo, requestPhoto);
+    var updated = heroWriteService.updateProfile(heroNo, profile);
 
-    if (requestPhoto != null) {
-      var heroProfileImage = new HeroProfileImage(hero, requestPhoto);
-
-      hero.setImage(heroProfileImage);
-
-      s3UploadService.upload(heroProfileImage);
-    }
-
-    return HeroQueryDTO.from(heroWriteService.update(hero));
+    return HeroQueryDTO.from(updated);
 
   }
 
@@ -123,6 +95,7 @@ public class HeroWriteEndpoint {
                                    @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(),
         heroChangeAuthRequest.heroNo());
+
     heroUserAuthWriteService.update(heroChangeAuthRequest);
   }
 
