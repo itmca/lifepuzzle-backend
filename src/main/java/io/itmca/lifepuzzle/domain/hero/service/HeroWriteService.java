@@ -56,7 +56,7 @@ public class HeroWriteService {
     return created;
   }
 
-  public Hero update(Long heroNo, HeroWriteRequest heroWriteRequest) {
+  public Hero update(Long heroNo, HeroWriteRequest heroWriteRequest, MultipartFile profile) {
     var hero = heroRepository.findById(heroNo)
         .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
 
@@ -64,6 +64,11 @@ public class HeroWriteService {
     hero.setName(heroWriteRequest.getHeroName());
     hero.setNickname(heroWriteRequest.getHeroNickName());
     hero.setBirthday(heroWriteRequest.getBirthday());
+
+    if (profile != null) {
+      var uploadedProfileImage = uploadProfileImage(profile, hero);
+      hero.setProfileImage(uploadedProfileImage.orElse(null));
+    }
 
     return heroRepository.save(hero);
   }

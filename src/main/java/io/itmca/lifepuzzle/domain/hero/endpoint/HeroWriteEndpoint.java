@@ -54,12 +54,17 @@ public class HeroWriteEndpoint {
   @AuthCheck(auths = {ADMIN, OWNER})
   @Operation(summary = "주인공 수정")
   @PutMapping("heroes/{heroNo}")
-  public HeroQueryDTO updateHero(@RequestBody HeroWriteRequest heroWriteRequest,
-                                 @PathVariable("heroNo") @HeroNo Long heroNo,
-                                 @AuthenticationPrincipal AuthPayload authPayload) {
+  public HeroQueryDTO updateHero(
+      @PathVariable("heroNo") @HeroNo Long heroNo,
+      @RequestBody
+      HeroWriteRequest request,
+      @RequestPart(value = "photo", required = false)
+      MultipartFile profile,
+      @AuthenticationPrincipal
+      AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
 
-    return HeroQueryDTO.from(heroWriteService.update(heroNo, heroWriteRequest));
+    return HeroQueryDTO.from(heroWriteService.update(heroNo, request, profile));
   }
 
   @AuthCheck(auths = {OWNER})
@@ -71,6 +76,8 @@ public class HeroWriteEndpoint {
     heroWriteService.remove(heroNo);
   }
 
+  // TODO: FE에서 주인공 저장 시점에 사진도 저장하는 것으로 되어 Deprecated 되었으며 FE 전환 후 제거
+  @Deprecated
   @AuthCheck(auths = {ADMIN, OWNER})
   @Operation(summary = "주인공 사진 수정")
   @RequestMapping(
