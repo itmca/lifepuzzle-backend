@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -184,8 +185,20 @@ public class StoryWriteEndpoint {
   }
 
   @PostMapping({"/stories/speech-to-text"})
-  public String convertSpeechToText(@RequestPart(value = "voice", required = false)
-                                    List<MultipartFile> voices) {
+  public String convertSpeechToText(
+      @RequestPart(value = "voice", required = false)
+      List<MultipartFile> voices,
+      @RequestParam(value = "isTest", defaultValue = "false", required = false)
+      boolean isTest
+  ) {
+    if (isTest) {
+      return String.join("\\n",
+          "동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁화 삼천리 화려강산 대한사람 대한으로 길이 보전하세",
+          "떳다 떳다 비행기 날아라 날아라 높이 높이 날아라",
+          "떳다 떳다 비행기 시원하게 시원하게 날아라 날아라 시원하게 날아라");
+    }
+
+
     StoryVoiceFile storyVoiceFile = new StoryVoiceFile(new Story(), voices.get(0));
     return (new DeepgramSttService()).transcribeAudio(storyVoiceFile);
   }
