@@ -17,7 +17,7 @@ public class SocialRegisterService {
   public void registerKakaoUser(String kakaoId) {
     var user = userWriteService.save(
         User.builder()
-            .userId("kakao" + kakaoId)
+            .loginId("kakao" + kakaoId)
             .nickName(nicknameProvideService.getRandomNickname(kakaoId))
             .kakaoId(kakaoId)
             .build());
@@ -31,7 +31,7 @@ public class SocialRegisterService {
 
     var user = userWriteService.save(
         User.builder()
-            .userId("appleUserId" + appleUserId)
+            .loginId("appleUserId" + appleUserId)
             .nickName(nicknameProvideService.getRandomNickname(appleUserId))
             .email(email)
             .appleId(appleUserId)

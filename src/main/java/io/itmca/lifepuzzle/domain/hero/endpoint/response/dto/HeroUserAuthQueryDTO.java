@@ -27,9 +27,9 @@ public class HeroUserAuthQueryDTO {
   public static HeroUserAuthQueryDTO from(HeroUserAuth heroUserAuth) {
     var user = heroUserAuth.getUser();
     return HeroUserAuthQueryDTO.builder()
-        .userNo(user.getUserNo())
+        .userNo(user.getId())
         .nickName(user.getNickName())
-        .imageURL(addServerHostInImage(user.getUserNo(), user.getImage()))
+        .imageURL(addServerHostInImage(user.getId(), user.getImage()))
         .auth(heroUserAuth.getAuth())
         .build();
   }

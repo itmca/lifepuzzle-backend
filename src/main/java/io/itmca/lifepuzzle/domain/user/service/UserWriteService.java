@@ -60,14 +60,14 @@ public class UserWriteService {
       throw new UserNotShareHeroAuthException("user can not share hero auth");
     }
 
-    long userNo = user.getUserNo();
+    long userNo = user.getId();
     String shareKey = createHeroAuthShareKey(userNo);
     LocalDateTime now = LocalDateTime.now();
 
     userHeroShareRepository.save(UserHeroShare.builder()
         .id(shareKey)
-        .ownerNo(userNo)
-        .heroNo(heroNo)
+        .sharerUserId(userNo)
+        .heroId(heroNo)
         .auth(shareAuth)
         .createdAt(now)
         .expiredAt(now.plusDays(7))

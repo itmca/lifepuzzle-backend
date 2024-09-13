@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HeroUserAuthRepository extends JpaRepository<HeroUserAuth, Long> {
 
-  List<HeroUserAuth> findAllByUser_UserNo(Long userNo);
+  List<HeroUserAuth> findAllByUser_Id(Long userNo);
 
   @Query(value = "SELECT auth FROM HeroUserAuth auth "
-      + "WHERE auth.user.userNo = :userNo AND auth.hero.heroNo = :heroNo")
+      + "WHERE auth.user.id = :userNo AND auth.hero.heroNo = :heroNo")
   Optional<HeroUserAuth> findByUserNoAndHeroNo(@Param("userNo") Long userNo,
                                                @Param("heroNo") Long heroNo);
 }

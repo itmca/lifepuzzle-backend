@@ -14,7 +14,7 @@ public class UserRegisterRequest {
 
   public User toUser() {
     return User.builder()
-        .userId(id)
+        .loginId(id)
         .nickName(nickName)
         .email(email)
         .password(password)

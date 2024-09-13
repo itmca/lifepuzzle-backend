@@ -28,13 +28,13 @@ import org.springframework.lang.Nullable;
 public class Hero {
 
   @Id
-  @Column(name = "seq")
+  @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long heroNo;
   @Nullable
-  private Long parentNo;
+  private Long parentId;
   @Nullable
-  private Long spouseNo;
+  private Long spouseId;
   @Setter
   private String name;
   @Setter

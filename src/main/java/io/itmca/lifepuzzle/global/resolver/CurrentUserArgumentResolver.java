@@ -30,7 +30,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
       throws Exception {
     AuthPayload principal =
         (AuthPayload) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Long userNo = principal.getUserNo();
+    Long userNo = principal.getUserId();
 
     return userQueryService.findByUserNo(userNo);
   }

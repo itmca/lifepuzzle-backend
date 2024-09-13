@@ -35,10 +35,10 @@ import org.springframework.util.StringUtils;
 public class Story {
 
   @Id
-  private String storyKey;
-  private Long userNo;
-  private Long heroNo;
-  private Long recQuestionNo;
+  private String id;
+  private Long userId;
+  private Long heroId;
+  private Long recQuestionId;
   private String usedQuestion;
   @Column(columnDefinition = "tinyint(1) default 0")
   private boolean isQuestionModified;
@@ -161,7 +161,7 @@ public class Story {
   }
 
   public void updateStoryInfo(StoryWriteRequest storyWriteRequest) {
-    this.recQuestionNo =
+    this.recQuestionId =
         storyWriteRequest.getRecQuestionNo() == null ? -1 : storyWriteRequest.getRecQuestionNo();
     this.isQuestionModified =
         storyWriteRequest.getRecQuestionModified() == null ? false :

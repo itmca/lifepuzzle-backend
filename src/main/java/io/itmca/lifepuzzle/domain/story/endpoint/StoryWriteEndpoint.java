@@ -63,7 +63,7 @@ public class StoryWriteEndpoint {
       List<MultipartFile> videos,
       @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
 
-    var story = storyWriteRequest.toStory(authPayload.getUserNo());
+    var story = storyWriteRequest.toStory(authPayload.getUserId());
 
     var storyFile = CollectionUtils.isEmpty(gallery)
         ? buildStoryFile(images, voices, videos, story)
@@ -73,7 +73,7 @@ public class StoryWriteEndpoint {
 
     return ResponseEntity.ok(
         StoryWriteResponse.builder()
-            .storyKey(story.getStoryKey())
+            .storyKey(story.getId())
             .build()
     );
   }
@@ -143,13 +143,13 @@ public class StoryWriteEndpoint {
 
     var story = storyQueryService.findById(storyKey);
 
-    if (story.getUserNo() != authPayload.getUserNo()) {
-      throw new UserNotAccessibleToStoryException(authPayload.getUserNo(), storyKey);
+    if (story.getUserId() != authPayload.getUserId()) {
+      throw new UserNotAccessibleToStoryException(authPayload.getUserId(), storyKey);
     }
 
     // storyWriteRequest에 있는 heroNo로 비교하는 것보다,
     // authPayload에 있는 userNo로 heroNo를 조회하여 비교하는 게 맞을까요?
-    if (story.getHeroNo() != storyWriteRequest.getHeroNo()) {
+    if (story.getHeroId() != storyWriteRequest.getHeroNo()) {
       throw new HeroNotAccessibleToStoryException(storyWriteRequest.getHeroNo(), storyKey);
     }
 
@@ -170,12 +170,12 @@ public class StoryWriteEndpoint {
 
     var story = storyQueryService.findById(storyKey);
 
-    if (story.getUserNo() != authPayload.getUserNo()) {
-      throw new UserNotAccessibleToStoryException(authPayload.getUserNo(), storyKey);
+    if (story.getUserId() != authPayload.getUserId()) {
+      throw new UserNotAccessibleToStoryException(authPayload.getUserId(), storyKey);
     }
 
-    var user = userQueryService.findByUserNo(authPayload.getUserNo());
-    if (story.getHeroNo() != user.getRecentHeroNo()) {
+    var user = userQueryService.findByUserNo(authPayload.getUserId());
+    if (story.getHeroId() != user.getRecentHeroNo()) {
       throw new HeroNotAccessibleToStoryException(user.getRecentHeroNo(), storyKey);
     }
 

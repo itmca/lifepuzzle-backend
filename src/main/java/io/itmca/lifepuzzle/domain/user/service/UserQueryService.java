@@ -19,9 +19,9 @@ public class UserQueryService {
         .orElseThrow(() -> UserNotFoundException.byUserNo(userNo));
   }
 
-  public User findByUserId(String userId) {
-    return userRepository.findByUserId(userId)
-        .orElseThrow(() -> UserNotFoundException.byId(userId));
+  public User findByLoginId(String userLoginId) {
+    return userRepository.findByLoginId(userLoginId)
+        .orElseThrow(() -> UserNotFoundException.byId(userLoginId));
   }
 
   public User findByEmail(String email) {

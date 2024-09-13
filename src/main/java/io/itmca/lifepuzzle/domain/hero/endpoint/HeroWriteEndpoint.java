@@ -9,7 +9,6 @@ import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
-import io.itmca.lifepuzzle.domain.hero.file.HeroProfileImage;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
@@ -62,7 +61,7 @@ public class HeroWriteEndpoint {
       MultipartFile profile,
       @AuthenticationPrincipal
       AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
 
     return HeroQueryDTO.from(heroWriteService.update(heroNo, request, profile));
   }
@@ -72,7 +71,7 @@ public class HeroWriteEndpoint {
   @DeleteMapping("heroes/{heroNo}")
   public void deleteHero(@PathVariable("heroNo") @HeroNo Long heroNo,
                          @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
     heroWriteService.remove(heroNo);
   }
 
@@ -88,7 +87,7 @@ public class HeroWriteEndpoint {
                                     @RequestPart(name = "photo")
                                     MultipartFile profile,
                                     @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
 
     var updated = heroWriteService.updateProfile(heroNo, profile);
 
@@ -100,7 +99,7 @@ public class HeroWriteEndpoint {
   @PutMapping("heroes/auth")
   public void changeHeroAuthOfUser(@RequestBody HeroChangeAuthRequest heroChangeAuthRequest,
                                    @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(),
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(),
         heroChangeAuthRequest.heroNo());
 
     heroUserAuthWriteService.update(heroChangeAuthRequest);

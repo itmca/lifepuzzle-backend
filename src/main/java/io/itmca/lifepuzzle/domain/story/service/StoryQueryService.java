@@ -21,6 +21,6 @@ public class StoryQueryService {
   }
 
   public int countByHeroNo(Long heroNo) {
-    return storyRepository.countByHeroNo(heroNo);
+    return storyRepository.countByHeroId(heroNo);
   }
 }

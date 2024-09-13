@@ -24,10 +24,10 @@ public class UserHeroShare {
   String id;
 
   @Column(nullable = false)
-  long ownerNo;
+  long sharerUserId;
 
   @Column(nullable = false)
-  long heroNo;
+  long heroId;
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)

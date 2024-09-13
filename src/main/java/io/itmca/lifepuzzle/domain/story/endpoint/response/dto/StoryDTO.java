@@ -26,8 +26,8 @@ public class StoryDTO {
 
   public static StoryDTO from(Story story, Hero hero) {
     return StoryDTO.builder()
-        .id(story.getStoryKey())
-        .heroNo(story.getHeroNo())
+        .id(story.getId())
+        .heroNo(story.getHeroId())
         .title(story.getTitle())
         .content(story.getContent())
         .question(story.getUsedQuestion())

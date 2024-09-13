@@ -31,11 +31,10 @@ import org.springframework.util.StringUtils;
 @AllArgsConstructor
 public class User {
   @Id
-  @Column(name = "seq")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long userNo;
   @Column(name = "id")
-  private String userId;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  private String loginId;
   private String email;
   private String salt;
   private String password;

@@ -32,14 +32,15 @@ public class HeroUserAuth {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long seq;
+  private Long id;
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "userNo")
+  @JoinColumn(name = "user_id")
   private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "heroNo")
+  @JoinColumn(name = "hero_id")
   private Hero hero;
+
   @Enumerated(EnumType.STRING)
   private HeroAuthStatus auth;
 

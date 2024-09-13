@@ -46,7 +46,7 @@ public class HeroUserAuthWriteService {
 
     boolean isExistHeroAuth =
         user.getHeroUserAuths().stream()
-            .anyMatch(h -> h.getHero().getHeroNo() == userHeroShare.getHeroNo());
+            .anyMatch(h -> h.getHero().getHeroNo() == userHeroShare.getHeroId());
 
     if (isExistHeroAuth) {
       throw new HeroAuthAlreadyExistsException("이미 등록되어 있는 주인공입니다.");
@@ -58,7 +58,7 @@ public class HeroUserAuthWriteService {
             .user(user)
             .hero(Hero
                 .builder()
-                .heroNo(userHeroShare.getHeroNo())
+                .heroNo(userHeroShare.getHeroId())
                 .build()
             )
             .auth(userHeroShare.getAuth())

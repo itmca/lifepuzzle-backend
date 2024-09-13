@@ -25,14 +25,14 @@ public class UserQueryDto {
 
   public static UserQueryDto from(User user) {
     return UserQueryDto.builder()
-        .userNo(user.getUserNo())
-        .userId(user.getUserId())
+        .userNo(user.getId())
+        .userId(user.getLoginId())
         .userNickName(user.getNickName())
         .recentHeroNo(user.getRecentHeroNo())
         .email(user.getEmail())
         .birthday(user.getBirthday())
         .userType(user.getUserType())
-        .imageURL(addServerHostInImage(user.getUserNo(), user.getImage()))
+        .imageURL(addServerHostInImage(user.getId(), user.getImage()))
         .build();
   }
 

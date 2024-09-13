@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Question {
   @Id
-  @Column(name = "seq")
+  @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long questionNo;
 

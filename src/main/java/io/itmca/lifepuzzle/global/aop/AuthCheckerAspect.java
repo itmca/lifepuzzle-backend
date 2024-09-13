@@ -76,7 +76,7 @@ public class AuthCheckerAspect {
     var principal = (AuthPayload) SecurityContextHolder.getContext()
         .getAuthentication()
         .getPrincipal();
-    var userNo = principal.getUserNo();
+    var userNo = principal.getUserId();
 
     var heroUserAuths = userQueryService.findByUserNo(userNo).getHeroUserAuths();
 

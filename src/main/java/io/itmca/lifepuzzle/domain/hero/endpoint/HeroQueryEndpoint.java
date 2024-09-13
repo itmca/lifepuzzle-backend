@@ -28,7 +28,7 @@ public class HeroQueryEndpoint {
   @Deprecated
   @GetMapping("/heroes")
   public List<HeroQueryDTO> getHeroes(@AuthenticationPrincipal AuthPayload authPayload) {
-    var heroes = heroQueryService.findHeroesByUserNo(authPayload.getUserNo());
+    var heroes = heroQueryService.findHeroesByUserNo(authPayload.getUserId());
 
     return heroes.stream().map(HeroQueryDTO::from).toList();
   }
@@ -36,7 +36,7 @@ public class HeroQueryEndpoint {
   @Operation(summary = "주인공 전체 목록 조회")
   @GetMapping("/heroes/v2")
   public HeroListQueryResponse getHeroesV2(@AuthenticationPrincipal AuthPayload authPayload) {
-    var user = userQueryService.findByUserNo(authPayload.getUserNo());
+    var user = userQueryService.findByUserNo(authPayload.getUserId());
 
     return heroQueryService.toQueryResponses(user);
   }
@@ -46,7 +46,7 @@ public class HeroQueryEndpoint {
   public HeroQueryResponse getHeroDetail(
       @PathVariable("heroNo") @Schema(description = "주인공키") Long heroNo,
       @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
 
     var hero = heroQueryService.findHeroByHeroNo(heroNo);
 

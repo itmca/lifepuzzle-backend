@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StoryRepository extends JpaRepository<Story, String> {
-  @Query("SELECT s FROM Story s WHERE s.heroNo = :heroNo "
+  @Query("SELECT s FROM Story s WHERE s.heroId = :heroNo "
       + "ORDER BY s.createdAt DESC")
   List<Story> findAllByHeroNo(@Param("heroNo") Long heroNo);
 
-  int countByHeroNo(Long heroNo);
+  int countByHeroId(Long heroNo);
 }
