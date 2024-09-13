@@ -45,8 +45,8 @@ CREATE TABLE `question`
     `id`               bigint NOT NULL AUTO_INCREMENT COMMENT '질문 ID',
     `category`         varchar(32)  DEFAULT NULL COMMENT '카테고리',
     `question_content` varchar(128) DEFAULT NULL COMMENT '질문내용',
-    `use_count`        int    NOT NULL COMMENT '사용횟수',
-    `question_grade`   float  NOT NULL COMMENT '질문평점',
+    `use_count`        int    NOT NULL DEFAULT 0 COMMENT '사용횟수',
+    `question_grade`   float  NOT NULL DEFAULT 0 COMMENT '질문평점',
     `created_at`       datetime     DEFAULT CURRENT_TIMESTAMP COMMENT '생성일자',
     PRIMARY KEY (`id`)
 ) COMMENT='질문 정보';

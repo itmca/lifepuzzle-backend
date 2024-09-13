@@ -24,10 +24,10 @@ public class QuestionStory {
   @Id
   @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  String storyKey;
+  String id;
 
   @Column
-  Long heroNo;
+  Long heroId;
 
   @Column
   Long recQuestionNo;
