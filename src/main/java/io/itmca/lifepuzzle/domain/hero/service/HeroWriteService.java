@@ -28,14 +28,17 @@ public class HeroWriteService {
   public Hero create(HeroWriteRequest request, User user, @Nullable MultipartFile profile) {
     var hero = request.toHero();
 
+    var savedHero = heroRepository.save(hero);
+    postCreateAction(user, profile, hero, savedHero);
+
+    return savedHero;
+  }
+  
+  private void postCreateAction(User user, MultipartFile profile, Hero hero, Hero savedHero) {
     var uploadedProfileImage = uploadProfileImage(profile, hero);
     hero.setProfileImage(uploadedProfileImage.orElse(null));
 
-    var savedHero = heroRepository.save(hero);
-
     heroUserAuthWriteService.authorize(user, savedHero, OWNER);
-
-    return savedHero;
   }
 
   private Optional<HeroProfileImage> uploadProfileImage(@Nullable MultipartFile profile,
