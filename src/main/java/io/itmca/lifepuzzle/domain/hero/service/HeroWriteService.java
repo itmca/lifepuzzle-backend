@@ -31,9 +31,11 @@ public class HeroWriteService {
     var uploadedProfileImage = uploadProfileImage(profile, hero);
     hero.setProfileImage(uploadedProfileImage.orElse(null));
 
-    heroUserAuthWriteService.authorize(user, hero, OWNER);
+    var savedHero = heroRepository.save(hero);
 
-    return heroRepository.save(hero);
+    heroUserAuthWriteService.authorize(user, savedHero, OWNER);
+
+    return savedHero;
   }
 
   private Optional<HeroProfileImage> uploadProfileImage(@Nullable MultipartFile profile,
