@@ -30,7 +30,7 @@ public class QuestionStory {
   Long heroId;
 
   @Column
-  Long recQuestionNo;
+  Long recQuestionId;
 
   @Column
   boolean isQuestionModified;

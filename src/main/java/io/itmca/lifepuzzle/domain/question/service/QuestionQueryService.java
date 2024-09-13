@@ -42,7 +42,7 @@ public class QuestionQueryService {
 
     return heroQuestionStories.stream()
         .filter(stories -> !stories.isQuestionModified())
-        .map(stories -> stories.getRecQuestionNo())
+        .map(stories -> stories.getRecQuestionId())
         .toList();
   }
 }
