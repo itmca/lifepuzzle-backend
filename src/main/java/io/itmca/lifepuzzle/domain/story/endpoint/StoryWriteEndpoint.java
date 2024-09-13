@@ -86,7 +86,8 @@ public class StoryWriteEndpoint {
             gallery.stream().filter(
                     file -> file.getContentType() != null && file.getContentType().startsWith("image"))
                 .toList(),
-            (image) -> new StoryImageFile(story, image).resize(),
+            // TODO: resize() 메서드 제거했는데 resize 정책 다시 확인 후 추가 필요
+            (image) -> new StoryImageFile(story, image),
             (image, postfix) -> new StoryImageFile(story, image, postfix).resize())
         )
         .voices(handleSameNameContents(
@@ -96,9 +97,10 @@ public class StoryWriteEndpoint {
         )
         .videos(handleSameNameContents(
             gallery.stream().filter(
-                    file -> file.getContentType() != null && file.getContentType().startsWith("video"))
+                    file -> file.getContentType() != null && !file.getContentType().startsWith("image"))
                 .toList(),
-            (video) -> new StoryVideoFile(story, video).resize(),
+            // TODO: resize() 메서드 제거했는데 resize 정책 다시 확인 후 추가 필요
+            (video) -> new StoryVideoFile(story, video),
             (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
         ).build();
   }
