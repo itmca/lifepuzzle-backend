@@ -4,7 +4,9 @@ import io.itmca.lifepuzzle.domain.question.entity.Question;
 import io.itmca.lifepuzzle.domain.question.repository.QuestionRepository;
 import io.itmca.lifepuzzle.domain.question.repository.QuestionStoryRepository;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -24,14 +26,19 @@ public class QuestionQueryService {
         ? findHeroUsedQuestionNumbers(heroNo)
         : new ArrayList<Long>();
 
-    return questions.stream()
+    var notUsedQuestions = questions.stream()
         .filter(question -> !alreadyUsedQuestionNumbers.contains(question.getQuestionNo()))
+        .collect(Collectors.toList());
+
+    Collections.shuffle(notUsedQuestions);
+
+    return notUsedQuestions.stream()
         .limit(size)
         .toList();
   }
 
   private List<Long> findHeroUsedQuestionNumbers(Long heroNo) {
-    var heroQuestionStories = questionStoryRepository.findByHeroNo(heroNo);
+    var heroQuestionStories = questionStoryRepository.findByHeroId(heroNo);
 
     return heroQuestionStories.stream()
         .filter(stories -> !stories.isQuestionModified())
