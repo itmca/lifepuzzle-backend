@@ -9,9 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 public class UserProfileImage extends CustomFile {
-  public UserProfileImage(User user, MultipartFile file) {
+  public UserProfileImage(User user, MultipartFile file, String postfix) {
     super(
         USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(user.getId().toString()),
-        file);
+        file,
+        postfix
+    );
   }
 }

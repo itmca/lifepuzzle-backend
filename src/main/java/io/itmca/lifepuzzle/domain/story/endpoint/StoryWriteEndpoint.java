@@ -104,7 +104,7 @@ public class StoryWriteEndpoint {
                 .toList(),
             // TODO: resize() 메서드 제거했는데 resize 정책 다시 확인 후 추가 필요
             (video) -> new StoryVideoFile(story, video),
-            (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
+            (video, postfix) -> new StoryVideoFile(story, video, postfix))
         ).build();
   }
 
@@ -126,7 +126,7 @@ public class StoryWriteEndpoint {
         .videos(handleSameNameContents(
             videos,
             (video) -> new StoryVideoFile(story, video).resize(),
-            (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
+            (video, postfix) -> new StoryVideoFile(story, video, postfix))
         )
         .build();
   }

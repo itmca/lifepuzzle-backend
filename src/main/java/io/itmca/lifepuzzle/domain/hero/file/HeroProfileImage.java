@@ -20,10 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Slf4j
 public class HeroProfileImage extends CustomFile implements Resizable<HeroProfileImage> {
-  public HeroProfileImage(Hero hero, MultipartFile file) {
+  public HeroProfileImage(Hero hero, MultipartFile file, String postfix) {
     super(
         HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(hero.getHeroNo().toString()),
-        file);
+        file,
+        postfix
+    );
   }
 
   @Builder

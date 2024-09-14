@@ -46,7 +46,11 @@ public class UserWriteEndpoint {
     }
 
     if (requestPhoto != null) {
-      var userProfileImage = new UserProfileImage(user, requestPhoto);
+      var userProfileImage = new UserProfileImage(
+          user,
+          requestPhoto,
+          String.valueOf(System.currentTimeMillis())
+      );
 
       user.setImage(userProfileImage);
 

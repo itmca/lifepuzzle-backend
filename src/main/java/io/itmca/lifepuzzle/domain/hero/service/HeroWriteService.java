@@ -47,7 +47,12 @@ public class HeroWriteService {
       return Optional.empty();
     }
 
-    var heroProfileImage = new HeroProfileImage(hero, profile).resize();
+    // TODO : resize 실패가 자주 발생해 추석 기간 동안 resize 제거. 추석 이후 원인 파악하여 resize 복구 예정
+    var heroProfileImage = new HeroProfileImage(
+        hero,
+        profile,
+        String.valueOf(System.currentTimeMillis())
+    );
     s3UploadService.upload(heroProfileImage);
 
     return Optional.of(heroProfileImage);
