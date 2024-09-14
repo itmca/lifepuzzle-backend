@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
 
   @EntityGraph(attributePaths = {"heroUserAuths"})
-  Optional<User> findByUserId(String userId);
+  Optional<User> findByLoginId(String userId);
 
   Optional<User> findByEmail(String email);
 

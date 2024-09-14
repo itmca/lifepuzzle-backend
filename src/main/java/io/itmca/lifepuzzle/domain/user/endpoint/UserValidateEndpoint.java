@@ -44,7 +44,7 @@ public class UserValidateEndpoint {
   @Operation(summary = "아이디 중복 체크")
   public boolean checkId(@RequestParam("id") String id) {
     try {
-      userQueryService.findByUserId(id);
+      userQueryService.findByLoginId(id);
     } catch (NotFoundException e) {
       return false;
     }

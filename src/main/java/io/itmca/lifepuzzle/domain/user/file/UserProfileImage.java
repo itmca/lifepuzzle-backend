@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserProfileImage extends CustomFile {
   public UserProfileImage(User user, MultipartFile file) {
     super(
-        USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(user.getUserNo().toString()),
+        USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(user.getId().toString()),
         file);
   }
 }

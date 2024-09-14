@@ -4,6 +4,7 @@ import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroUserAuthRepository;
+import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.entity.UserHeroShare;
 import io.itmca.lifepuzzle.domain.user.repository.UserHeroShareRepository;
@@ -22,7 +23,13 @@ public class HeroUserAuthWriteService {
   private final HeroUserAuthRepository heroUserAuthRepository;
   private final UserHeroShareRepository userHeroShareRepository;
 
-  public HeroUserAuth create(HeroUserAuth heroUserAuth) {
+  public HeroUserAuth authorize(User user, Hero hero, HeroAuthStatus heroAuthStatus) {
+    var heroUserAuth = HeroUserAuth.builder()
+        .user(user)
+        .hero(hero)
+        .auth(heroAuthStatus)
+        .build();
+
     return heroUserAuthRepository.save(heroUserAuth);
   }
 
@@ -39,7 +46,7 @@ public class HeroUserAuthWriteService {
 
     boolean isExistHeroAuth =
         user.getHeroUserAuths().stream()
-            .anyMatch(h -> h.getHero().getHeroNo() == userHeroShare.getHeroNo());
+            .anyMatch(h -> h.getHero().getHeroNo() == userHeroShare.getHeroId());
 
     if (isExistHeroAuth) {
       throw new HeroAuthAlreadyExistsException("이미 등록되어 있는 주인공입니다.");
@@ -51,7 +58,7 @@ public class HeroUserAuthWriteService {
             .user(user)
             .hero(Hero
                 .builder()
-                .heroNo(userHeroShare.getHeroNo())
+                .heroNo(userHeroShare.getHeroId())
                 .build()
             )
             .auth(userHeroShare.getAuth())

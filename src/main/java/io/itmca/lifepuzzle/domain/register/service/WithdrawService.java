@@ -7,13 +7,11 @@ import io.itmca.lifepuzzle.domain.user.UserType;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -48,7 +46,7 @@ public class WithdrawService {
       }
     }
 
-    userWriteService.deleteByUserNo(user.getUserNo());
+    userWriteService.deleteByUserNo(user.getId());
   }
 
   private String getSocialToken(UserWithdrawRequest userWithdrawRequest) {

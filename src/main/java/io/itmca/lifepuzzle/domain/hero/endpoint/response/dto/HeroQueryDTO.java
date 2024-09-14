@@ -1,6 +1,5 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_DEFAULT_IMAGE_PATH;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constant.ServerConstant.S3_SERVER_HOST;
 
@@ -42,7 +41,7 @@ public class HeroQueryDTO {
 
   private static String addServerHostInImage(Long heroNo, String imageURL) {
     if (StringUtils.isBlank(imageURL)) {
-      return S3_SERVER_HOST + HERO_PROFILE_DEFAULT_IMAGE_PATH;
+      return "";
     }
 
     return S3_SERVER_HOST

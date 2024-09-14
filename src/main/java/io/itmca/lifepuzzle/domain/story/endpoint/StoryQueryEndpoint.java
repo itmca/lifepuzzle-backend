@@ -43,7 +43,7 @@ public class StoryQueryEndpoint {
     if (heroNo == -1) {
       return StoryQueryResponse.getEmptyResponse();
     }
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
 
     var hero = heroQueryService.findHeroByHeroNo(heroNo);
     var stories = storyQueryService.findStoriesByHeroId(heroNo);
@@ -57,9 +57,9 @@ public class StoryQueryEndpoint {
   public StoryDTO findSingleStory(@PathVariable("storyKey") String storyKey,
                                   @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyQueryService.findById(storyKey);
-    var hero = heroQueryService.findHeroByHeroNo(story.getHeroNo());
+    var hero = heroQueryService.findHeroByHeroNo(story.getHeroId());
 
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), hero.getHeroNo());
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), hero.getHeroNo());
 
     return StoryDTO.from(story, hero);
   }

@@ -24,7 +24,7 @@ public class WithdrawEndpoint {
   @Operation(summary = "회원탈퇴")
   public void withdraw(@PathVariable("id") Long id, @CurrentUser User user,
                        @RequestBody(required = false) UserWithdrawRequest userWithdrawRequest) {
-    if (id != user.getUserNo()) {
+    if (!id.equals(user.getId())) {
       throw new UserNoMismatchException();
     }
 

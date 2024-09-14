@@ -24,7 +24,7 @@ public class StoryVideoFile extends CustomFile implements Resizable<StoryVideoFi
 
   public StoryVideoFile(Story story, MultipartFile file, String postfix) {
     super(
-        STORY_VIDEO_BASE_PATH_FORMAT.formatted(story.getStoryKey()),
+        STORY_VIDEO_BASE_PATH_FORMAT.formatted(story.getId()),
         file,
         postfix
     );

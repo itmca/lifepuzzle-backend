@@ -29,10 +29,10 @@ public class StoryWriteRequest {
   public Story toStory(Long userNo) {
     var storyKey = generatedStoryKey();
     return Story.builder()
-        .storyKey(storyKey)
-        .heroNo(heroNo)
-        .userNo(userNo)
-        .recQuestionNo(recQuestionNo == null ? -1 : recQuestionNo)
+        .id(storyKey)
+        .heroId(heroNo)
+        .userId(userNo)
+        .recQuestionId(recQuestionNo == null ? -1 : recQuestionNo)
         .isQuestionModified(recQuestionModified == null ? false : recQuestionModified)
         .usedQuestion(helpQuestionText)
         .title(title)

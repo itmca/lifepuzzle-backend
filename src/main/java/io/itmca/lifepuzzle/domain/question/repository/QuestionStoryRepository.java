@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface QuestionStoryRepository extends JpaRepository<QuestionStory, Long> {
-  List<QuestionStory> findByHeroNo(Long heroNo);
+  List<QuestionStory> findByHeroId(Long heroId);
 }

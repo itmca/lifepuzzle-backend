@@ -15,7 +15,7 @@ public class StoryVoiceFile extends CustomFile {
 
   public StoryVoiceFile(Story story, MultipartFile file, String postfix) {
     super(
-        STORY_VOICE_BASE_PATH_FORMAT.formatted(story.getStoryKey()),
+        STORY_VOICE_BASE_PATH_FORMAT.formatted(story.getId()),
         file,
         postfix
     );

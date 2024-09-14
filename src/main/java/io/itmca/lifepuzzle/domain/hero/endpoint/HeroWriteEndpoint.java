@@ -9,8 +9,6 @@ import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
-import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
-import io.itmca.lifepuzzle.domain.hero.file.HeroProfileImage;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
@@ -18,7 +16,6 @@ import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.global.aop.AuthCheck;
 import io.itmca.lifepuzzle.global.aop.HeroNo;
-import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -38,34 +35,17 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @Tag(name = "주인공 등록")
 public class HeroWriteEndpoint {
-
   private final HeroValidationService heroValidationService;
   private final HeroWriteService heroWriteService;
   private final HeroUserAuthWriteService heroUserAuthWriteService;
-  private final S3UploadService s3UploadService;
 
   @Operation(summary = "주인공 등록")
   @PostMapping("/heroes")
-  public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest heroWriteRequest,
+  public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest request,
                                  @RequestPart(value = "photo", required = false)
-                                 MultipartFile requestPhoto,
+                                 MultipartFile profile,
                                  @CurrentUser User user) {
-
-    var hero = heroWriteService.create(heroWriteRequest.toHeroOf(requestPhoto));
-
-    if (requestPhoto != null) {
-      var heroProfileImage = new HeroProfileImage(hero, requestPhoto).resize();
-
-      hero.setImage(heroProfileImage);
-
-      s3UploadService.upload(heroProfileImage);
-    }
-
-    heroUserAuthWriteService.create(HeroUserAuth.builder()
-        .user(user)
-        .hero(hero)
-        .auth(OWNER)
-        .build());
+    var hero = heroWriteService.create(request, user, profile);
 
     return HeroQueryDTO.from(hero);
   }
@@ -73,12 +53,17 @@ public class HeroWriteEndpoint {
   @AuthCheck(auths = {ADMIN, OWNER})
   @Operation(summary = "주인공 수정")
   @PutMapping("heroes/{heroNo}")
-  public HeroQueryDTO updateHero(@RequestBody HeroWriteRequest heroWriteRequest,
-                                 @PathVariable("heroNo") @HeroNo Long heroNo,
-                                 @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
+  public HeroQueryDTO updateHero(
+      @PathVariable("heroNo") @HeroNo Long heroNo,
+      @RequestPart("toWrite")
+      HeroWriteRequest request,
+      @RequestPart(value = "photo", required = false)
+      MultipartFile profile,
+      @AuthenticationPrincipal
+      AuthPayload authPayload) {
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
 
-    return HeroQueryDTO.from(heroWriteService.create(heroWriteRequest.toHeroOf(heroNo)));
+    return HeroQueryDTO.from(heroWriteService.update(heroNo, request, profile));
   }
 
   @AuthCheck(auths = {OWNER})
@@ -86,10 +71,12 @@ public class HeroWriteEndpoint {
   @DeleteMapping("heroes/{heroNo}")
   public void deleteHero(@PathVariable("heroNo") @HeroNo Long heroNo,
                          @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
     heroWriteService.remove(heroNo);
   }
 
+  // TODO: FE에서 주인공 저장 시점에 사진도 저장하는 것으로 되어 Deprecated 되었으며 FE 전환 후 제거
+  @Deprecated
   @AuthCheck(auths = {ADMIN, OWNER})
   @Operation(summary = "주인공 사진 수정")
   @RequestMapping(
@@ -97,23 +84,14 @@ public class HeroWriteEndpoint {
           "heroes/{heroNo}/profile"},
       method = {POST, PUT})
   public HeroQueryDTO saveHeroPhoto(@PathVariable("heroNo") @HeroNo Long heroNo,
-                                    @RequestPart("toUpdate") HeroWriteRequest heroWriteRequest,
-                                    @RequestPart(name = "photo", required = false)
-                                    MultipartFile requestPhoto,
+                                    @RequestPart(name = "photo")
+                                    MultipartFile profile,
                                     @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(), heroNo);
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
 
-    var hero = heroWriteRequest.toHeroOf(heroNo, requestPhoto);
+    var updated = heroWriteService.updateProfile(heroNo, profile);
 
-    if (requestPhoto != null) {
-      var heroProfileImage = new HeroProfileImage(hero, requestPhoto);
-
-      hero.setImage(heroProfileImage);
-
-      s3UploadService.upload(heroProfileImage);
-    }
-
-    return HeroQueryDTO.from(heroWriteService.update(hero));
+    return HeroQueryDTO.from(updated);
 
   }
 
@@ -121,8 +99,9 @@ public class HeroWriteEndpoint {
   @PutMapping("heroes/auth")
   public void changeHeroAuthOfUser(@RequestBody HeroChangeAuthRequest heroChangeAuthRequest,
                                    @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserNo(),
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(),
         heroChangeAuthRequest.heroNo());
+
     heroUserAuthWriteService.update(heroChangeAuthRequest);
   }
 

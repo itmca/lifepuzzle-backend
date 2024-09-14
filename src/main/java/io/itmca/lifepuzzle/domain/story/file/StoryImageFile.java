@@ -10,7 +10,6 @@ import io.github.techgnious.dto.ImageFormats;
 import io.github.techgnious.exception.ImageException;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
-import java.io.File;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,7 @@ public class StoryImageFile extends CustomFile {
 
   public StoryImageFile(Story story, MultipartFile file, String postfix) {
     super(
-        STORY_IMAGE_BASE_PATH_FORMAT.formatted(story.getStoryKey()),
+        STORY_IMAGE_BASE_PATH_FORMAT.formatted(story.getId()),
         file,
         postfix
     );

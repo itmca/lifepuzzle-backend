@@ -19,7 +19,7 @@ public class LoginService {
 
   public LoginResponse getLoginResponse(Login login) {
     var user = login.getUser();
-    var tokens = tokenIssueService.getTokensOfUser(user.getUserNo());
+    var tokens = tokenIssueService.getTokensOfUser(user.getId());
     var hero = heroQueryServiceService.findHeroByHeroNo(user.getRecentHeroNo());
 
     var socialToken = login.getSocialToken();
@@ -38,7 +38,7 @@ public class LoginService {
         .build();
 
     var userQueryDTO = UserQueryDTO.builder()
-        .userNo(user.getUserNo())
+        .userNo(user.getId())
         .userNickName(user.getNickName())
         .userType(user.getUserType())
         .build();

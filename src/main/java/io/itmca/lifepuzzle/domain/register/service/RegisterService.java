@@ -25,7 +25,7 @@ public class RegisterService {
   @Transactional
   public void register(User user) {
     if (isAlreadyExist(user)) {
-      throw new UserAlreadyExistsException(user.getUserId());
+      throw new UserAlreadyExistsException(user.getLoginId());
     }
 
     var registeredUser = this.registerInternally(user);
@@ -35,7 +35,7 @@ public class RegisterService {
 
   private boolean isAlreadyExist(User user) {
     try {
-      userQueryService.findByUserId(user.getUserId());
+      userQueryService.findByLoginId(user.getLoginId());
     } catch (NotFoundException e) {
       return false;
     }
@@ -46,7 +46,7 @@ public class RegisterService {
     this.setSaltAndEncodedPasswordToUser(user);
 
     if (!StringUtils.hasText(user.getNickName())) {
-      user.setNickname(nicknameProvideService.getRandomNickname(user.getUserId()));
+      user.setNickname(nicknameProvideService.getRandomNickname(user.getLoginId()));
     }
 
     return this.userWriteService.save(user);

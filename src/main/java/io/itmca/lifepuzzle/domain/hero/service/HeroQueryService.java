@@ -29,7 +29,7 @@ public class HeroQueryService {
 
   @Deprecated
   public List<Hero> findHeroesByUserNo(Long userNo) {
-    var heroUserAuths = this.heroUserAuthRepository.findAllByUser_UserNo(userNo);
+    var heroUserAuths = this.heroUserAuthRepository.findAllByUser_Id(userNo);
 
     return heroUserAuths.stream()
         .map(HeroUserAuth::getHero)
@@ -45,7 +45,7 @@ public class HeroQueryService {
   public HeroListQueryResponse toQueryResponses(User user) {
     var heroUserAuths = user.getHeroUserAuths();
     if (isEmpty(heroUserAuths)) {
-      throw HeroNotFoundException.byUserNo(user.getUserNo());
+      throw HeroNotFoundException.byUserNo(user.getId());
     }
 
     var heroQueryResponses = heroUserAuths.stream()

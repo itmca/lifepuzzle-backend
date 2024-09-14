@@ -41,7 +41,7 @@ public class UserWriteEndpoint {
                                  @RequestPart(name = "photo", required = false)
                                  MultipartFile requestPhoto,
                                  @CurrentUser User user) {
-    if (id != user.getUserNo()) {
+    if (!id.equals(user.getId())) {
       throw new UserNoMismatchException();
     }
 
@@ -63,7 +63,7 @@ public class UserWriteEndpoint {
   public void updateUserPassword(@PathVariable("id") Long id,
                                  @CurrentUser User user,
                                  @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest) {
-    if (id != user.getUserNo()) {
+    if (!id.equals(user.getId())) {
       throw new UserNoMismatchException();
     }
 

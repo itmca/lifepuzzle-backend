@@ -3,7 +3,7 @@ name: Deploy-to-EB
 on:
   push:
     branches:
-      - production
+      - main
 
 jobs:
   build:
@@ -39,7 +39,7 @@ jobs:
       - name: Prepare deployment package
         run: |
           mkdir -p deploy
-          cp ./build/libs/${{env.artifact}} deploy/
+          cp ${{env.artifact}} deploy/
           cp -r .platform deploy/.platform
           cd deploy && zip -r ../deploy-package.zip .
         shell: bash

@@ -30,10 +30,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,6 +56,8 @@ public class StoryWriteEndpoint {
       "/stories"})
   public ResponseEntity<StoryWriteResponse> writeStory(
       @RequestPart("storyInfo") @HeroNoContainer StoryWriteRequest storyWriteRequest,
+      @RequestPart(value = "gallery", required = false)
+      List<MultipartFile> gallery,
       @RequestPart(value = "photos", required = false)
       List<MultipartFile> images,
       @RequestPart(value = "voice", required = false)
@@ -62,9 +66,53 @@ public class StoryWriteEndpoint {
       List<MultipartFile> videos,
       @AuthenticationPrincipal AuthPayload authPayload) throws IOException {
 
-    var story = storyWriteRequest.toStory(authPayload.getUserNo());
+    var story = storyWriteRequest.toStory(authPayload.getUserId());
 
-    var storyFile = StoryFile.builder()
+    var storyFile = CollectionUtils.isEmpty(gallery)
+        ? buildStoryFile(images, voices, videos, story)
+        : buildStoryFileWithGallery(gallery, voices, story);
+
+    storyWriteService.create(story, storyFile);
+
+    return ResponseEntity.ok(
+        StoryWriteResponse.builder()
+            .storyKey(story.getId())
+            .build()
+    );
+  }
+
+  private static StoryFile buildStoryFileWithGallery(List<MultipartFile> gallery,
+                                                     List<MultipartFile> voices,
+                                                     Story story) {
+    return StoryFile.builder()
+        .images(handleSameNameContents(
+            gallery.stream().filter(
+                    file -> file.getContentType() != null && file.getContentType().startsWith("image"))
+                .toList(),
+            // TODO: resize() 메서드 제거했는데 resize 정책 다시 확인 후 추가 필요
+            (image) -> new StoryImageFile(story, image),
+            (image, postfix) -> new StoryImageFile(story, image, postfix).resize())
+        )
+        .voices(handleSameNameContents(
+            voices,
+            (voice) -> new StoryVoiceFile(story, voice),
+            (voice, postfix) -> new StoryVoiceFile(story, voice, postfix))
+        )
+        .videos(handleSameNameContents(
+            gallery.stream().filter(
+                    file -> file.getContentType() != null && !file.getContentType().startsWith("image"))
+                .toList(),
+            // TODO: resize() 메서드 제거했는데 resize 정책 다시 확인 후 추가 필요
+            (video) -> new StoryVideoFile(story, video),
+            (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
+        ).build();
+  }
+
+  // TODO: FE에서 gallery로 전환 후 제거
+  @Deprecated
+  private static StoryFile buildStoryFile(List<MultipartFile> images, List<MultipartFile> voices,
+                                          List<MultipartFile> videos, Story story) {
+    return StoryFile.builder()
         .images(handleSameNameContents(
             images,
             (image) -> new StoryImageFile(story, image).resize(),
@@ -81,14 +129,6 @@ public class StoryWriteEndpoint {
             (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
         )
         .build();
-
-    storyWriteService.create(story, storyFile);
-
-    return ResponseEntity.ok(
-        StoryWriteResponse.builder()
-            .storyKey(story.getStoryKey())
-            .build()
-    );
   }
 
   @Operation(summary = "스토리 수정")
@@ -96,6 +136,8 @@ public class StoryWriteEndpoint {
       "/stories/{storyKey}"})
   public void updateStory(@PathVariable("storyKey") String storyKey,
                           @RequestPart("storyInfo") StoryWriteRequest storyWriteRequest,
+                          @RequestPart(value = "gallery", required = false)
+                          List<MultipartFile> gallery,
                           @RequestPart(value = "photos", required = false)
                           List<MultipartFile> images,
                           @RequestPart(value = "voice", required = false)
@@ -106,35 +148,21 @@ public class StoryWriteEndpoint {
 
     var story = storyQueryService.findById(storyKey);
 
-    if (story.getUserNo() != authPayload.getUserNo()) {
-      throw new UserNotAccessibleToStoryException(authPayload.getUserNo(), storyKey);
+    if (story.getUserId() != authPayload.getUserId()) {
+      throw new UserNotAccessibleToStoryException(authPayload.getUserId(), storyKey);
     }
 
     // storyWriteRequest에 있는 heroNo로 비교하는 것보다,
     // authPayload에 있는 userNo로 heroNo를 조회하여 비교하는 게 맞을까요?
-    if (story.getHeroNo() != storyWriteRequest.getHeroNo()) {
+    if (story.getHeroId() != storyWriteRequest.getHeroNo()) {
       throw new HeroNotAccessibleToStoryException(storyWriteRequest.getHeroNo(), storyKey);
     }
 
     story.updateStoryInfo(storyWriteRequest);
 
-    var storyFile = StoryFile.builder()
-        .images(handleSameNameContents(
-            images,
-            (image) -> new StoryImageFile(story, image).resize(),
-            (image, postfix) -> new StoryImageFile(story, image, postfix).resize())
-        )
-        .voices(handleSameNameContents(
-            voices,
-            (voice) -> new StoryVoiceFile(story, voice),
-            (voice, postfix) -> new StoryVoiceFile(story, voice, postfix))
-        )
-        .videos(handleSameNameContents(
-            videos,
-            (video) -> new StoryVideoFile(story, video).resize(),
-            (video, postfix) -> new StoryVideoFile(story, video, postfix).resize())
-        )
-        .build();
+    var storyFile = CollectionUtils.isEmpty(gallery)
+        ? buildStoryFile(images, voices, videos, story)
+        : buildStoryFileWithGallery(gallery, voices, story);
 
     storyWriteService.update(story, storyFile);
   }
@@ -147,12 +175,12 @@ public class StoryWriteEndpoint {
 
     var story = storyQueryService.findById(storyKey);
 
-    if (story.getUserNo() != authPayload.getUserNo()) {
-      throw new UserNotAccessibleToStoryException(authPayload.getUserNo(), storyKey);
+    if (story.getUserId() != authPayload.getUserId()) {
+      throw new UserNotAccessibleToStoryException(authPayload.getUserId(), storyKey);
     }
 
-    var user = userQueryService.findByUserNo(authPayload.getUserNo());
-    if (story.getHeroNo() != user.getRecentHeroNo()) {
+    var user = userQueryService.findByUserNo(authPayload.getUserId());
+    if (story.getHeroId() != user.getRecentHeroNo()) {
       throw new HeroNotAccessibleToStoryException(user.getRecentHeroNo(), storyKey);
     }
 
@@ -162,8 +190,20 @@ public class StoryWriteEndpoint {
   }
 
   @PostMapping({"/stories/speech-to-text"})
-  public String convertSpeechToText(@RequestPart(value = "voice", required = false)
-                                    List<MultipartFile> voices) {
+  public String convertSpeechToText(
+      @RequestPart(value = "voice", required = false)
+      List<MultipartFile> voices,
+      @RequestParam(value = "isTest", defaultValue = "false", required = false)
+      boolean isTest
+  ) {
+    if (isTest) {
+      return String.join("\\n",
+          "동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁화 삼천리 화려강산 대한사람 대한으로 길이 보전하세",
+          "떳다 떳다 비행기 날아라 날아라 높이 높이 날아라",
+          "떳다 떳다 비행기 시원하게 시원하게 날아라 날아라 시원하게 날아라");
+    }
+
+
     StoryVoiceFile storyVoiceFile = new StoryVoiceFile(new Story(), voices.get(0));
     String convertTextToStt = speechToTextService.transcribeAudio(storyVoiceFile);
     return openAiChatService.requestChat("맞춤법 및 오타 교정해서 내용만 보여줘", convertTextToStt);

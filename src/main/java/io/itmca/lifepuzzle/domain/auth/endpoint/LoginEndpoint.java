@@ -28,7 +28,7 @@ public class LoginEndpoint {
   @Operation(summary = "일반 로그인")
   public LoginResponse login(@RequestBody LoginRequest loginRequest) {
     var username = loginRequest.getUsername();
-    var user = userQueryService.findByUserId(username);
+    var user = userQueryService.findByLoginId(username);
 
     var passwordVerification = PasswordVerification.builder()
         .plainPassword(loginRequest.getPassword())
