@@ -40,9 +40,14 @@ public class CustomExceptionHandler {
   public ResponseEntity handleAccessDeniedException(AccessDeniedException e) {
     return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
   }
-    
+
   @ExceptionHandler(ExpiredException.class)
   public ResponseEntity handleExpiredException(ExpiredException e) {
     return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+  }
+
+  @ExceptionHandler(ExternalApiException.class)
+  public ResponseEntity handleExternalApiException(ExternalApiException e) {
+    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 }

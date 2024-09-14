@@ -26,6 +26,10 @@ java {
 
 repositories {
     mavenCentral()
+    maven {
+        name = "TarsosDSP repository"
+        url = "https://mvn.0110.be/releases"
+    }
 }
 
 ext {

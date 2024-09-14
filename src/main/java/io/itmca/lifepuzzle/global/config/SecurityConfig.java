@@ -21,10 +21,10 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             (request) -> request.requestMatchers(
-                  "/", "/hc", "/error-test", "/auth/**",
-                  "/user", "/user/dupcheck/*", "/users", "/users/dupcheck/*",
-                  "/v3/**", "/question/*", "/questions/*",
-                  "/share/hero", "/swagger-ui/**",
+                    "/", "/hc", "/error-test", "/auth/**",
+                    "/user", "/user/dupcheck/*", "/users", "/users/dupcheck/*",
+                    "/v3/**", "/question/*", "/questions/*",
+                    "/share/hero", "/swagger-ui/**", "/stories/**",
                     "/.well-know/assetlinks.json", ".well-known/apple-app-site-association")
                 .permitAll()
                 .anyRequest()

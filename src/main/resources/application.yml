@@ -67,3 +67,11 @@ sentry:
 
 slack:
   webhook-url: ***REMOVED***
+
+api:
+  chat-gpt:
+    uri: ***REMOVED***
+    key: ***REMOVED***
+  deepgram:
+    uri: ***REMOVED***
+    key: ***REMOVED***

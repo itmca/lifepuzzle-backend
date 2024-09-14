@@ -15,6 +15,7 @@ public abstract class CustomFile {
   protected final String base;
   protected final String fileName;
   protected final byte[] bytes;
+  protected final String contentType;
   private final boolean uploaded;
 
   public CustomFile(String base, MultipartFile file) {
@@ -25,6 +26,7 @@ public abstract class CustomFile {
     this.base = base;
     this.fileName = normalizeFileName(file.getOriginalFilename(), postfix);
     this.uploaded = file.getOriginalFilename().startsWith(FILE_DUPLICATE_PREFIX);
+    this.contentType = file.getContentType();
 
     try {
       this.bytes = file.getBytes();
@@ -38,6 +40,7 @@ public abstract class CustomFile {
     this.fileName = customFile.getFileName();
     this.bytes = bytes;
     this.uploaded = customFile.uploaded;
+    this.contentType = customFile.getContentType();
   }
 
   private String normalizeFileName(String fileName, String postfix) {
