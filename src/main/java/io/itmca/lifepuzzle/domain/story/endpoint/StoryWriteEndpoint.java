@@ -16,7 +16,8 @@ import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
-import io.itmca.lifepuzzle.global.ai.stt.DeepgramSttService;
+import io.itmca.lifepuzzle.global.ai.chat.OpenAiChatService;
+import io.itmca.lifepuzzle.global.ai.stt.SpeechToTextService;
 import io.itmca.lifepuzzle.global.aop.AuthCheck;
 import io.itmca.lifepuzzle.global.aop.HeroNoContainer;
 import io.itmca.lifepuzzle.global.exception.HeroNotAccessibleToStoryException;
@@ -46,6 +47,8 @@ public class StoryWriteEndpoint {
   private final StoryWriteService storyWriteService;
   private final StoryQueryService storyQueryService;
   private final UserQueryService userQueryService;
+  private final SpeechToTextService speechToTextService;
+  private final OpenAiChatService openAiChatService;
 
   @AuthCheck(auths = {WRITER, ADMIN, OWNER})
   @Operation(summary = "스토리 등록")
@@ -202,6 +205,7 @@ public class StoryWriteEndpoint {
 
 
     StoryVoiceFile storyVoiceFile = new StoryVoiceFile(new Story(), voices.get(0));
-    return (new DeepgramSttService()).transcribeAudio(storyVoiceFile);
+    String convertTextToStt = speechToTextService.transcribeAudio(storyVoiceFile);
+    return openAiChatService.requestChat("맞춤법 및 오타 교정해서 내용만 보여줘", convertTextToStt);
   }
 }

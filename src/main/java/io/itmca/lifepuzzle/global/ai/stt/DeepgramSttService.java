@@ -1,18 +1,22 @@
 package io.itmca.lifepuzzle.global.ai.stt;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.itmca.lifepuzzle.global.exception.AiServiceUnavailableException;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-@Slf4j
+@Component
 public class DeepgramSttService implements SpeechToTextService {
+  @Value("${api.deepgram.key}")
+  private String apiKey;
+  @Value("${api.deepgram.uri}")
+  private String uri;
 
   @Override
   public String transcribeAudio(CustomFile customFile) {
@@ -20,28 +24,22 @@ public class DeepgramSttService implements SpeechToTextService {
       HttpClient client = HttpClient.newHttpClient();
 
       HttpRequest request = HttpRequest.newBuilder()
-          .uri(URI.create(
-              "https://api.deepgram.com/v1/listen?model=base&smart_format=true&language=ko"))
-          .header("Authorization", "Token ***REMOVED***")
-          .header("Content-Type", "audio/m4a")
+          .uri(URI.create(uri))
+          .header("Authorization", "Token " + apiKey)
+          .header("Content-Type", customFile.getContentType())
           .POST(HttpRequest.BodyPublishers.ofByteArray(customFile.getBytes()))
           .build();
 
       HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-      System.out.println("Response Code: " + response.statusCode());
-
       ObjectMapper objectMapper = new ObjectMapper();
-      HashMap<String, Object> mapp = objectMapper.readValue(response.body(), HashMap.class);
-      return (String) ((LinkedHashMap<String, Object>) ((LinkedHashMap<String, Object>)
-          ((ArrayList) ((LinkedHashMap<String, Object>)
-              ((ArrayList) ((LinkedHashMap<String, Object>) mapp.get("results")).get(
-                  "channels")).get(0))
-              .get("alternatives")).get(0)).get("paragraphs")).get("transcript");
-    } catch (Exception e) {
-      log.error(e.getMessage(), e);
-    }
+      JsonNode rootNode = objectMapper.readTree(response.body());
 
-    return null;
+      client.close();
+      return rootNode.get("results").get("channels").get(0).get("alternatives").get(0)
+          .get("paragraphs").get("transcript").asText();
+    } catch (Exception e) {
+      throw new AiServiceUnavailableException("Deepgram STT");
+    }
   }
 }
