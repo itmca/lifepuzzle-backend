@@ -13,6 +13,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Component
 public class CustomBeforeSendCallback implements SentryOptions.BeforeSendCallback {
@@ -28,6 +29,14 @@ public class CustomBeforeSendCallback implements SentryOptions.BeforeSendCallbac
 
     if (isLocalEnvOrRunningOnMacWindow(event) || hasAlertDisabledException(event)) {
       return null;
+    }
+
+    if (event.getThrowable() instanceof HttpClientErrorException) {
+      HttpClientErrorException httpException = (HttpClientErrorException) event.getThrowable();
+
+      if (httpException.getStatusCode().is4xxClientError()) {
+        return null;
+      }
     }
 
     Instant now = Instant.now();
