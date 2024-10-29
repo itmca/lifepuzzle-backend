@@ -12,19 +12,23 @@ import lombok.Getter;
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 public class StoryDTO {
-  String id;
-  Long heroNo;
-  String title;
-  String content;
-  String question;
-  List<String> photos;
-  List<String> videos;
-  List<String> audios;
-  List<StoryTagDTO> tags;
-  LocalDate date;
-  LocalDateTime createdAt;
+  private String id;
+  private Long heroNo;
+  private String title;
+  private String content;
+  private String question;
+  private List<String> photos;
+  private List<String> videos;
+  private List<String> audios;
+  private List<StoryTagDTO> tags;
+  private List<LikeDTO> likes;
+  private int likeCount;
+  private LocalDate date;
+  private LocalDateTime createdAt;
 
   public static StoryDTO from(Story story, Hero hero) {
+    var likeDTOs = LikeDTO.listFrom(story.getLikes());
+
     return StoryDTO.builder()
         .id(story.getId())
         .heroNo(story.getHeroId())
@@ -35,6 +39,8 @@ public class StoryDTO {
         .videos(story.getVideos())
         .audios(story.getAudios())
         .tags(List.of(StoryTagDTO.from(story.getTag(hero))))
+        .likes(likeDTOs)
+        .likeCount(likeDTOs.size())
         .date(story.getDate())
         .createdAt(story.getCreatedAt())
         .build();

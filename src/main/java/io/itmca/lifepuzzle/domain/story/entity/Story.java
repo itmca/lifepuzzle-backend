@@ -13,8 +13,10 @@ import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +53,10 @@ public class Story {
   private String videoFolder;
   private String videoFiles;
   private String hashtag;
+
+  @OneToMany(mappedBy = "story")
+  private List<Like> likes;
+
   private LocalDate date;
 
   @Column(nullable = false, updatable = false)

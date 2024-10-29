@@ -63,5 +63,4 @@ public class StoryQueryEndpoint {
 
     return StoryDTO.from(story, hero);
   }
-
 }
