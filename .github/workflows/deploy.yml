@@ -41,6 +41,7 @@ jobs:
           mkdir -p deploy
           cp ${{env.artifact}} deploy/
           cp -r .platform deploy/.platform
+          cp -r .ebextensions deploy/.ebextensions
           cd deploy && zip -r ../deploy-package.zip .
         shell: bash
 
