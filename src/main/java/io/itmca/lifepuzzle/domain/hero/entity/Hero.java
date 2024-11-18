@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -46,7 +47,7 @@ public class Hero {
   private String image;
 
   @OneToMany(mappedBy = "hero")
-  private List<HeroUserAuth> heroUserAuths;
+  private List<HeroUserAuth> heroUserAuths = new ArrayList<>();
 
   @Column(nullable = false, updatable = false)
   @CreationTimestamp

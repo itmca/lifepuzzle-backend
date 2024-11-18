@@ -46,7 +46,7 @@ public class LoginService {
     return LoginResponse.builder()
         .user(userQueryDTO)
         .tokens(tokenQueryDTO)
-        .hero(HeroQueryDTO.from(hero))
+        .hero(HeroQueryDTO.from(hero, user.getId()))
         .isNewUser(isNewUser)
         .build();
   }

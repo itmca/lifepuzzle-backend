@@ -4,12 +4,14 @@ import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_IMAG
 import static io.itmca.lifepuzzle.global.constant.ServerConstant.S3_SERVER_HOST;
 
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
+import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.Nullable;
 
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
@@ -27,8 +29,17 @@ public class HeroQueryDTO {
   private String title;
   @Schema(description = "대표이미지")
   private String imageURL;
+  @Nullable
+  @Schema(description = "권한")
+  private HeroAuthStatus auth;
 
-  public static HeroQueryDTO from(Hero hero) {
+  public static HeroQueryDTO from(Hero hero, @Nullable Long userNo) {
+    var heroAuth = hero.getHeroUserAuths().stream().filter(
+        heroUserAuth -> heroUserAuth.isUserExist(userNo)
+    ).findFirst().orElse(null);
+
+    var auth = heroAuth != null ? heroAuth.getAuth() : null;
+
     return HeroQueryDTO.builder()
         .heroNo(hero.getHeroNo())
         .heroName(hero.getName())
@@ -36,7 +47,12 @@ public class HeroQueryDTO {
         .birthday(hero.getBirthday())
         .title(hero.getTitle())
         .imageURL(addServerHostInImage(hero.getHeroNo(), hero.getImage()))
+        .auth(auth)
         .build();
+  }
+
+  public static HeroQueryDTO from(Hero hero) {
+    return from(hero, null);
   }
 
   private static String addServerHostInImage(Long heroNo, String imageURL) {

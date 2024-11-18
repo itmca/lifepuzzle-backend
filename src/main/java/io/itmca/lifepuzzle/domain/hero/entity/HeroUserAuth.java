@@ -56,4 +56,7 @@ public class HeroUserAuth {
     auth = heroAuthStatus;
   }
 
+  public boolean isUserExist(Long userNo) {
+    return user.getId().equals(userNo);
+  }
 }
