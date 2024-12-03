@@ -69,9 +69,9 @@ public class Hero {
 
   public void setProfileImage(@Nullable HeroProfileImage heroProfileImage) {
     if (heroProfileImage == null) {
-      return;
+      this.image = null;
+    } else {
+      this.image = heroProfileImage.getFileName();
     }
-
-    this.image = heroProfileImage.getFileName();
   }
 }

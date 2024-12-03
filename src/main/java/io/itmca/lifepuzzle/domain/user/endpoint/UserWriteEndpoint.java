@@ -9,11 +9,9 @@ import io.itmca.lifepuzzle.domain.user.endpoint.request.UserPasswordUpdateReques
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.endpoint.response.UserQueryDto;
 import io.itmca.lifepuzzle.domain.user.entity.User;
-import io.itmca.lifepuzzle.domain.user.file.UserProfileImage;
 import io.itmca.lifepuzzle.domain.user.service.UserWriteService;
 import io.itmca.lifepuzzle.global.exception.PasswordMismatchException;
 import io.itmca.lifepuzzle.global.exception.UserNoMismatchException;
-import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,34 +30,19 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserWriteEndpoint {
 
   private final UserWriteService userWriteService;
-  private final S3UploadService s3UploadService;
 
-  @RequestMapping(value = "/{id}", method = {PUT, PATCH})
+  @RequestMapping(value = {"/{id}", ""}, method = {PUT, PATCH})
   @Operation(summary = "유저 수정")
   public UserQueryDto updateUser(@PathVariable("id") Long id,
                                  @RequestPart("toUpdate") UserUpdateRequest userUpdateRequest,
-                                 @RequestPart(name = "photo", required = false)
-                                 MultipartFile requestPhoto,
+                                 @RequestPart(required = false)
+                                 MultipartFile photo,
                                  @CurrentUser User user) {
     if (!id.equals(user.getId())) {
       throw new UserNoMismatchException();
     }
 
-    if (requestPhoto != null) {
-      var userProfileImage = new UserProfileImage(
-          user,
-          requestPhoto,
-          String.valueOf(System.currentTimeMillis())
-      );
-
-      user.setImage(userProfileImage);
-
-      s3UploadService.upload(userProfileImage);
-    }
-
-    user.updateUserInfo(userUpdateRequest);
-
-    return UserQueryDto.from(userWriteService.save(user));
+    return UserQueryDto.from(userWriteService.update(user, userUpdateRequest, photo));
   }
 
   @RequestMapping(value = "/{id}/password", method = {PUT, PATCH})

@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.domain.hero.service;
 
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
+import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
 
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
@@ -33,7 +34,7 @@ public class HeroWriteService {
 
     return savedHero;
   }
-  
+
   private void postCreateAction(User user, MultipartFile profile, Hero hero, Hero savedHero) {
     var uploadedProfileImage = uploadProfileImage(profile, hero);
     hero.setProfileImage(uploadedProfileImage.orElse(null));
@@ -75,7 +76,14 @@ public class HeroWriteService {
     hero.setNickname(heroWriteRequest.getHeroNickName());
     hero.setBirthday(heroWriteRequest.getBirthday());
 
-    if (profile != null) {
+    var isProfileImageUpdate = heroWriteRequest.isProfileImageUpdate();
+
+    if (isProfileImageUpdate) {
+      if (profile == null) {
+        s3UploadService.delete(
+            HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(heroNo) + hero.getImage());
+      }
+
       var uploadedProfileImage = uploadProfileImage(profile, hero);
       hero.setProfileImage(uploadedProfileImage.orElse(null));
     }

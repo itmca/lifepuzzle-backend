@@ -102,7 +102,11 @@ public class User {
     setNickname(userUpdateRequest.getUserNickName());
   }
 
-  public void setImage(UserProfileImage userProfileImage) {
-    this.image = userProfileImage.getFileName();
+  public void setProfileImage(UserProfileImage userProfileImage) {
+    if (userProfileImage == null) {
+      this.image = null;
+    } else {
+      this.image = userProfileImage.getFileName();
+    }
   }
 }

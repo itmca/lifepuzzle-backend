@@ -57,13 +57,11 @@ public class HeroWriteEndpoint {
       @PathVariable("heroNo") @HeroNo Long heroNo,
       @RequestPart("toWrite")
       HeroWriteRequest request,
-      @RequestPart(value = "photo", required = false)
-      MultipartFile profile,
+      @RequestPart(required = false)
+      MultipartFile photo,
       @AuthenticationPrincipal
       AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
-
-    return HeroQueryDTO.from(heroWriteService.update(heroNo, request, profile));
+    return HeroQueryDTO.from(heroWriteService.update(heroNo, request, photo));
   }
 
   @AuthCheck(auths = {OWNER})

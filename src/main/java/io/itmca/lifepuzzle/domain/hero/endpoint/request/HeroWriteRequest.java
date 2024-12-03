@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -19,6 +20,8 @@ public class HeroWriteRequest {
   private String heroNickName;
   private LocalDate birthday;
   private String title;
+  @JsonProperty("isProfileImageUpdate")
+  private boolean profileImageUpdate;
 
   public Hero toHero() {
     return Hero.builder()
