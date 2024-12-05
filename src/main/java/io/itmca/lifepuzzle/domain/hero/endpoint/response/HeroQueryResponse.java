@@ -16,13 +16,13 @@ public class HeroQueryResponse {
   @Schema(description = "맞춘 퍼즐 개수")
   private int puzzleCnt;
 
-  public static HeroQueryResponse from(Hero hero, int puzzleCnt) {
+  public static HeroQueryResponse from(Hero hero, Long userNo, int puzzleCnt) {
     var heroUserAuthQueryDTOs = hero.getHeroUserAuths().stream()
         .map(HeroUserAuthQueryDTO::from)
         .toList();
 
     return HeroQueryResponse.builder()
-        .hero(HeroQueryDTO.from(hero))
+        .hero(HeroQueryDTO.from(hero, userNo))
         .users(heroUserAuthQueryDTOs)
         .puzzleCnt(puzzleCnt)
         .build();

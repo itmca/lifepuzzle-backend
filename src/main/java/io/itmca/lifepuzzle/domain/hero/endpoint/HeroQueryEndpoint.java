@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,10 +47,11 @@ public class HeroQueryEndpoint {
   public HeroQueryResponse getHeroDetail(
       @PathVariable("heroNo") @Schema(description = "주인공키") Long heroNo,
       @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
+    val userNo = authPayload.getUserId();
+    heroValidationService.validateUserCanAccessHero(userNo, heroNo);
 
     var hero = heroQueryService.findHeroByHeroNo(heroNo);
 
-    return heroQueryService.toQueryResponse(hero);
+    return heroQueryService.toQueryResponse(hero, userNo);
   }
 }

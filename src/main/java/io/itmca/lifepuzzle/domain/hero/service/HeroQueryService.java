@@ -36,10 +36,10 @@ public class HeroQueryService {
         .toList();
   }
 
-  public HeroQueryResponse toQueryResponse(Hero hero) {
+  public HeroQueryResponse toQueryResponse(Hero hero, Long userNo) {
     int puzzleCnt = storyQueryService.countByHeroNo(hero.getHeroNo());
 
-    return HeroQueryResponse.from(hero, puzzleCnt);
+    return HeroQueryResponse.from(hero, userNo, puzzleCnt);
   }
 
   public HeroListQueryResponse toQueryResponses(User user) {
@@ -50,7 +50,7 @@ public class HeroQueryService {
 
     var heroQueryResponses = heroUserAuths.stream()
         .map(HeroUserAuth::getHero)
-        .map(this::toQueryResponse)
+        .map(hero -> toQueryResponse(hero, user.getId()))
         .toList();
 
     return HeroListQueryResponse.builder()
