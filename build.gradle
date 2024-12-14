@@ -72,6 +72,9 @@ dependencies {
 
     // Swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+    implementation 'org.flywaydb:flyway-core:11.0.1'
+    implementation 'org.flywaydb:flyway-mysql:11.0.1'
 }
 
 tasks.named('test') {

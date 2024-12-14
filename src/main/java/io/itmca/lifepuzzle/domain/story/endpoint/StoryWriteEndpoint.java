@@ -6,15 +6,14 @@ import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.WRITER;
 import static io.itmca.lifepuzzle.global.util.FileUtil.handleSameNameContents;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
-import io.itmca.lifepuzzle.domain.story.endpoint.request.LikeWriteRequest;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
-import io.itmca.lifepuzzle.domain.story.endpoint.response.LikeWriteResponse;
 import io.itmca.lifepuzzle.domain.story.endpoint.response.StoryWriteResponse;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
+import io.itmca.lifepuzzle.domain.story.service.StoryPhotoService;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
@@ -34,11 +33,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,6 +50,7 @@ public class StoryWriteEndpoint {
   private final UserQueryService userQueryService;
   private final SpeechToTextService speechToTextService;
   private final OpenAiChatService openAiChatService;
+  private final StoryPhotoService storyPhotoService;
 
   @AuthCheck(auths = {WRITER, ADMIN, OWNER})
   @Operation(summary = "스토리 등록")
@@ -77,6 +75,7 @@ public class StoryWriteEndpoint {
         : buildStoryFileWithGallery(gallery, voices, story);
 
     storyWriteService.create(story, storyFile);
+    storyPhotoService.savePhotos(story, storyFile);
 
     return ResponseEntity.ok(
         StoryWriteResponse.builder()
@@ -168,6 +167,7 @@ public class StoryWriteEndpoint {
         ? buildStoryFile(images, voices, videos, story)
         : buildStoryFileWithGallery(gallery, voices, story);
 
+    storyPhotoService.updatePhotos(story, storyFile);
     storyWriteService.update(story, storyFile);
   }
 
@@ -188,6 +188,7 @@ public class StoryWriteEndpoint {
       throw new HeroNotAccessibleToStoryException(user.getRecentHeroNo(), storyKey);
     }
 
+    storyPhotoService.deletePhotos(story);
     storyWriteService.delete(storyKey);
 
     return HttpStatus.OK;

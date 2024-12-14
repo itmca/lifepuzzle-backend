@@ -4,7 +4,10 @@ import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
 import static java.io.File.separator;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+import io.itmca.lifepuzzle.domain.hero.entity.Hero;
+import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
+import io.itmca.lifepuzzle.domain.story.entity.StoryPhoto;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;

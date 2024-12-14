@@ -5,6 +5,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
+  #    hibernate:
+  #      ddl-auto: validate
   mail:
     host: ***REMOVED***
     port: 587
@@ -16,6 +18,10 @@ spring:
           auth: true
           starttls:
             enable: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
   servlet:
     multipart:
       max-file-size: 50MB

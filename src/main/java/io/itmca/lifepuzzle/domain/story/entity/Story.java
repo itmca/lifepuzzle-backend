@@ -16,7 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +55,9 @@ public class Story {
 
   @OneToMany(mappedBy = "story")
   private List<Like> likes;
+
+  @OneToMany(mappedBy = "story")
+  private List<StoryPhotoMap> photoMaps;
 
   private LocalDate date;
 
