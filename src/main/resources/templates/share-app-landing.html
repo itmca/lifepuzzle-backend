@@ -66,32 +66,29 @@
             justify-content: center;
             align-items: center;
         }
-        .web-link {
-            display: block;
-            color: #007aff;
-            text-decoration: none;
-        }
     </style>
     <script>
-        function redirectToStore() {
+        function loadByPlatform() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const shareKey = urlParams.get('shareKey');
+
             var userAgent = navigator.userAgent || navigator.vendor || window.opera;
             if (/android/i.test(userAgent)) {
-                window.location.href = 'https://play.google.com/store/apps/details?id=io.itmca.lifepuzzle';
+                document.getElementById('store-btn').innerText = '플레이 스토어 바로가기';
+                document.getElementById('store-btn').href = 'https://play.google.com/store/apps/details?id=io.itmca.lifepuzzle';
+
+                window.location.href = `lifepuzzle://share/hero?shareKey=${shareKey}`;
             } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                window.location.href = 'https://apps.apple.com/kr/app/%EC%9D%B8%EC%83%9D%ED%8D%BC%EC%A6%90/id6443452557';
+                document.getElementById('store-btn').innerText = '앱 스토어 바로가기';
+                document.getElementById('store-btn').href = 'https://apps.apple.com/kr/app/%EC%9D%B8%EC%83%9D%ED%8D%BC%EC%A6%90/id6443452557'
+
+                window.location.href = `lifepuzzle://share/hero?shareKey=${shareKey}`;
             } else {
                 alert('모바일 기기에서 클릭해 주세요');
             }
         }
 
-        function setButtonText() {
-            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            if (/android/i.test(userAgent)) {
-                document.getElementById('store-btn').innerText = '플레이 스토어 바로가기';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', setButtonText);
+        document.addEventListener('DOMContentLoaded', loadByPlatform);
     </script>
 </head>
 <body>
@@ -101,7 +98,7 @@
         </div>
         <div class="small-text">앱 설치 및 로그인 후 링크를 다시 클릭해 주세요</div>
         <img src="https://***REMOVED***.s3.***REMOVED***.amazonaws.com/sites/app-landing/puzzle-couples.png" alt="Popup Image">
-        <a id="store-btn" href="javascript:redirectToStore();" class="app-store-btn">앱 스토어 바로가기</a>
+        <a id="store-btn" class="app-store-btn">앱 스토어 바로가기</a>
     </div>
 </body>
 </html>
