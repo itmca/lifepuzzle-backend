@@ -75,6 +75,7 @@ public class HeroWriteService {
     hero.setName(heroWriteRequest.getHeroName());
     hero.setNickname(heroWriteRequest.getHeroNickName());
     hero.setBirthday(heroWriteRequest.getBirthday());
+    hero.setLunar(heroWriteRequest.isLunar());
 
     var isProfileImageUpdate = heroWriteRequest.isProfileImageUpdate();
 

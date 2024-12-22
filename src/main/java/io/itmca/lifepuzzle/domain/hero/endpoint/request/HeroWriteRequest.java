@@ -20,6 +20,7 @@ public class HeroWriteRequest {
   private String heroNickName;
   private LocalDate birthday;
   private String title;
+  private boolean isLunar;
   @JsonProperty("isProfileImageUpdate")
   private boolean profileImageUpdate;
 
@@ -28,6 +29,7 @@ public class HeroWriteRequest {
         .name(heroName)
         .nickname(heroNickName)
         .birthday(birthday)
+        .isLunar(isLunar)
         .title(title)
         .build();
   }
