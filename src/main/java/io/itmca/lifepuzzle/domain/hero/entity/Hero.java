@@ -57,6 +57,12 @@ public class Hero {
   @UpdateTimestamp
   private LocalDateTime updatedAt;
 
+  @Column(name = "is_deleted", nullable = false)
+  private boolean isDeleted;
+
+  @Column(name = "deleted_at")
+  private LocalDateTime deletedAt;
+
   @Setter
   private boolean isLunar;
 
@@ -77,5 +83,10 @@ public class Hero {
     } else {
       this.image = heroProfileImage.getFileName();
     }
+  }
+
+  public void delete() {
+    this.isDeleted = true;
+    this.deletedAt = LocalDateTime.now();
   }
 }

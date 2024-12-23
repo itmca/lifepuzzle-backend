@@ -70,7 +70,7 @@ public class HeroWriteEndpoint {
   public void deleteHero(@PathVariable("heroNo") @HeroNo Long heroNo,
                          @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
-    heroWriteService.remove(heroNo);
+    heroWriteService.delete(heroNo);
   }
 
   // TODO: FE에서 주인공 저장 시점에 사진도 저장하는 것으로 되어 Deprecated 되었으며 FE 전환 후 제거

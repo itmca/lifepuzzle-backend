@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.hero.service;
 
+import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroUserAuthRepository;
 import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToHeroException;
