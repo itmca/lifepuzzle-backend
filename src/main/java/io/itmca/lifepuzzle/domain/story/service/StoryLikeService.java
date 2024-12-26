@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
-import static io.itmca.lifepuzzle.domain.story.LikeType.STORY;
+import static io.itmca.lifepuzzle.domain.story.type.LikeType.STORY;
 
 import io.itmca.lifepuzzle.domain.story.endpoint.response.LikeWriteResponse;
 import io.itmca.lifepuzzle.domain.story.entity.Like;

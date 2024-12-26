@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.request;
 
-import io.itmca.lifepuzzle.domain.story.LikeType;
+import io.itmca.lifepuzzle.domain.story.type.LikeType;
 import lombok.Getter;
 
 @Getter

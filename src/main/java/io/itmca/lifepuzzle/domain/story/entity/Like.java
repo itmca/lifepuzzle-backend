@@ -1,7 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.entity;
 
-import io.itmca.lifepuzzle.domain.story.LikeType;
-import jakarta.persistence.Column;
+import io.itmca.lifepuzzle.domain.story.type.LikeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

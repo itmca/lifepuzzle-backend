@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
-import static io.itmca.lifepuzzle.domain.story.LikeType.STORY;
+import static io.itmca.lifepuzzle.domain.story.type.LikeType.STORY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -86,7 +86,8 @@ class StoryLikeServiceTest {
   public void addLikeFailWhenStoryNotFound() {
     // Given
     // 스토리를 찾지 못하는 경우
-    when(storyQueryService.findById(storyKey)).thenThrow(StoryNotFoundException.byStoryKey(storyKey));
+    when(storyQueryService.findById(storyKey)).thenThrow(
+        StoryNotFoundException.byStoryKey(storyKey));
 
     // When & Then
     StoryNotFoundException exception = assertThrows(StoryNotFoundException.class, () -> {
@@ -95,7 +96,7 @@ class StoryLikeServiceTest {
 
     assertTrue(exception.getMessage().contains("storyKey: " + storyKey));
   }
-  
+
   @Test
   @DisplayName("스토리 좋아요 취소 성공")
   public void deleteLikeSuccess() {
@@ -140,7 +141,8 @@ class StoryLikeServiceTest {
   public void deleteLikeFailWhenStoryNotFound() {
     // Given
     // 스토리를 찾지 못하는 경우
-    when(storyQueryService.findById(storyKey)).thenThrow(StoryNotFoundException.byStoryKey(storyKey));
+    when(storyQueryService.findById(storyKey)).thenThrow(
+        StoryNotFoundException.byStoryKey(storyKey));
 
     // When & Then
     StoryNotFoundException exception = assertThrows(StoryNotFoundException.class, () -> {

@@ -6,6 +6,7 @@ import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.WRITER;
 import static io.itmca.lifepuzzle.global.util.FileUtil.handleSameNameContents;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
+import io.itmca.lifepuzzle.domain.story.endpoint.request.GalleryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.endpoint.response.StoryWriteResponse;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
@@ -84,6 +85,8 @@ public class StoryWriteEndpoint {
     );
   }
 
+  // TODO: FE에서 사진 분리 작업이 끝나면 제거
+  @Deprecated
   private static StoryFile buildStoryFileWithGallery(List<MultipartFile> gallery,
                                                      List<MultipartFile> voices,
                                                      Story story) {
@@ -93,8 +96,8 @@ public class StoryWriteEndpoint {
                     file -> file.getContentType() != null && file.getContentType().startsWith("image"))
                 .toList(),
             // TODO: resize() 메서드 제거했는데 resize 정책 다시 확인 후 추가 필요
-            (image) -> new StoryImageFile(story, image),
-            (image, postfix) -> new StoryImageFile(story, image, postfix).resize())
+            (image) -> new StoryImageFile(story.getHeroId(), image),
+            (image, postfix) -> new StoryImageFile(story.getHeroId(), image, postfix).resize())
         )
         .voices(handleSameNameContents(
             voices,
@@ -106,8 +109,8 @@ public class StoryWriteEndpoint {
                     file -> file.getContentType() != null && !file.getContentType().startsWith("image"))
                 .toList(),
             // TODO: resize() 메서드 제거했는데 resize 정책 다시 확인 후 추가 필요
-            (video) -> new StoryVideoFile(story, video),
-            (video, postfix) -> new StoryVideoFile(story, video, postfix))
+            (video) -> new StoryVideoFile(story.getHeroId(), video),
+            (video, postfix) -> new StoryVideoFile(story.getHeroId(), video, postfix))
         ).build();
   }
 
@@ -118,8 +121,8 @@ public class StoryWriteEndpoint {
     return StoryFile.builder()
         .images(handleSameNameContents(
             images,
-            (image) -> new StoryImageFile(story, image).resize(),
-            (image, postfix) -> new StoryImageFile(story, image, postfix).resize())
+            (image) -> new StoryImageFile(story.getHeroId(), image).resize(),
+            (image, postfix) -> new StoryImageFile(story.getHeroId(), image, postfix).resize())
         )
         .voices(handleSameNameContents(
             voices,
@@ -128,8 +131,8 @@ public class StoryWriteEndpoint {
         )
         .videos(handleSameNameContents(
             videos,
-            (video) -> new StoryVideoFile(story, video).resize(),
-            (video, postfix) -> new StoryVideoFile(story, video, postfix))
+            (video) -> new StoryVideoFile(story.getHeroId(), video).resize(),
+            (video, postfix) -> new StoryVideoFile(story.getHeroId(), video, postfix))
         )
         .build();
   }
@@ -212,5 +215,13 @@ public class StoryWriteEndpoint {
     StoryVoiceFile storyVoiceFile = new StoryVoiceFile(new Story(), voices.get(0));
     String convertTextToStt = speechToTextService.transcribeAudio(storyVoiceFile);
     return openAiChatService.requestChat("맞춤법 및 오타 교정해서 내용만 보여줘", convertTextToStt);
+  }
+
+  @PostMapping({"v1/heroes/gallery"})
+  public void savePhoto(
+      @RequestPart List<MultipartFile> gallery,
+      @RequestPart(value = "galleryInfo") GalleryWriteRequest galleryWriteRequest) {
+    storyPhotoService.saveGallery(galleryWriteRequest.getHeroId(),
+        gallery, galleryWriteRequest.getAgeGroup());
   }
 }

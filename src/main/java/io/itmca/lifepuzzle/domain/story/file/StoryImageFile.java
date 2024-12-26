@@ -3,13 +3,15 @@ package io.itmca.lifepuzzle.domain.story.file;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_IMAGE_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_IMAGE_RESIZING_HEIGHT;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_IMAGE_RESIZING_WIDTH;
+import static io.itmca.lifepuzzle.global.util.FileUtil.handleSameNameContents;
 
 import io.github.techgnious.IVCompressor;
 import io.github.techgnious.dto.IVSize;
 import io.github.techgnious.dto.ImageFormats;
 import io.github.techgnious.exception.ImageException;
-import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import io.itmca.lifepuzzle.global.util.FileUtil;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +20,13 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Slf4j
 public class StoryImageFile extends CustomFile {
-  public StoryImageFile(Story story, MultipartFile file) {
-    this(story, file, "");
+  public StoryImageFile(Long heroId, MultipartFile file) {
+    this(heroId, file, "");
   }
 
-  public StoryImageFile(Story story, MultipartFile file, String postfix) {
+  public StoryImageFile(Long heroId, MultipartFile file, String postfix) {
     super(
-        STORY_IMAGE_BASE_PATH_FORMAT.formatted(story.getId()),
+        STORY_IMAGE_BASE_PATH_FORMAT.formatted(heroId),
         file,
         postfix
     );
@@ -44,16 +46,23 @@ public class StoryImageFile extends CustomFile {
 
     try {
       var resizeImg = new IVCompressor()
-                          .resizeImageWithCustomRes(bytes, ImageFormats.JPEG, customRes);
+          .resizeImageWithCustomRes(bytes, ImageFormats.JPEG, customRes);
 
       return StoryImageFile
-            .builder()
-            .storyImageFile(this)
-            .bytes(resizeImg)
-            .build();
+          .builder()
+          .storyImageFile(this)
+          .bytes(resizeImg)
+          .build();
 
     } catch (ImageException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static List<StoryImageFile> listFrom(List<MultipartFile> gallery, Long heroId) {
+    return handleSameNameContents(
+        gallery.stream().filter(FileUtil::isImageFile).toList(),
+        (image) -> new StoryImageFile(heroId, image),
+        (image, postfix) -> new StoryImageFile(heroId, image, postfix).resize());
   }
 }

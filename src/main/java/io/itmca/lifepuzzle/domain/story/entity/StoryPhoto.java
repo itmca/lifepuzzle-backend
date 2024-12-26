@@ -1,6 +1,8 @@
 package io.itmca.lifepuzzle.domain.story.entity;
 
-import io.itmca.lifepuzzle.domain.story.AgeGroup;
+import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
+import io.itmca.lifepuzzle.domain.story.type.GalleryType;
+import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +40,9 @@ public class StoryPhoto {
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private AgeGroup ageGroup;
+  @Column(name = "type", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private GalleryType galleryType;
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
   private LocalDateTime createdAt;
@@ -47,4 +52,16 @@ public class StoryPhoto {
 
   @OneToMany(mappedBy = "photo", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<StoryPhotoMap> storyMaps;
+
+  public static List<StoryPhoto> listFrom(List<? extends CustomFile> galleryFiles, Long heroId,
+                                          AgeGroup ageGroup, GalleryType galleryType) {
+    return galleryFiles.stream().map(storyImageFile ->
+        StoryPhoto.builder()
+            .heroId(heroId)
+            .ageGroup(ageGroup)
+            .galleryType(galleryType)
+            .url(storyImageFile.getBase() + storyImageFile.getFileName())
+            .build()
+    ).toList();
+  }
 }

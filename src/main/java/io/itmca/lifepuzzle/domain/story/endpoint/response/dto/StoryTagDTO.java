@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.response.dto;
 
-import io.itmca.lifepuzzle.domain.story.AgeGroup;
+import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

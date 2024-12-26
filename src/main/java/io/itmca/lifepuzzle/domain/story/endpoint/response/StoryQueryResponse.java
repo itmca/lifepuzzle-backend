@@ -1,10 +1,10 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.response;
 
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
-import io.itmca.lifepuzzle.domain.story.AgeGroup;
 import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.StoryDTO;
 import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.StoryTagDTO;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
+import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;

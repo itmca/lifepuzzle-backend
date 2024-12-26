@@ -14,9 +14,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import org.apache.tika.Tika;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUtil {
+  public static Tika tika = new Tika();
+
   public static Boolean isExistFolder(String folderPath) {
     var folder = new File(folderPath);
     return folder.exists();
@@ -58,5 +61,12 @@ public class FileUtil {
         .toList();
   }
 
-
+  public static boolean isImageFile(MultipartFile file) {
+    try {
+      String mimeType = tika.detect(file.getBytes());
+      return mimeType.startsWith("image");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

@@ -2,6 +2,7 @@ package io.itmca.lifepuzzle.domain.story;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

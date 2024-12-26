@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.story;
+package io.itmca.lifepuzzle.domain.story.type;
 
 import java.util.Arrays;
 import java.util.Map;

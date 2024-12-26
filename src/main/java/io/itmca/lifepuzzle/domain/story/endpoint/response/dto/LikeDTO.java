@@ -1,7 +1,7 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.response.dto;
 
-import io.itmca.lifepuzzle.domain.story.LikeType;
 import io.itmca.lifepuzzle.domain.story.entity.Like;
+import io.itmca.lifepuzzle.domain.story.type.LikeType;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
