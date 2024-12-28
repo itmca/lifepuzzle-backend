@@ -3,6 +3,7 @@ package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constant.ServerConstant.S3_SERVER_HOST;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,6 +34,9 @@ public class HeroQueryDTO {
   @Schema(description = "권한")
   private HeroAuthStatus auth;
 
+  @Schema(description = "양음력여부")
+  private Boolean isLunar;
+
   public static HeroQueryDTO from(Hero hero, @Nullable Long userNo) {
     var heroAuth = hero.getHeroUserAuths().stream().filter(
         heroUserAuth -> heroUserAuth.isUserExist(userNo)
@@ -48,6 +52,7 @@ public class HeroQueryDTO {
         .title(hero.getTitle())
         .imageURL(addServerHostInImage(hero.getHeroNo(), hero.getImage()))
         .auth(auth)
+        .isLunar(hero.isLunar())
         .build();
   }
 
