@@ -57,7 +57,7 @@ public class Hero {
   @UpdateTimestamp
   private LocalDateTime updatedAt;
 
-  @Column(name = "is_deleted", nullable = false)
+  @Column(name = "deleted", nullable = false)
   private boolean isDeleted;
 
   @Column(name = "deleted_at")
