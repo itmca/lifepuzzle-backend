@@ -43,12 +43,12 @@ public class AgeGroupGalleryDTO {
         .build();
   }
 
-  public static Map<String, AgeGroupGalleryDTO> fromGroupedGallery(Map<AgeGroup, List<StoryPhoto>> groupedPhotos, LocalDate birthdate) {
+  public static Map<AgeGroup, AgeGroupGalleryDTO> fromGroupedGallery(Map<AgeGroup, List<StoryPhoto>> groupedPhotos, LocalDate birthdate) {
     var index = new AtomicInteger(1);
     return groupedPhotos.entrySet().stream()
         .sorted(comparingInt(entry -> entry.getKey().getRepresentativeAge()))
         .collect(Collectors.toMap(
-            entry -> entry.getKey().getTagKey(),
+            Map.Entry::getKey,
             entry -> AgeGroupGalleryDTO.from(entry.getValue(), birthdate, index),
             (oldValue, newValue) -> oldValue,
             LinkedHashMap::new

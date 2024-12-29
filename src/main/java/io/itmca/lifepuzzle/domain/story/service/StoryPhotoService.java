@@ -129,7 +129,7 @@ public class StoryPhotoService {
         .orElseThrow(() -> new GalleryNotFoundException(heroId));
   }
 
-  private Map<String, AgeGroupGalleryDTO> getGalleryByAgeGroup(List<StoryPhoto> photos, Hero hero) {
+  private Map<AgeGroup, AgeGroupGalleryDTO> getGalleryByAgeGroup(List<StoryPhoto> photos, Hero hero) {
     var groupedByAge = photos.stream()
         .collect(groupingBy(
             StoryPhoto::getAgeGroup,
@@ -145,7 +145,7 @@ public class StoryPhotoService {
         .distinct()
         .sorted(Comparator.comparingInt(AgeGroup::getRepresentativeAge))
         .map(ageGroup -> TagDTO.builder()
-            .key(ageGroup.getTagKey())
+            .key(ageGroup)
             .label(ageGroup.getDisplayName())
             .build())
         .toList();

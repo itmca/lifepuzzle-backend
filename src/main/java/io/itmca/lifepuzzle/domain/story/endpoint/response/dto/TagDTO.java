@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.response.dto;
 
+import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TagDTO {
-  private String key;
+  private AgeGroup key;
   private String label;
 }
