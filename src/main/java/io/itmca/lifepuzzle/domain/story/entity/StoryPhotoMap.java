@@ -44,5 +44,12 @@ public class StoryPhotoMap {
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
   private LocalDateTime createdAt;
+
+  public static StoryPhotoMap create(Story story, Long galleryId) {
+    return StoryPhotoMap.builder()
+        .storyId(story.getId())
+        .photoId(galleryId)
+        .build();
+  }
 }
 

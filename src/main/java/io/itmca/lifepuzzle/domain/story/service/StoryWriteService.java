@@ -4,11 +4,10 @@ import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
 import static java.io.File.separator;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-import io.itmca.lifepuzzle.domain.hero.entity.Hero;
-import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
-import io.itmca.lifepuzzle.domain.story.entity.StoryPhoto;
+import io.itmca.lifepuzzle.domain.story.entity.StoryPhotoMap;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
+import io.itmca.lifepuzzle.domain.story.repository.StoryPhotoMapRepository;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
@@ -22,13 +21,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class StoryWriteService {
   private final StoryRepository storyRepository;
   private final S3UploadService s3UploadService;
+  private final StoryPhotoMapRepository storyPhotoMapRepository;
 
+  @Deprecated
   public Story create(Story story, StoryFile storyFile) {
     uploadStoryFile(storyFile);
 
     story.addStoryFile(storyFile);
 
     return storyRepository.save(story);
+  }
+
+  @Transactional
+  public String create(Story story, List<Long> galleryIds) {
+    var savedStory = storyRepository.save(story);
+
+    var storyPhotoMaps = galleryIds.stream()
+        .map(id -> StoryPhotoMap.create(story, id))
+        .toList();
+    saveStoryPhotoMaps(storyPhotoMaps);
+
+    return savedStory.getId();
+  }
+
+  private void saveStoryPhotoMaps(List<StoryPhotoMap> storyPhotoMaps) {
+    for (StoryPhotoMap storyPhotoMap : storyPhotoMaps) {
+      storyPhotoMapRepository.save(storyPhotoMap);
+    }
   }
 
   private void uploadStoryFile(StoryFile storyFile) {

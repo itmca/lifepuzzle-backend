@@ -7,6 +7,7 @@ import static io.itmca.lifepuzzle.global.util.FileUtil.handleSameNameContents;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.GalleryWriteRequest;
+import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryGalleryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.endpoint.response.StoryWriteResponse;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
@@ -26,6 +27,7 @@ import io.itmca.lifepuzzle.global.exception.HeroNotAccessibleToStoryException;
 import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToStoryException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,6 +56,7 @@ public class StoryWriteEndpoint {
   private final OpenAiChatService openAiChatService;
   private final StoryPhotoService storyPhotoService;
 
+  @Deprecated
   @AuthCheck(auths = {WRITER, ADMIN, OWNER})
   @Operation(summary = "스토리 등록")
   @PostMapping({"/story", // TODO: FE 전환 후 제거
@@ -83,6 +87,19 @@ public class StoryWriteEndpoint {
             .storyKey(story.getId())
             .build()
     );
+  }
+
+  @AuthCheck(auths = {WRITER, ADMIN, OWNER})
+  @Operation(summary = "스토리 등록")
+  @PostMapping("/v2/heroes/{heroId}/stories")
+  public ResponseEntity<Void> createStory(
+      @PathVariable("heroId") Long heroId,
+      @RequestBody @Valid StoryGalleryWriteRequest storyGalleryWriteRequest,
+      @AuthenticationPrincipal AuthPayload authPayload) {
+    var story = storyGalleryWriteRequest.toStory(heroId, authPayload.getUserId());
+
+    storyWriteService.create(story, storyGalleryWriteRequest.getGalleryIds());
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   // TODO: FE에서 사진 분리 작업이 끝나면 제거
