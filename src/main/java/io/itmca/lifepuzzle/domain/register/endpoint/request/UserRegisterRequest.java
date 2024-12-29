@@ -11,6 +11,7 @@ public class UserRegisterRequest {
   private String email;
   private String password;
   private LocalDate birthday;
+  private String shareKey;
 
   public User toUser() {
     return User.builder()

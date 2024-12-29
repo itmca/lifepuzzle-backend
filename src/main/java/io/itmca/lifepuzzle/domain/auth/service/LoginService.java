@@ -6,6 +6,7 @@ import io.itmca.lifepuzzle.domain.auth.endpoint.response.dto.TokenQueryDTO;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.dto.UserQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
+import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -16,6 +17,7 @@ public class LoginService {
 
   private final TokenIssueService tokenIssueService;
   private final HeroQueryService heroQueryServiceService;
+  private final HeroUserAuthWriteService heroUserAuthWriteService;
 
   public LoginResponse getLoginResponse(Login login) {
     var user = login.getUser();

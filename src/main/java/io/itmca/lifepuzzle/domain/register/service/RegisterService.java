@@ -23,14 +23,14 @@ public class RegisterService {
   private final UserQueryService userQueryService;
 
   @Transactional
-  public void register(User user) {
+  public void register(User user, String shareKey) {
     if (isAlreadyExist(user)) {
       throw new UserAlreadyExistsException(user.getLoginId());
     }
 
     var registeredUser = this.registerInternally(user);
 
-    registerPostActionService.doAfterRegisterActions(registeredUser);
+    registerPostActionService.doAfterRegisterActions(registeredUser, shareKey);
   }
 
   private boolean isAlreadyExist(User user) {

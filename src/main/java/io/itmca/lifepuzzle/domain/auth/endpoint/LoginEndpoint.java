@@ -4,6 +4,7 @@ import io.itmca.lifepuzzle.domain.auth.Login;
 import io.itmca.lifepuzzle.domain.auth.endpoint.request.LoginRequest;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
 import io.itmca.lifepuzzle.domain.auth.service.LoginService;
+import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.register.PasswordVerification;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.global.exception.PasswordMismatchException;
@@ -22,6 +23,7 @@ public class LoginEndpoint {
 
   private final LoginService loginService;
   private final UserQueryService userQueryService;
+  private final HeroUserAuthWriteService heroUserAuthWriteService;
 
   @PostMapping({"/auth/login", // TODO: FE 전환 후 제거
       "/auth/login/email"})
@@ -40,6 +42,8 @@ public class LoginEndpoint {
     if (!PasswordUtil.matches(passwordVerification)) {
       throw new PasswordMismatchException();
     }
+
+    heroUserAuthWriteService.createIfShareKeyPresent(user, loginRequest.getShareKey());
 
     return loginService.getLoginResponse(
         Login.builder()

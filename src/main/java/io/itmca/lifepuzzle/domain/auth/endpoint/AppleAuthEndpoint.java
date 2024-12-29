@@ -5,6 +5,7 @@ import io.itmca.lifepuzzle.domain.auth.endpoint.request.AppleAuthBody;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
 import io.itmca.lifepuzzle.domain.auth.service.AppleValidateService;
 import io.itmca.lifepuzzle.domain.auth.service.LoginService;
+import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.register.service.SocialRegisterService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.global.exception.handler.NotFoundException;
@@ -25,24 +26,30 @@ public class AppleAuthEndpoint {
   private final UserQueryService userQueryService;
   private final LoginService loginService;
   private final SocialRegisterService socialRegisterService;
+  private final HeroUserAuthWriteService heroUserAuthWriteService;
 
   @Operation(summary = "애플 로그인")
   @PostMapping({"/auth/social/apple", // TODO: FE 전환 후 제거
       "/auth/login/apple"})
   public LoginResponse login(@RequestBody AppleAuthBody appleAuthBody) throws ParseException {
     verify(appleAuthBody);
+    var shareKey = appleAuthBody.getShareKey();
     try {
-      return tryAppleLogin(appleAuthBody);
+      return tryAppleLogin(appleAuthBody, shareKey);
     } catch (NotFoundException e) {
-      return loginAfterRegistration(appleAuthBody);
+      return loginAfterRegistration(appleAuthBody, shareKey);
     }
   }
 
-  private LoginResponse tryAppleLogin(AppleAuthBody appleAuthBody) throws NotFoundException {
+  private LoginResponse tryAppleLogin(AppleAuthBody appleAuthBody, String shareKey)
+      throws NotFoundException {
     var appleUser = userQueryService.findByAppleId(appleAuthBody.getAppleUserId());
     var loginType = Login.builder()
         .user(appleUser)
         .build();
+
+    heroUserAuthWriteService.createIfShareKeyPresent(appleUser, shareKey);
+
     return loginService.getLoginResponse(loginType);
   }
 
@@ -50,8 +57,8 @@ public class AppleAuthEndpoint {
     var sub = appleValidateService.parseToken(appleAuthBody.getIdentityToken());
   }
 
-  private LoginResponse loginAfterRegistration(AppleAuthBody appleAuthBody) {
-    socialRegisterService.registerAppleUser(appleAuthBody);
+  private LoginResponse loginAfterRegistration(AppleAuthBody appleAuthBody, String shareKey) {
+    socialRegisterService.registerAppleUser(appleAuthBody, shareKey);
     var newAppleUser = userQueryService.findByAppleId(appleAuthBody.getAppleUserId());
     var appleIdentityToken = appleAuthBody.getIdentityToken();
 

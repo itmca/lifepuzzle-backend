@@ -23,7 +23,7 @@ public class RegisterEndpoint {
   public HttpStatus register(@RequestBody UserRegisterRequest userRegisterRequest) {
     var user = userRegisterRequest.toUser();
 
-    registerService.register(user);
+    registerService.register(user, userRegisterRequest.getShareKey());
 
     return HttpStatus.OK;
   }

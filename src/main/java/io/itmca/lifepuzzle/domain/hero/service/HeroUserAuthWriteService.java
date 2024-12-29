@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.hero.service;
 
+import ch.qos.logback.core.util.StringUtil;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
@@ -33,6 +34,12 @@ public class HeroUserAuthWriteService {
     return heroUserAuthRepository.save(heroUserAuth);
   }
 
+  public void createIfShareKeyPresent(User user, String shareKey) {
+    if (StringUtil.notNullNorEmpty(shareKey)) {
+      create(user, shareKey);
+    }
+  }
+
   public void create(User user, String shareKey) {
     UserHeroShare userHeroShare = userHeroShareRepository
         .findById(shareKey)
@@ -44,9 +51,9 @@ public class HeroUserAuthWriteService {
       throw new UserHeroShareExpiredDateException("기간 만료 링크입니다");
     }
 
-    boolean isExistHeroAuth =
-        user.getHeroUserAuths().stream()
-            .anyMatch(h -> h.getHero().getHeroNo() == userHeroShare.getHeroId());
+    boolean isExistHeroAuth = user.getHeroUserAuths() != null
+        && user.getHeroUserAuths().stream()
+        .anyMatch(h -> h.getHero().getHeroNo() == userHeroShare.getHeroId());
 
     if (isExistHeroAuth) {
       throw new HeroAuthAlreadyExistsException("이미 등록되어 있는 주인공입니다.");

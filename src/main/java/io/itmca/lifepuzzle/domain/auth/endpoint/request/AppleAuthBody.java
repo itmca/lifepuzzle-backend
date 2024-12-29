@@ -8,4 +8,5 @@ public class AppleAuthBody {
   private String email;
   private String identityToken;
   private String nonce;
+  private String shareKey;
 }

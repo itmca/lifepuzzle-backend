@@ -14,7 +14,7 @@ public class SocialRegisterService {
   private final NicknameProvideService nicknameProvideService;
   private final RegisterPostActionService registerPostActionService;
 
-  public void registerKakaoUser(String kakaoId) {
+  public void registerKakaoUser(String kakaoId, String shareKey) {
     var user = userWriteService.save(
         User.builder()
             .loginId("kakao" + kakaoId)
@@ -22,10 +22,10 @@ public class SocialRegisterService {
             .kakaoId(kakaoId)
             .build());
 
-    registerPostActionService.doAfterRegisterActions(user);
+    registerPostActionService.doAfterRegisterActions(user, shareKey);
   }
 
-  public void registerAppleUser(AppleAuthBody appleAuthBody) {
+  public void registerAppleUser(AppleAuthBody appleAuthBody, String shareKey) {
     var appleUserId = appleAuthBody.getAppleUserId();
     var email = appleAuthBody.getEmail();
 
@@ -37,6 +37,6 @@ public class SocialRegisterService {
             .appleId(appleUserId)
             .build());
 
-    registerPostActionService.doAfterRegisterActions(user);
+    registerPostActionService.doAfterRegisterActions(user, shareKey);
   }
 }
