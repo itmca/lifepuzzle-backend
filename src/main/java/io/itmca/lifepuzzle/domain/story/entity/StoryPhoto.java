@@ -2,6 +2,7 @@ package io.itmca.lifepuzzle.domain.story.entity;
 
 import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import io.itmca.lifepuzzle.domain.story.type.GalleryType;
+import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -22,6 +23,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.util.StringUtils;
 
 @Table(name = "story_photo")
 @Entity
@@ -63,5 +65,13 @@ public class StoryPhoto {
             .url(storyImageFile.getBase() + storyImageFile.getFileName())
             .build()
     ).toList();
+  }
+
+  public String getGalleryUrl() {
+    if (!StringUtils.hasText(url)) {
+      return "";
+    }
+
+    return ServerConstant.S3_SERVER_HOST + url;
   }
 }

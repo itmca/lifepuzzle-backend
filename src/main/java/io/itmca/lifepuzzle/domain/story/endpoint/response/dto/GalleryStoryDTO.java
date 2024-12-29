@@ -1,5 +1,8 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.response.dto;
 
+import io.itmca.lifepuzzle.domain.story.entity.Story;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +14,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GalleryStoryDTO {
-  private Long id;
+  private String id;
   private String title;
   private String content;
-  private String audio;
-  private String date;
+  private List<String> audios;
+  private LocalDate date;
+
+  public static GalleryStoryDTO from(Story story) {
+    return GalleryStoryDTO.builder()
+      .id(story.getId())
+      .title(story.getTitle())
+      .content(story.getContent())
+      .audios(story.getAudios())
+      .date(story.getDate())
+      .build();
+  }
 }

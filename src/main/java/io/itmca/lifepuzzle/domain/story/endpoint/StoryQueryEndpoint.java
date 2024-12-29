@@ -9,8 +9,10 @@ import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.WRITER;
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
+import io.itmca.lifepuzzle.domain.story.endpoint.response.GalleryQueryResponse;
 import io.itmca.lifepuzzle.domain.story.endpoint.response.StoryQueryResponse;
 import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.StoryDTO;
+import io.itmca.lifepuzzle.domain.story.service.StoryPhotoService;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.story.service.StoryTagService;
 import io.itmca.lifepuzzle.global.aop.AuthCheck;
@@ -18,6 +20,7 @@ import io.itmca.lifepuzzle.global.aop.HeroNo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +35,7 @@ public class StoryQueryEndpoint {
   private final StoryTagService storyTagService;
   private final HeroValidationService heroValidationService;
   private final HeroQueryService heroQueryService;
+  private final StoryPhotoService storyPhotoService;
 
   @AuthCheck(auths = {VIEWER, COMMENTER, WRITER, ADMIN, OWNER})
   @GetMapping("/stories")
@@ -62,5 +66,12 @@ public class StoryQueryEndpoint {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), hero.getHeroNo());
 
     return StoryDTO.from(story, hero);
+  }
+
+  @Operation(summary = "홈 화면 조회")
+  @GetMapping("/v1/heroes/{heroId}/gallery")
+  public ResponseEntity<GalleryQueryResponse> getHeroGallery(@PathVariable("heroId") Long heroId) {
+    var response = storyPhotoService.getHeroGallery(heroId);
+    return ResponseEntity.ok(response);
   }
 }
