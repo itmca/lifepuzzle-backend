@@ -14,6 +14,7 @@ import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
 import io.itmca.lifepuzzle.domain.story.repository.StoryPhotoRepository;
 import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
+import io.itmca.lifepuzzle.global.exception.GalleryItemNotFoundException;
 import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
@@ -44,7 +45,16 @@ public class StoryPhotoService {
     storyPhotoRepository.saveAll(saveGalleryFiles);
   }
 
-
+  @Transactional
+  public void deleteGalleryItem(Long galleryId) {
+    StoryPhoto storyPhoto = storyPhotoRepository.findById(galleryId).orElse(null);
+    if (storyPhoto == null) {
+      throw GalleryItemNotFoundException.of(galleryId);
+    }
+    s3UploadService.delete(storyPhoto.getUrl());
+    storyPhotoRepository.delete(storyPhoto);
+  }
+  
   @Deprecated
   @Transactional
   public void savePhotos(Story story, StoryFile storyFile) {

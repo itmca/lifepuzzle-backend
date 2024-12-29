@@ -241,4 +241,9 @@ public class StoryWriteEndpoint {
     storyPhotoService.saveGallery(galleryWriteRequest.getHeroId(),
         gallery, galleryWriteRequest.getAgeGroup());
   }
+
+  @DeleteMapping({"v1/heroes/gallery/{galleryId}"})
+  public void deleteGalleryItem(@PathVariable Long galleryId) {
+    storyPhotoService.deleteGalleryItem(galleryId);
+  }
 }
