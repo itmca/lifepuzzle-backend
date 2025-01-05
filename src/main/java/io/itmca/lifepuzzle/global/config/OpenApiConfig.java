@@ -3,6 +3,8 @@ package io.itmca.lifepuzzle.global.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,6 +19,13 @@ public class OpenApiConfig {
 
     return new OpenAPI()
         .components(new Components())
-        .info(info);
+        .info(info)
+        .components(new io.swagger.v3.oas.models.Components()
+            .addSecuritySchemes("Bearer Authentication", new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")))
+        // 보안 요구 사항 정의 (Swagger UI에서 Bearer Authentication 사용을 명시)
+        .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"));
   }
 }

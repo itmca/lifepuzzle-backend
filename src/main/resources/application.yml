@@ -54,15 +54,15 @@ springdoc:
     disabled: true
   group-configs:
     - group: 이야기
-      paths-to-match: /story/**, /stories/**
+      paths-to-match: /**/story/**, /**/stories/**
     - group: 권한
-      paths-to-match: /auth/**
+      paths-to-match: /**/auth/**
     - group: 유저
-      paths-to-match: /user/**, /users/**
+      paths-to-match: /**/user/**, /**/users/**
     - group: 질문
-      paths-to-match: /question/**, /questions/**
+      paths-to-match: /**/question/**, /**/questions/**
     - group: 주인공
-      paths-to-match: /hero/**, /heroes/**
+      paths-to-match: /**/hero/**, /**/heroes/**
 
 sentry:
   dsn: ***REMOVED***
