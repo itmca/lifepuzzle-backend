@@ -64,7 +64,7 @@ public class Hero {
   private LocalDateTime deletedAt;
 
   @Setter
-  private boolean isLunar;
+  private Boolean isLunar;
 
   public static Hero defaultHero() {
     return Hero.builder()

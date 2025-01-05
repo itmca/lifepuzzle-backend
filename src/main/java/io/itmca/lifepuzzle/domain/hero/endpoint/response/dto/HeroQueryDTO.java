@@ -3,7 +3,6 @@ package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constant.ServerConstant.S3_SERVER_HOST;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -52,7 +51,7 @@ public class HeroQueryDTO {
         .title(hero.getTitle())
         .imageURL(addServerHostInImage(hero.getHeroNo(), hero.getImage()))
         .auth(auth)
-        .isLunar(hero.isLunar())
+        .isLunar(hero.getIsLunar())
         .build();
   }
 
