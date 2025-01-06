@@ -15,6 +15,8 @@ import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
+import io.itmca.lifepuzzle.domain.story.repository.StoryPhotoRepository;
+import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
 import io.itmca.lifepuzzle.domain.story.service.StoryPhotoService;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
@@ -55,6 +57,8 @@ public class StoryWriteEndpoint {
   private final SpeechToTextService speechToTextService;
   private final OpenAiChatService openAiChatService;
   private final StoryPhotoService storyPhotoService;
+  private final StoryRepository storyRepository;
+  private final StoryPhotoRepository storyPhotoRepository;
 
   @Deprecated
   @AuthCheck(auths = {WRITER, ADMIN, OWNER})
@@ -191,6 +195,7 @@ public class StoryWriteEndpoint {
     storyWriteService.update(story, storyFile);
   }
 
+  @Deprecated
   @Operation(summary = "스토리 삭제")
   @DeleteMapping({"/story/{storyKey}", // TODO: FE 전환 후 제거
       "/stories/{storyKey}"})
@@ -213,6 +218,25 @@ public class StoryWriteEndpoint {
 
     return HttpStatus.OK;
   }
+
+  @Operation(summary = "스토리 삭제 v2")
+  @DeleteMapping({"/v2/stories/{storyKey}"})
+  public void deleteStoryV2(@PathVariable("storyKey") String storyKey,
+                            @AuthenticationPrincipal AuthPayload authPayload) {
+    var story = storyQueryService.findById(storyKey);
+
+    if (story.getUserId() != authPayload.getUserId()) {
+      throw new UserNotAccessibleToStoryException(authPayload.getUserId(), storyKey);
+    }
+
+    var user = userQueryService.findByUserNo(authPayload.getUserId());
+    if (story.getHeroId() != user.getRecentHeroNo()) {
+      throw new HeroNotAccessibleToStoryException(user.getRecentHeroNo(), storyKey);
+    }
+
+    storyRepository.delete(story);
+  }
+
 
   @PostMapping({"/stories/speech-to-text"})
   public String convertSpeechToText(
