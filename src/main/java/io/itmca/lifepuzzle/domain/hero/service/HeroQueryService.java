@@ -23,7 +23,7 @@ public class HeroQueryService {
   private final HeroUserAuthRepository heroUserAuthRepository;
 
   public Hero findHeroByHeroNo(Long heroNo) {
-    return this.heroRepository.findById(heroNo)
+    return this.heroRepository.findByHeroNoAndIsDeletedFalse(heroNo)
         .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
   }
 

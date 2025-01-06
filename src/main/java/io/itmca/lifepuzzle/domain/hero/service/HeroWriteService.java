@@ -103,7 +103,7 @@ public class HeroWriteService {
   }
 
   public void delete(Long heroNo) {
-    var hero = heroRepository.findByHeroNo(heroNo)
+    var hero = heroRepository.findByHeroNoAndIsDeletedFalse(heroNo)
         .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
     hero.delete();
   }
