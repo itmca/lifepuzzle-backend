@@ -25,6 +25,7 @@ import io.itmca.lifepuzzle.global.exception.GalleryNotFoundException;
 import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -113,13 +114,14 @@ public class StoryPhotoService {
 
   public GalleryQueryResponse getHeroGallery(Long heroNo) {
     var hero = heroQueryService.findHeroByHeroNo(heroNo);
+    var heroDTO = HeroDTO.from(hero);
     var photos = getGalleryByHeroId(heroNo);
     var ageGroupsDTO = getGalleryByAgeGroup(photos, hero);
 
     return GalleryQueryResponse.builder()
-        .hero(HeroDTO.from(hero))
+        .hero(heroDTO)
         .ageGroups(ageGroupsDTO)
-        .tags(getTags(photos))
+        .tags(getTags(heroDTO.getAge()))
         .totalGallery(photos.size())
         .build();
   }
@@ -139,10 +141,11 @@ public class StoryPhotoService {
     return AgeGroupGalleryDTO.fromGroupedGallery(groupedByAge, hero.getBirthday());
   }
 
-  private List<TagDTO> getTags(List<StoryPhoto> photos) {
-    return photos.stream()
-        .map(StoryPhoto::getAgeGroup)
-        .distinct()
+  private List<TagDTO> getTags(int age) {
+    var heroAgeGroup = AgeGroup.of(age);
+
+    return Arrays.stream(AgeGroup.values())
+        .filter(ageGroup -> ageGroup.getRepresentativeAge() <= heroAgeGroup.getRepresentativeAge())
         .sorted(Comparator.comparingInt(AgeGroup::getRepresentativeAge))
         .map(ageGroup -> TagDTO.builder()
             .key(ageGroup)
