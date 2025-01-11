@@ -25,6 +25,7 @@ import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.global.ai.chat.OpenAiChatService;
 import io.itmca.lifepuzzle.global.ai.stt.SpeechToTextService;
 import io.itmca.lifepuzzle.global.aop.AuthCheck;
+import io.itmca.lifepuzzle.global.aop.HeroNo;
 import io.itmca.lifepuzzle.global.aop.HeroNoContainer;
 import io.itmca.lifepuzzle.global.exception.HeroNotAccessibleToStoryException;
 import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToStoryException;
@@ -95,7 +96,7 @@ public class StoryWriteEndpoint {
   @Operation(summary = "스토리 등록")
   @PostMapping("/v2/heroes/{heroId}/stories")
   public ResponseEntity<Void> createStory(
-      @PathVariable("heroId") Long heroId,
+      @HeroNo @PathVariable("heroId") Long heroId,
       @RequestPart(value = "story") StoryGalleryWriteRequest storyGalleryWriteRequest,
       @RequestPart(value = "voice", required = false) MultipartFile voice,
       @AuthenticationPrincipal AuthPayload authPayload) {
