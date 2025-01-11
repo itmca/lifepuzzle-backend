@@ -4,6 +4,7 @@ import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.ADMIN;
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.WRITER;
 import static io.itmca.lifepuzzle.global.util.FileUtil.handleSameNameContents;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.GalleryWriteRequest;
@@ -29,19 +30,16 @@ import io.itmca.lifepuzzle.global.exception.HeroNotAccessibleToStoryException;
 import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToStoryException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,7 +77,7 @@ public class StoryWriteEndpoint {
 
     var story = storyWriteRequest.toStory(authPayload.getUserId());
 
-    var storyFile = CollectionUtils.isEmpty(gallery)
+    var storyFile = isEmpty(gallery)
         ? buildStoryFile(images, voices, videos, story)
         : buildStoryFileWithGallery(gallery, voices, story);
 
@@ -98,9 +96,11 @@ public class StoryWriteEndpoint {
   @PostMapping("/v2/heroes/{heroId}/stories")
   public ResponseEntity<Void> createStory(
       @PathVariable("heroId") Long heroId,
-      @RequestBody @Valid StoryGalleryWriteRequest storyGalleryWriteRequest,
+      @RequestPart(value = "story") StoryGalleryWriteRequest storyGalleryWriteRequest,
+      @RequestPart(value = "voice", required = false) MultipartFile voice,
       @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyGalleryWriteRequest.toStory(heroId, authPayload.getUserId());
+    story.setVoice(voice);
 
     storyWriteService.create(story, storyGalleryWriteRequest.getGalleryIds());
     return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -187,7 +187,7 @@ public class StoryWriteEndpoint {
 
     story.updateStoryInfo(storyWriteRequest);
 
-    var storyFile = CollectionUtils.isEmpty(gallery)
+    var storyFile = isEmpty(gallery)
         ? buildStoryFile(images, voices, videos, story)
         : buildStoryFileWithGallery(gallery, voices, story);
 

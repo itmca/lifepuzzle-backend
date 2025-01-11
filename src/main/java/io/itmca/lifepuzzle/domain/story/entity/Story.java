@@ -7,6 +7,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
+import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import io.itmca.lifepuzzle.global.constant.ServerConstant;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
@@ -27,6 +28,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Getter
@@ -70,6 +72,7 @@ public class Story {
   private LocalDateTime updatedAt;
 
 
+  @Deprecated
   public void addStoryFile(StoryFile storyFile) {
     if (!isEmpty(storyFile.images())) {
       var storyImages = storyFile.images();
@@ -99,6 +102,18 @@ public class Story {
     } else {
       this.videoFolder = "";
       this.videoFiles = "";
+    }
+  }
+
+  public void setVoice(MultipartFile voice) {
+    if (voice != null) {
+      var storyVoice = new StoryVoiceFile(this, voice);
+
+      this.audioFolder = storyVoice.getBase();
+      this.audioFiles = storyVoice.getFileName();
+    } else {
+      this.audioFolder = "";
+      this.audioFiles = "";
     }
   }
 
