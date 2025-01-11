@@ -3,7 +3,7 @@ package io.itmca.lifepuzzle.domain.story.file;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_VIDEO_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.VIDEO_RESIZING_HEIGHT;
 import static io.itmca.lifepuzzle.global.constant.FileConstant.VIDEO_RESIZING_WIDTH;
-import static io.itmca.lifepuzzle.global.util.FileUtil.handleSameNameContents;
+import static io.itmca.lifepuzzle.global.util.FileUtil.handleFileNameContents;
 
 import io.github.techgnious.IVCompressor;
 import io.github.techgnious.dto.IVSize;
@@ -57,10 +57,8 @@ public class StoryVideoFile extends CustomFile implements Resizable<StoryVideoFi
   }
 
   public static List<StoryVideoFile> listFrom(List<MultipartFile> gallery, Long heroId) {
-    return handleSameNameContents(
+    return handleFileNameContents(
         gallery.stream().filter(file -> !FileUtil.isImageFile(file)).toList(),
-        // TODO: resize() 메서드 제거했는데 resize 정책 다시 확인 후 추가 필요
-        (video) -> new StoryVideoFile(heroId, video),
         (video, postfix) -> new StoryVideoFile(heroId, video, postfix));
   }
 }

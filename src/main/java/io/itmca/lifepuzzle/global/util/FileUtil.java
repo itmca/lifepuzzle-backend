@@ -10,6 +10,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -68,5 +69,29 @@ public class FileUtil {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static <R extends CustomFile> List<R> handleFileNameContents(
+      List<MultipartFile> files,
+      BiFunction<MultipartFile, String, R> nameHandler) {
+    var timeStamp = Instant.now().getEpochSecond();
+
+    return toStreamOrEmptyStream(files)
+        .collect(groupingBy(file -> file.getOriginalFilename()))
+        .values()
+        .stream()
+        .flatMap(sameNameContents -> {
+          if (sameNameContents.size() <= 1) {
+            return sameNameContents.stream()
+                .map(c -> nameHandler.apply(c, String.format("_%s", timeStamp)));
+          }
+
+          var postfix = new AtomicInteger();
+
+          return sameNameContents.stream()
+              .map(c -> nameHandler.apply(c,
+                  String.format("_%s_%s", timeStamp, postfix.getAndAdd(1))));
+        })
+        .toList();
   }
 }
