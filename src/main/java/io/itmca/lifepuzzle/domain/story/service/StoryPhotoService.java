@@ -115,7 +115,7 @@ public class StoryPhotoService {
   public GalleryQueryResponse getHeroGallery(Long heroNo) {
     var hero = heroQueryService.findHeroByHeroNo(heroNo);
     var heroDTO = HeroDTO.from(hero);
-    var photos = getGalleryByHeroId(heroNo);
+    var photos = getFilteredGallery(heroDTO);
     var ageGroupsDTO = getGalleryByAgeGroup(photos, hero);
 
     return GalleryQueryResponse.builder()
@@ -124,6 +124,15 @@ public class StoryPhotoService {
         .tags(getTags(heroDTO.getAge()))
         .totalGallery(photos.size())
         .build();
+  }
+
+  private List<StoryPhoto> getFilteredGallery(HeroDTO heroDTO) {
+    var photos = getGalleryByHeroId(heroDTO.getId());
+    var heroAgeGroup = AgeGroup.of(heroDTO.getAge());
+
+    return photos.stream()
+        .filter(photo -> photo.getAgeGroup().getRepresentativeAge() <= heroAgeGroup.getRepresentativeAge())
+        .toList();
   }
 
   private List<StoryPhoto> getGalleryByHeroId(Long heroId) {
