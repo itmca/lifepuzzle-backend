@@ -18,7 +18,7 @@ public class StoryGalleryWriteRequest {
         .id(generatedStoryKey(heroId))
         .heroId(heroId)
         .userId(userId)
-        .title(title)
+        .title(title != null ? title : "")
         .content(content)
         .date(date)
         .build();
