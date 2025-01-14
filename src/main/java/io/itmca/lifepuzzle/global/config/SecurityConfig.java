@@ -25,7 +25,8 @@ public class SecurityConfig {
                     "/user", "/user/dupcheck/*", "/users", "/users/dupcheck/*",
                     "/v3/**", "/question/*", "/questions/*",
                     "/share/hero", "/swagger-ui/**", "/stories/**",
-                    "/.well-know/assetlinks.json", ".well-known/apple-app-site-association")
+                    "/.well-know/assetlinks.json", "/.well-known/assetlinks.json",
+                    ".well-known/apple-app-site-association")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
