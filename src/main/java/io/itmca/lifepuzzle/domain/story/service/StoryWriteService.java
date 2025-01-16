@@ -7,14 +7,17 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.domain.story.entity.StoryPhotoMap;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
+import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.repository.StoryPhotoMapRepository;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +36,12 @@ public class StoryWriteService {
   }
 
   @Transactional
-  public String create(Story story, List<Long> galleryIds) {
+  public String create(Story story, List<Long> galleryIds, @Nullable MultipartFile voice) {
+    if (voice != null) {
+      s3UploadService.upload(new StoryVoiceFile(story, voice));
+    }
+    story.setVoice(voice);
+
     var savedStory = storyRepository.save(story);
 
     var storyPhotoMaps = galleryIds.stream()

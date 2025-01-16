@@ -101,9 +101,8 @@ public class StoryWriteEndpoint {
       @RequestPart(value = "voice", required = false) MultipartFile voice,
       @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyGalleryWriteRequest.toStory(heroId, authPayload.getUserId());
-    story.setVoice(voice);
 
-    storyWriteService.create(story, storyGalleryWriteRequest.getGalleryIds());
+    storyWriteService.create(story, storyGalleryWriteRequest.getGalleryIds(), voice);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 

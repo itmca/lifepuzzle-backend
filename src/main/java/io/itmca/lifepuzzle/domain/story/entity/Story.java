@@ -27,6 +27,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -105,7 +106,7 @@ public class Story {
     }
   }
 
-  public void setVoice(MultipartFile voice) {
+  public void setVoice(@Nullable MultipartFile voice) {
     if (voice != null) {
       var storyVoice = new StoryVoiceFile(this, voice);
 
