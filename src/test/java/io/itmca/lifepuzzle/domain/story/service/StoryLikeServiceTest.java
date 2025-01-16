@@ -87,14 +87,14 @@ class StoryLikeServiceTest {
     // Given
     // 스토리를 찾지 못하는 경우
     when(storyQueryService.findById(storyKey)).thenThrow(
-        StoryNotFoundException.byStoryKey(storyKey));
+        StoryNotFoundException.byStoryId(storyKey));
 
     // When & Then
     StoryNotFoundException exception = assertThrows(StoryNotFoundException.class, () -> {
       storyLikeService.addLike(storyKey, userId);
     });
 
-    assertTrue(exception.getMessage().contains("storyKey: " + storyKey));
+    assertTrue(exception.getMessage().contains("storyId: " + storyKey));
   }
 
   @Test
@@ -142,13 +142,13 @@ class StoryLikeServiceTest {
     // Given
     // 스토리를 찾지 못하는 경우
     when(storyQueryService.findById(storyKey)).thenThrow(
-        StoryNotFoundException.byStoryKey(storyKey));
+        StoryNotFoundException.byStoryId(storyKey));
 
     // When & Then
     StoryNotFoundException exception = assertThrows(StoryNotFoundException.class, () -> {
       storyLikeService.deleteLike(storyKey, userId);
     });
 
-    assertTrue(exception.getMessage().contains("storyKey: " + storyKey));
+    assertTrue(exception.getMessage().contains("storyId: " + storyKey));
   }
 }

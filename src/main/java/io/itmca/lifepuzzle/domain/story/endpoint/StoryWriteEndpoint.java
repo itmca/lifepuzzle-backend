@@ -106,6 +106,19 @@ public class StoryWriteEndpoint {
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
+  @AuthCheck(auths = {WRITER, ADMIN, OWNER})
+  @Operation(summary = "스토리 수정")
+  @PostMapping("/v2/heroes/{heroId}/stories/{storyId}")
+  public ResponseEntity<Void> putStory(
+      @HeroNo @PathVariable("heroId") Long heroId,
+      @PathVariable("storyId") String storyId,
+      @RequestPart(value = "story") StoryGalleryWriteRequest storyGalleryWriteRequest,
+      @RequestPart(value = "voice", required = false) MultipartFile voice,
+      @AuthenticationPrincipal AuthPayload authPayload) {
+    storyWriteService.update(storyId, storyGalleryWriteRequest, voice);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
   // TODO: FE에서 사진 분리 작업이 끝나면 제거
   @Deprecated
   private static StoryFile buildStoryFileWithGallery(List<MultipartFile> gallery,

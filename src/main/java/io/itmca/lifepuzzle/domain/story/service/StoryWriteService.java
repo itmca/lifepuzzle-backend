@@ -4,12 +4,14 @@ import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
 import static java.io.File.separator;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryGalleryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.domain.story.entity.StoryPhotoMap;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.repository.StoryPhotoMapRepository;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
+import io.itmca.lifepuzzle.global.exception.StoryNotFoundException;
 import io.itmca.lifepuzzle.global.infra.file.CustomFile;
 import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
 import java.util.List;
@@ -52,6 +54,29 @@ public class StoryWriteService {
     return savedStory.getId();
   }
 
+  @Transactional
+  public void update(String storyId, StoryGalleryWriteRequest storyGalleryWriteRequest, @Nullable MultipartFile voice) {
+    var story = storyRepository.findById(storyId)
+        .orElseThrow(() -> StoryNotFoundException.byStoryId(storyId));
+
+    story.update(storyGalleryWriteRequest);
+
+    if (voice != null) {
+      s3UploadService.upload(new StoryVoiceFile(story, voice));
+    }
+    story.setVoice(voice);
+  }
+
+  @Transactional
+  public void update(Story story, StoryFile storyFile) {
+    // TODO 2023.09.09 Solmioh 삭제 로직 확인 필요
+    deleteStoryFile(story, storyFile);
+
+    uploadStoryFile(storyFile);
+
+    story.addStoryFile(storyFile);
+  }
+
   private void saveStoryPhotoMaps(List<StoryPhotoMap> storyPhotoMaps) {
     for (StoryPhotoMap storyPhotoMap : storyPhotoMaps) {
       storyPhotoMapRepository.save(storyPhotoMap);
@@ -70,16 +95,6 @@ public class StoryWriteService {
     if (!isEmpty(storyFile.videos())) {
       s3UploadService.upload(storyFile.videos());
     }
-  }
-
-  @Transactional
-  public void update(Story story, StoryFile storyFile) {
-    // TODO 2023.09.09 Solmioh 삭제 로직 확인 필요
-    deleteStoryFile(story, storyFile);
-
-    uploadStoryFile(storyFile);
-
-    story.addStoryFile(storyFile);
   }
 
   private void deleteStoryFile(Story story, StoryFile storyFile) {

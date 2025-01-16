@@ -8,8 +8,8 @@ public class StoryNotFoundException extends NotFoundException {
     super(msg);
   }
 
-  public static StoryNotFoundException byStoryKey(String storyKey) {
-    return new StoryNotFoundException(String.format("Story is not found - storyKey: %s", storyKey));
+  public static StoryNotFoundException byStoryId(String storyId) {
+    return new StoryNotFoundException(String.format("Story is not found - storyId: %s", storyId));
   }
 
   public static StoryNotFoundException byHeroNo(Long heroNo) {

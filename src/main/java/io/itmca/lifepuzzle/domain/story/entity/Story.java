@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.joining;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
+import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryGalleryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
@@ -194,5 +195,11 @@ public class Story {
     this.date = storyWriteRequest.getDate();
     this.title = storyWriteRequest.getTitle();
     this.content = storyWriteRequest.getStoryText();
+  }
+
+  public void update(StoryGalleryWriteRequest request) {
+    this.date = request.getDate();
+    this.title = request.getTitle();
+    this.content = request.getContent();
   }
 }

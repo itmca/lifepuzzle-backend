@@ -20,7 +20,7 @@ public class StoryQueryService {
 
   public Story findById(String storyKey) {
     return storyRepository.findByStoryKey(storyKey)
-        .orElseThrow(() -> StoryNotFoundException.byStoryKey(storyKey));
+        .orElseThrow(() -> StoryNotFoundException.byStoryId(storyKey));
   }
 
   public int countByHeroNo(Long heroNo) {
