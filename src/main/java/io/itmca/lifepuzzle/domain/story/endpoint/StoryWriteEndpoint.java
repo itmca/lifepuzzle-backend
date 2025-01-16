@@ -108,7 +108,7 @@ public class StoryWriteEndpoint {
 
   @AuthCheck(auths = {WRITER, ADMIN, OWNER})
   @Operation(summary = "스토리 수정")
-  @PostMapping("/v2/heroes/{heroId}/stories/{storyId}")
+  @PutMapping("/v2/heroes/{heroId}/stories/{storyId}")
   public ResponseEntity<Void> putStory(
       @HeroNo @PathVariable("heroId") Long heroId,
       @PathVariable("storyId") String storyId,
