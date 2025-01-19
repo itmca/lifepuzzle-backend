@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.auth.endpoint;
 
+import ch.qos.logback.core.util.StringUtil;
 import io.itmca.lifepuzzle.domain.auth.Login;
 import io.itmca.lifepuzzle.domain.auth.endpoint.request.KakaoAuthBody;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
@@ -46,7 +47,10 @@ public class KakaoAuthEndpoint {
   private LoginResponse tryKakaoLogin(String kakaoId, String shareKey) throws NotFoundException {
     var kakaoUser = userQueryService.findByKakaoId(kakaoId);
 
-    heroUserAuthWriteService.createIfShareKeyPresent(kakaoUser, shareKey);
+    if (StringUtil.notNullNorEmpty(shareKey)) {
+      heroUserAuthWriteService.createByShareKey(kakaoUser, shareKey);
+
+    }
 
     return loginService.getLoginResponse(
         Login.builder()

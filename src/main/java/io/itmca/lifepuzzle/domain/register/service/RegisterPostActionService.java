@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.domain.register.service;
 
 import ch.qos.logback.core.util.StringUtil;
+import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
 import io.itmca.lifepuzzle.domain.user.entity.User;
@@ -17,15 +18,14 @@ public class RegisterPostActionService {
   private final UserWriteService userWriteService;
 
   public void doAfterRegisterActions(User user, String shareKey) {
-    heroUserAuthWriteService.createIfShareKeyPresent(user, shareKey);
+    Hero hero;
 
     if (StringUtil.isNullOrEmpty(shareKey)) {
-      this.createHeroOfUser(user);
+      hero = heroWriteService.createDefaultHero(user);
+    } else {
+      var newHeroUserAuth = heroUserAuthWriteService.createByShareKey(user, shareKey);
+      hero = newHeroUserAuth.getHero();
     }
-  }
-
-  private void createHeroOfUser(User user) {
-    var hero = heroWriteService.createDefaultHero(user);
 
     userWriteService.changeRecentHeroNo(user, hero.getHeroNo());
   }

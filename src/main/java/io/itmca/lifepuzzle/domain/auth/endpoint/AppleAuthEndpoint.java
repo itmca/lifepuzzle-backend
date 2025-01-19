@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.auth.endpoint;
 
+import ch.qos.logback.core.util.StringUtil;
 import io.itmca.lifepuzzle.domain.auth.Login;
 import io.itmca.lifepuzzle.domain.auth.endpoint.request.AppleAuthBody;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
@@ -48,7 +49,9 @@ public class AppleAuthEndpoint {
         .user(appleUser)
         .build();
 
-    heroUserAuthWriteService.createIfShareKeyPresent(appleUser, shareKey);
+    if (StringUtil.notNullNorEmpty(shareKey)) {
+      heroUserAuthWriteService.createByShareKey(appleUser, shareKey);
+    }
 
     return loginService.getLoginResponse(loginType);
   }

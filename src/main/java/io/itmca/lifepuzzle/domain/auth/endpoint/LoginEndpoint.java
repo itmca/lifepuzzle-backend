@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.auth.endpoint;
 
+import ch.qos.logback.core.util.StringUtil;
 import io.itmca.lifepuzzle.domain.auth.Login;
 import io.itmca.lifepuzzle.domain.auth.endpoint.request.LoginRequest;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
@@ -43,8 +44,10 @@ public class LoginEndpoint {
       throw new PasswordMismatchException();
     }
 
-    heroUserAuthWriteService.createIfShareKeyPresent(user, loginRequest.getShareKey());
-
+    var shareKey = loginRequest.getShareKey();
+    if (StringUtil.notNullNorEmpty(shareKey)) {
+      heroUserAuthWriteService.createByShareKey(user, shareKey);
+    }
     return loginService.getLoginResponse(
         Login.builder()
             .user(user)

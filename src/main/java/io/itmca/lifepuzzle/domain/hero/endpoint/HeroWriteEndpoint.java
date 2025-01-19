@@ -107,6 +107,6 @@ public class HeroWriteEndpoint {
   @PostMapping("heroes/auth")
   public void createHeroAuthOfUser(@RequestParam String shareKey,
                                    @CurrentUser User user) {
-    heroUserAuthWriteService.create(user, shareKey);
+    heroUserAuthWriteService.createByShareKey(user, shareKey);
   }
 }
