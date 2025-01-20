@@ -20,7 +20,7 @@ public class HeroWriteRequest {
   private String heroNickName;
   private LocalDate birthday;
   private String title;
-  private Boolean isLunar;
+  private Boolean isLunar = false;
   @JsonProperty("isProfileImageUpdate")
   private boolean profileImageUpdate;
 

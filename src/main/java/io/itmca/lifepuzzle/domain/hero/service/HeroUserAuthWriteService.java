@@ -13,6 +13,7 @@ import io.itmca.lifepuzzle.global.exception.UserHeroShareExpiredDateException;
 import io.itmca.lifepuzzle.global.exception.UserHeroShareKeyNotFoundException;
 import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToHeroException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ public class HeroUserAuthWriteService {
         .auth(heroAuthStatus)
         .build();
 
+    hero.setHeroUserAuths(Collections.singletonList(heroUserAuth));
     return heroUserAuthRepository.save(heroUserAuth);
   }
 

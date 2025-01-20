@@ -47,7 +47,7 @@ public class HeroWriteEndpoint {
                                  @CurrentUser User user) {
     var hero = heroWriteService.create(request, user, profile);
 
-    return HeroQueryDTO.from(hero);
+    return HeroQueryDTO.from(hero, user.getId());
   }
 
   @AuthCheck(auths = {ADMIN, OWNER})

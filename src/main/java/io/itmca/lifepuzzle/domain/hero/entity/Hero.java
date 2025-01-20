@@ -46,6 +46,7 @@ public class Hero {
   private String title;
   private String image;
 
+  @Setter
   @OneToMany(mappedBy = "hero")
   private List<HeroUserAuth> heroUserAuths = new ArrayList<>();
 
