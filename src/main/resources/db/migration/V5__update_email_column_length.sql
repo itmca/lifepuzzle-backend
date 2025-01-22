@@ -1,0 +1,2 @@
+ALTER TABLE `user`
+MODIFY COLUMN `email` VARCHAR(128);
