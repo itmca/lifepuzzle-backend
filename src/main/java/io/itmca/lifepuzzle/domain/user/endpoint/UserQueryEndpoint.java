@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
-import io.itmca.lifepuzzle.domain.user.endpoint.response.UserQueryDto;
+import io.itmca.lifepuzzle.domain.user.endpoint.response.dto.UserQueryDto;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +16,7 @@ public class UserQueryEndpoint {
 
   private final UserQueryService userQueryService;
 
-  @GetMapping("/users/{id}")
+  @GetMapping(value = {"/users/{id}", "/v1/users/{id}"})
   @Operation(summary = "유저 조회")
   public UserQueryDto getOne(@PathVariable("id") Long id) {
     var user = userQueryService.findByUserNo(id);

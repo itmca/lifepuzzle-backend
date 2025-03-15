@@ -2,20 +2,18 @@ package io.itmca.lifepuzzle.domain.hero.endpoint;
 
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.ADMIN;
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDTO;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDto;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
-import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.global.aop.AuthCheck;
 import io.itmca.lifepuzzle.global.aop.HeroNo;
+import io.itmca.lifepuzzle.global.resolver.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,20 +37,20 @@ public class HeroWriteEndpoint {
   private final HeroUserAuthWriteService heroUserAuthWriteService;
 
   @Operation(summary = "주인공 등록")
-  @PostMapping("/heroes")
-  public HeroQueryDTO createHero(@RequestPart("toWrite") HeroWriteRequest request,
+  @PostMapping(value = {"/heroes", "/v1/heroes"})
+  public HeroQueryDto createHero(@RequestPart("toWrite") HeroWriteRequest request,
                                  @RequestPart(value = "photo", required = false)
                                  MultipartFile profile,
                                  @CurrentUser User user) {
     var hero = heroWriteService.create(request, user, profile);
 
-    return HeroQueryDTO.from(hero, user.getId());
+    return HeroQueryDto.from(hero, user.getId());
   }
 
   @AuthCheck(auths = {ADMIN, OWNER})
   @Operation(summary = "주인공 수정")
-  @PutMapping("heroes/{heroNo}")
-  public HeroQueryDTO updateHero(
+  @PutMapping(value = {"heroes/{heroNo}", "/v1/heroes/{heroNo}"})
+  public HeroQueryDto updateHero(
       @PathVariable("heroNo") @HeroNo Long heroNo,
       @RequestPart("toWrite")
       HeroWriteRequest request,
@@ -61,40 +58,20 @@ public class HeroWriteEndpoint {
       MultipartFile photo,
       @AuthenticationPrincipal
       AuthPayload authPayload) {
-    return HeroQueryDTO.from(heroWriteService.update(heroNo, request, photo));
+    return HeroQueryDto.from(heroWriteService.update(heroNo, request, photo));
   }
 
   @AuthCheck(auths = {OWNER})
   @Operation(summary = "주인공 삭제")
-  @DeleteMapping("heroes/{heroNo}")
+  @DeleteMapping(value = {"heroes/{heroNo}", "/v1/heroes/{heroNo}"})
   public void deleteHero(@PathVariable("heroNo") @HeroNo Long heroNo,
                          @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
     heroWriteService.delete(heroNo);
   }
 
-  // TODO: FE에서 주인공 저장 시점에 사진도 저장하는 것으로 되어 Deprecated 되었으며 FE 전환 후 제거
-  @Deprecated
-  @AuthCheck(auths = {ADMIN, OWNER})
-  @Operation(summary = "주인공 사진 수정")
-  @RequestMapping(
-      value = {"heroes/profile/{heroNo}", // TODO: FE 전환 후 제거
-          "heroes/{heroNo}/profile"},
-      method = {POST, PUT})
-  public HeroQueryDTO saveHeroPhoto(@PathVariable("heroNo") @HeroNo Long heroNo,
-                                    @RequestPart(name = "photo")
-                                    MultipartFile profile,
-                                    @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
-
-    var updated = heroWriteService.updateProfile(heroNo, profile);
-
-    return HeroQueryDTO.from(updated);
-
-  }
-
   @Operation(summary = "유저의 주인공 권한 변경")
-  @PutMapping("heroes/auth")
+  @PutMapping(value = {"heroes/auth", "/v1/heroes/auth"})
   public void changeHeroAuthOfUser(@RequestBody HeroChangeAuthRequest heroChangeAuthRequest,
                                    @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserId(),
@@ -104,7 +81,7 @@ public class HeroWriteEndpoint {
   }
 
   @Operation(summary = "유저의 주인공 권한 추가")
-  @PostMapping("heroes/auth")
+  @PostMapping(value = {"heroes/auth", "/v1/heroes/auth"})
   public void createHeroAuthOfUser(@RequestParam String shareKey,
                                    @CurrentUser User user) {
     heroUserAuthWriteService.createByShareKey(user, shareKey);

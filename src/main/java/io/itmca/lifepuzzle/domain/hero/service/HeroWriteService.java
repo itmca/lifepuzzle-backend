@@ -1,7 +1,7 @@
 package io.itmca.lifepuzzle.domain.hero.service;
 
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
-import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
 
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
@@ -10,7 +10,7 @@ import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.global.exception.HeroNotFoundException;
-import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
+import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
@@ -48,7 +48,6 @@ public class HeroWriteService {
       return Optional.empty();
     }
 
-    // TODO : resize 실패가 자주 발생해 추석 기간 동안 resize 제거. 추석 이후 원인 파악하여 resize 복구 예정
     var heroProfileImage = new HeroProfileImage(
         hero,
         profile,

@@ -1,8 +1,0 @@
-package io.itmca.lifepuzzle.global.infra.file.repository;
-
-import io.itmca.lifepuzzle.global.infra.file.CustomFile;
-import java.io.IOException;
-
-public interface FileRepository {
-  void upload(CustomFile customFile) throws IOException;
-}

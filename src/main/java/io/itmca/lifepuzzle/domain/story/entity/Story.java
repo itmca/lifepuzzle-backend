@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.entity;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.FILE_NAMES_SEPARATOR;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.FILE_NAMES_SEPARATOR;
 import static java.util.stream.Collectors.joining;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -10,8 +10,8 @@ import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
-import io.itmca.lifepuzzle.global.constant.ServerConstant;
-import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import io.itmca.lifepuzzle.global.constants.ServerConstant;
+import io.itmca.lifepuzzle.global.file.CustomFile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

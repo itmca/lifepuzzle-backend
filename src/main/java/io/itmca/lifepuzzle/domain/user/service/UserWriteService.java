@@ -2,7 +2,7 @@ package io.itmca.lifepuzzle.domain.user.service;
 
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.ADMIN;
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
-import static io.itmca.lifepuzzle.global.constant.FileConstant.USER_PROFILE_IMAGE_BASE_PATH_FORMAT;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.USER_PROFILE_IMAGE_BASE_PATH_FORMAT;
 
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
@@ -12,10 +12,10 @@ import io.itmca.lifepuzzle.domain.user.entity.UserHeroShare;
 import io.itmca.lifepuzzle.domain.user.file.UserProfileImage;
 import io.itmca.lifepuzzle.domain.user.repository.UserHeroShareRepository;
 import io.itmca.lifepuzzle.domain.user.repository.UserRepository;
-import io.itmca.lifepuzzle.global.constant.ServerConstant;
+import io.itmca.lifepuzzle.global.constants.ServerConstant;
 import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToHeroException;
 import io.itmca.lifepuzzle.global.exception.UserNotShareHeroAuthException;
-import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
+import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -117,7 +117,6 @@ public class UserWriteService {
       return Optional.empty();
     }
 
-    // TODO : resize 실패가 자주 발생해 추석 기간 동안 resize 제거. 추석 이후 원인 파악하여 resize 복구 예정
     var heroProfileImage = new UserProfileImage(
         user,
         profile,

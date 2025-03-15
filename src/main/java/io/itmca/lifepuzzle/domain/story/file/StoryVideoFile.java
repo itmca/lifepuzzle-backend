@@ -1,16 +1,16 @@
 package io.itmca.lifepuzzle.domain.story.file;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_VIDEO_BASE_PATH_FORMAT;
-import static io.itmca.lifepuzzle.global.constant.FileConstant.VIDEO_RESIZING_HEIGHT;
-import static io.itmca.lifepuzzle.global.constant.FileConstant.VIDEO_RESIZING_WIDTH;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_VIDEO_BASE_PATH_FORMAT;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.VIDEO_RESIZING_HEIGHT;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.VIDEO_RESIZING_WIDTH;
 import static io.itmca.lifepuzzle.global.util.FileUtil.handleFileNameContents;
 
 import io.github.techgnious.IVCompressor;
 import io.github.techgnious.dto.IVSize;
 import io.github.techgnious.dto.VideoFormats;
 import io.github.techgnious.exception.VideoException;
-import io.itmca.lifepuzzle.global.infra.file.CustomFile;
-import io.itmca.lifepuzzle.global.infra.file.Resizable;
+import io.itmca.lifepuzzle.global.file.CustomFile;
+import io.itmca.lifepuzzle.global.file.Resizable;
 import io.itmca.lifepuzzle.global.util.FileUtil;
 import java.util.List;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.story.service;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_BASE_PATH;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_BASE_PATH;
 import static java.io.File.separator;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -12,8 +12,8 @@ import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.story.repository.StoryPhotoMapRepository;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
 import io.itmca.lifepuzzle.global.exception.StoryNotFoundException;
-import io.itmca.lifepuzzle.global.infra.file.CustomFile;
-import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
+import io.itmca.lifepuzzle.global.file.CustomFile;
+import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
@@ -55,7 +55,8 @@ public class StoryWriteService {
   }
 
   @Transactional
-  public void update(String storyId, StoryGalleryWriteRequest storyGalleryWriteRequest, @Nullable MultipartFile voice) {
+  public void update(String storyId, StoryGalleryWriteRequest storyGalleryWriteRequest,
+                     @Nullable MultipartFile voice) {
     var story = storyRepository.findById(storyId)
         .orElseThrow(() -> StoryNotFoundException.byStoryId(storyId));
 

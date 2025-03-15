@@ -1,9 +1,9 @@
 package io.itmca.lifepuzzle.domain.story.file;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.STORY_VOICE_BASE_PATH_FORMAT;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_VOICE_BASE_PATH_FORMAT;
 
 import io.itmca.lifepuzzle.domain.story.entity.Story;
-import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import io.itmca.lifepuzzle.global.file.CustomFile;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 

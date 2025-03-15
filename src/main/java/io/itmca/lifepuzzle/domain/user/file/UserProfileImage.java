@@ -1,9 +1,9 @@
 package io.itmca.lifepuzzle.domain.user.file;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.USER_PROFILE_IMAGE_BASE_PATH_FORMAT;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.USER_PROFILE_IMAGE_BASE_PATH_FORMAT;
 
 import io.itmca.lifepuzzle.domain.user.entity.User;
-import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import io.itmca.lifepuzzle.global.file.CustomFile;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 

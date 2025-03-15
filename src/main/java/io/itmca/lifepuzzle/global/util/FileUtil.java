@@ -3,7 +3,7 @@ package io.itmca.lifepuzzle.global.util;
 import static io.itmca.lifepuzzle.global.util.StreamUtil.toStreamOrEmptyStream;
 import static java.util.stream.Collectors.groupingBy;
 
-import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import io.itmca.lifepuzzle.global.file.CustomFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;

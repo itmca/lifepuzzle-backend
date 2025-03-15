@@ -1,7 +1,6 @@
 package io.itmca.lifepuzzle.global.resolver;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
-import io.itmca.lifepuzzle.domain.user.CurrentUser;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import lombok.RequiredArgsConstructor;

@@ -1,17 +1,16 @@
 package io.itmca.lifepuzzle.domain.hero.file;
 
-import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_IMAGE_RESIZING_HEIGHT;
-import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_IMAGE_RESIZING_WIDTH;
-import static io.itmca.lifepuzzle.global.constant.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_IMAGE_RESIZING_HEIGHT;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_IMAGE_RESIZING_WIDTH;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
 
 import io.github.techgnious.IVCompressor;
 import io.github.techgnious.dto.IVSize;
 import io.github.techgnious.dto.ImageFormats;
 import io.github.techgnious.exception.ImageException;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
-import io.itmca.lifepuzzle.global.infra.file.CustomFile;
-import io.itmca.lifepuzzle.global.infra.file.Resizable;
-import java.io.File;
+import io.itmca.lifepuzzle.global.file.CustomFile;
+import io.itmca.lifepuzzle.global.file.Resizable;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +40,7 @@ public class HeroProfileImage extends CustomFile implements Resizable<HeroProfil
 
     try {
       var resizeImg = new IVCompressor()
-                      .resizeImageWithCustomRes(bytes, ImageFormats.JPEG, customRes);
+          .resizeImageWithCustomRes(bytes, ImageFormats.JPEG, customRes);
 
       return HeroProfileImage
           .builder()

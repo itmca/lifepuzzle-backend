@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.global.util;
 
-import io.itmca.lifepuzzle.domain.register.PasswordVerification;
+import io.itmca.lifepuzzle.domain.user.model.PasswordVerification;
 import java.util.Random;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;

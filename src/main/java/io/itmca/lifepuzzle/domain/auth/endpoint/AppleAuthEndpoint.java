@@ -2,12 +2,12 @@ package io.itmca.lifepuzzle.domain.auth.endpoint;
 
 import ch.qos.logback.core.util.StringUtil;
 import io.itmca.lifepuzzle.domain.auth.Login;
-import io.itmca.lifepuzzle.domain.auth.endpoint.request.AppleAuthBody;
+import io.itmca.lifepuzzle.domain.auth.endpoint.request.AppleAuthRequest;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
 import io.itmca.lifepuzzle.domain.auth.service.AppleValidateService;
 import io.itmca.lifepuzzle.domain.auth.service.LoginService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
-import io.itmca.lifepuzzle.domain.register.service.SocialRegisterService;
+import io.itmca.lifepuzzle.domain.user.service.SocialRegisterService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.global.exception.handler.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,20 +34,20 @@ public class AppleAuthEndpoint {
   @Operation(summary = "애플 로그인")
   @PostMapping({"/auth/social/apple", // TODO: FE 전환 후 제거
       "/auth/login/apple"})
-  public LoginResponse login(@RequestBody AppleAuthBody appleAuthBody) throws ParseException {
-    log.info("Apple Body : {}", appleAuthBody);
-    verify(appleAuthBody);
-    var shareKey = appleAuthBody.getShareKey();
+  public LoginResponse login(@RequestBody AppleAuthRequest appleAuthRequest) throws ParseException {
+    log.info("Apple Body : {}", appleAuthRequest);
+    verify(appleAuthRequest);
+    var shareKey = appleAuthRequest.getShareKey();
     try {
-      return tryAppleLogin(appleAuthBody, shareKey);
+      return tryAppleLogin(appleAuthRequest, shareKey);
     } catch (NotFoundException e) {
-      return loginAfterRegistration(appleAuthBody, shareKey);
+      return loginAfterRegistration(appleAuthRequest, shareKey);
     }
   }
 
-  private LoginResponse tryAppleLogin(AppleAuthBody appleAuthBody, String shareKey)
+  private LoginResponse tryAppleLogin(AppleAuthRequest appleAuthRequest, String shareKey)
       throws NotFoundException {
-    var appleUser = userQueryService.findByAppleId(appleAuthBody.getAppleUserId());
+    var appleUser = userQueryService.findByAppleId(appleAuthRequest.getAppleUserId());
     var loginType = Login.builder()
         .user(appleUser)
         .build();
@@ -59,14 +59,14 @@ public class AppleAuthEndpoint {
     return loginService.getLoginResponse(loginType);
   }
 
-  private void verify(AppleAuthBody appleAuthBody) throws ParseException {
-    var sub = appleValidateService.parseToken(appleAuthBody.getIdentityToken());
+  private void verify(AppleAuthRequest appleAuthRequest) throws ParseException {
+    var sub = appleValidateService.parseToken(appleAuthRequest.getIdentityToken());
   }
 
-  private LoginResponse loginAfterRegistration(AppleAuthBody appleAuthBody, String shareKey) {
-    socialRegisterService.registerAppleUser(appleAuthBody, shareKey);
-    var newAppleUser = userQueryService.findByAppleId(appleAuthBody.getAppleUserId());
-    var appleIdentityToken = appleAuthBody.getIdentityToken();
+  private LoginResponse loginAfterRegistration(AppleAuthRequest appleAuthRequest, String shareKey) {
+    socialRegisterService.registerAppleUser(appleAuthRequest, shareKey);
+    var newAppleUser = userQueryService.findByAppleId(appleAuthRequest.getAppleUserId());
+    var appleIdentityToken = appleAuthRequest.getIdentityToken();
 
     return loginService.getLoginResponse(
         Login.builder()

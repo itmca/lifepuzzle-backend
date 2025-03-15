@@ -2,8 +2,8 @@ package io.itmca.lifepuzzle.domain.story.entity;
 
 import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import io.itmca.lifepuzzle.domain.story.type.GalleryType;
-import io.itmca.lifepuzzle.global.constant.ServerConstant;
-import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import io.itmca.lifepuzzle.global.constants.ServerConstant;
+import io.itmca.lifepuzzle.global.file.CustomFile;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

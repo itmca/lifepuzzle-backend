@@ -2,12 +2,12 @@ package io.itmca.lifepuzzle.domain.auth.endpoint;
 
 import ch.qos.logback.core.util.StringUtil;
 import io.itmca.lifepuzzle.domain.auth.Login;
-import io.itmca.lifepuzzle.domain.auth.endpoint.request.KakaoAuthBody;
+import io.itmca.lifepuzzle.domain.auth.endpoint.request.KakaoAuthRequest;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
 import io.itmca.lifepuzzle.domain.auth.service.KakaoValidateService;
 import io.itmca.lifepuzzle.domain.auth.service.LoginService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
-import io.itmca.lifepuzzle.domain.register.service.SocialRegisterService;
+import io.itmca.lifepuzzle.domain.user.service.SocialRegisterService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
 import io.itmca.lifepuzzle.global.exception.handler.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,9 +34,9 @@ public class KakaoAuthEndpoint {
   @PostMapping({"/auth/social/kakao", // TODO: FE 전환 후 제거
       "/auth/login/kakao"})
   public LoginResponse login(@RequestHeader("kakao-access-token") String kakaoAccessToken,
-                             @RequestBody KakaoAuthBody kakaoAuthBody) {
+                             @RequestBody KakaoAuthRequest kakaoAuthRequest) {
     var kakaoId = getKakaoId(kakaoAccessToken);
-    var shareKey = kakaoAuthBody.getShareKey();
+    var shareKey = kakaoAuthRequest.getShareKey();
     try {
       return tryKakaoLogin(kakaoId, shareKey);
     } catch (NotFoundException e) {

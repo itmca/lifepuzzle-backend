@@ -1,9 +1,9 @@
 package io.itmca.lifepuzzle.domain.user.entity;
 
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
-import io.itmca.lifepuzzle.domain.user.UserType;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.file.UserProfileImage;
+import io.itmca.lifepuzzle.domain.user.type.UserType;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

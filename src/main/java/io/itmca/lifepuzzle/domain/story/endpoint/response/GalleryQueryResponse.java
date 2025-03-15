@@ -1,8 +1,8 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.response;
 
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroDTO;
-import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.AgeGroupGalleryDTO;
-import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.TagDTO;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroDto;
+import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.AgeGroupGalleryDto;
+import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.TagDto;
 import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +17,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GalleryQueryResponse {
-  private HeroDTO hero;
-  private Map<AgeGroup, AgeGroupGalleryDTO> ageGroups;
-  private List<TagDTO> tags;
+  private HeroDto hero;
+  private Map<AgeGroup, AgeGroupGalleryDto> ageGroups;
+  private List<TagDto> tags;
   private int totalGallery;
 }
 

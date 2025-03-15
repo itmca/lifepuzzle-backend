@@ -1,8 +1,8 @@
 package io.itmca.lifepuzzle.domain.story.endpoint.response;
 
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
-import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.StoryDTO;
-import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.StoryTagDTO;
+import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.StoryDto;
+import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.StoryTagDto;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
 import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import java.util.ArrayList;
@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StoryQueryResponse {
 
-  private List<StoryDTO> stories;
-  private List<StoryTagDTO> tags;
+  private List<StoryDto> stories;
+  private List<StoryTagDto> tags;
 
   /* [Debugging]
       hero가 -1인 경우 빈 데이터를 넘겨줘야 함.
@@ -33,9 +33,9 @@ public class StoryQueryResponse {
   }
 
   public static StoryQueryResponse from(List<Story> stories, Hero hero, List<AgeGroup> ageGroups) {
-    var storyDTOs = stories.stream().map(story -> StoryDTO.from(story, hero)).toList();
+    var storyDTOs = stories.stream().map(story -> StoryDto.from(story, hero)).toList();
     var storyTags = ageGroups.stream()
-        .map(ageGroup -> StoryTagDTO.builder()
+        .map(ageGroup -> StoryTagDto.builder()
             .key(ageGroup.getRepresentativeAge().toString())
             .displayName(ageGroup.getDisplayName())
             .priority(ageGroup.getRepresentativeAge())

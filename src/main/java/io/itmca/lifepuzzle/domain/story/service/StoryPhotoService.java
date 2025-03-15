@@ -4,26 +4,21 @@ import static io.itmca.lifepuzzle.domain.story.type.GalleryType.IMAGE;
 import static io.itmca.lifepuzzle.domain.story.type.GalleryType.VIDEO;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroDTO;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroDto;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.story.endpoint.response.GalleryQueryResponse;
-import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.AgeGroupGalleryDTO;
-import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.TagDTO;
-import io.itmca.lifepuzzle.domain.story.entity.Story;
+import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.AgeGroupGalleryDto;
+import io.itmca.lifepuzzle.domain.story.endpoint.response.dto.TagDto;
 import io.itmca.lifepuzzle.domain.story.entity.StoryPhoto;
-import io.itmca.lifepuzzle.domain.story.entity.StoryPhotoMap;
-import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVideoFile;
 import io.itmca.lifepuzzle.domain.story.repository.StoryPhotoRepository;
 import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import io.itmca.lifepuzzle.global.exception.GalleryItemNotFoundException;
 import io.itmca.lifepuzzle.global.exception.GalleryNotFoundException;
-import io.itmca.lifepuzzle.global.infra.file.service.S3UploadService;
-import jakarta.transaction.Transactional;
+import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -31,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class StoryPhotoService {
   private final StoryPhotoRepository storyPhotoRepository;
@@ -64,57 +61,10 @@ public class StoryPhotoService {
     s3UploadService.delete(storyPhoto.getUrl());
     storyPhotoRepository.delete(storyPhoto);
   }
-  
-  @Deprecated
-  @Transactional
-  public void savePhotos(Story story, StoryFile storyFile) {
-    Long heroId = story.getHeroId();
-    Hero hero = heroQueryService.findHeroByHeroNo(heroId);
-
-    if (!isEmpty(storyFile.images())) {
-      List<StoryImageFile> images = storyFile.images();
-
-      for (StoryImageFile image : images) {
-        StoryPhoto photo = StoryPhoto.builder()
-            .heroId(story.getHeroId())
-            .ageGroup(story.getTag(hero))
-            .url(image.getBase() + image.getFileName())
-            .storyMaps(new ArrayList<>())
-            .build();
-
-        storyPhotoRepository.save(photo);
-
-        StoryPhotoMap storyPhotoMap = StoryPhotoMap.builder()
-            .storyId(story.getId())
-            .photoId(photo.getId())
-            .story(story)
-            .photo(photo)
-            .build();
-
-        photo.getStoryMaps().add(storyPhotoMap);
-      }
-    }
-  }
-
-  @Deprecated
-  @Transactional
-  public void updatePhotos(Story story, StoryFile storyFile) {
-    deletePhotos(story);
-    savePhotos(story, storyFile);
-  }
-
-  @Deprecated
-  @Transactional
-  public void deletePhotos(Story story) {
-    List<StoryPhoto> storyPhotos = story.getPhotoMaps().stream()
-        .map(StoryPhotoMap::getPhoto).toList();
-
-    storyPhotoRepository.deleteAll(storyPhotos);
-  }
 
   public GalleryQueryResponse getHeroGallery(Long heroNo) {
     var hero = heroQueryService.findHeroByHeroNo(heroNo);
-    var heroDTO = HeroDTO.from(hero);
+    var heroDTO = HeroDto.from(hero);
     var photos = getFilteredGallery(heroDTO);
     var ageGroupsDTO = getGalleryByAgeGroup(photos, hero);
 
@@ -126,12 +76,13 @@ public class StoryPhotoService {
         .build();
   }
 
-  private List<StoryPhoto> getFilteredGallery(HeroDTO heroDTO) {
+  private List<StoryPhoto> getFilteredGallery(HeroDto heroDTO) {
     var photos = getGalleryByHeroId(heroDTO.getId());
     var heroAgeGroup = AgeGroup.of(heroDTO.getAge());
 
     return photos.stream()
-        .filter(photo -> photo.getAgeGroup().getRepresentativeAge() <= heroAgeGroup.getRepresentativeAge())
+        .filter(photo -> photo.getAgeGroup().getRepresentativeAge()
+            <= heroAgeGroup.getRepresentativeAge())
         .toList();
   }
 
@@ -140,23 +91,24 @@ public class StoryPhotoService {
         .orElseThrow(() -> new GalleryNotFoundException(heroId));
   }
 
-  private Map<AgeGroup, AgeGroupGalleryDTO> getGalleryByAgeGroup(List<StoryPhoto> photos, Hero hero) {
+  private Map<AgeGroup, AgeGroupGalleryDto> getGalleryByAgeGroup(List<StoryPhoto> photos,
+                                                                 Hero hero) {
     var groupedByAge = photos.stream()
         .collect(groupingBy(
             StoryPhoto::getAgeGroup,
             toList()
         ));
 
-    return AgeGroupGalleryDTO.fromGroupedGallery(groupedByAge, hero.getBirthday());
+    return AgeGroupGalleryDto.fromGroupedGallery(groupedByAge, hero.getBirthday());
   }
 
-  private List<TagDTO> getTags(int age) {
+  private List<TagDto> getTags(int age) {
     var heroAgeGroup = AgeGroup.of(age);
 
     return Arrays.stream(AgeGroup.values())
         .filter(ageGroup -> ageGroup.getRepresentativeAge() <= heroAgeGroup.getRepresentativeAge())
         .sorted(Comparator.comparingInt(AgeGroup::getRepresentativeAge))
-        .map(ageGroup -> TagDTO.builder()
+        .map(ageGroup -> TagDto.builder()
             .key(ageGroup)
             .label(ageGroup.getDisplayName())
             .build())

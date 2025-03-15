@@ -3,7 +3,7 @@ package io.itmca.lifepuzzle.global.ai.stt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.itmca.lifepuzzle.global.exception.AiServiceUnavailableException;
-import io.itmca.lifepuzzle.global.infra.file.CustomFile;
+import io.itmca.lifepuzzle.global.file.CustomFile;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;

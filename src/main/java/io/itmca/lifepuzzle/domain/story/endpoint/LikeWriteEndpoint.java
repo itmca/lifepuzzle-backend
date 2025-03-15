@@ -21,18 +21,20 @@ public class LikeWriteEndpoint {
   private final StoryLikeService storyLikeService;
 
   @Operation(summary = "스토리 좋아요")
-  @PostMapping("/stories/{storyKey}/likes")
+  @PostMapping("/v1/stories/{storyKey}/likes")
   public ResponseEntity<LikeWriteResponse> addLikeToStory(@PathVariable("storyKey") String storyKey,
-                                                          @AuthenticationPrincipal AuthPayload authPayload) {
+                                                          @AuthenticationPrincipal
+                                                          AuthPayload authPayload) {
     var likeWriteResponse = storyLikeService.addLike(storyKey, authPayload.getUserId());
 
     return ResponseEntity.ok(likeWriteResponse);
   }
 
   @Operation(summary = "스토리 좋아요 취소")
-  @DeleteMapping("/stories/{storyKey}/likes")
-  public ResponseEntity<LikeWriteResponse> removeLikeFromStory(@PathVariable("storyKey") String storyKey,
-                                                    @AuthenticationPrincipal AuthPayload authPayload) {
+  @DeleteMapping("/v1/stories/{storyKey}/likes")
+  public ResponseEntity<LikeWriteResponse> removeLikeFromStory(
+      @PathVariable("storyKey") String storyKey,
+      @AuthenticationPrincipal AuthPayload authPayload) {
     var likeWriteResponse = storyLikeService.deleteLike(storyKey, authPayload.getUserId());
 
     return ResponseEntity.ok(likeWriteResponse);
