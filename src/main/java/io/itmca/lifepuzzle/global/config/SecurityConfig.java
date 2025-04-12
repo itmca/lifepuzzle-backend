@@ -23,6 +23,7 @@ public class SecurityConfig {
             (request) -> request.requestMatchers(
                     "/", "/hc", "/error-test", "/auth/**",
                     "/user", "/user/dupcheck/*", "/users", "/users/dupcheck/*",
+                    "/v1/user", "/v1/user/dupcheck/*", "/v1/users", "/v1/users/dupcheck/*",
                     "/v3/**", "/question/*", "/questions/*",
                     "/share/hero", "/swagger-ui/**", "/stories/**",
                     "/.well-know/assetlinks.json", "/.well-known/assetlinks.json",
