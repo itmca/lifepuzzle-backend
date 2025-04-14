@@ -61,6 +61,7 @@ dependencies {
     //	Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.10")
 
     // Tool
     compileOnly 'org.projectlombok:lombok:1.18.34'
