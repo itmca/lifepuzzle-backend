@@ -1,0 +1,39 @@
+name: PR Title Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+jobs:
+  check-pr-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+
+            const allowedTypes = ['feat', 'fix', 'chore', 'docs', 'test', 'refactor', 'style', 'perf', 'ci', 'build', 'revert'];
+
+            // 더 유연한 정규식
+            const regex = new RegExp(
+              `^(\\[(SHIP|SHOW|ASK)\\])?(\$begin:math:display$LP-\\\\d+\\$end:math:display$)?\\s*(${allowedTypes.join('|')}): .+`
+            );
+
+            if (!regex.test(title)) {
+              const errorMessage = `❌ PR 제목 형식이 올바르지 않습니다: "${title}"`;
+    
+              console.log(errorMessage);
+              console.log(`
+                올바른 예시:
+                  - feat: 로그인 기능 추가
+                  - [SHOW] fix: UI 수정
+                  - [SHIP][LP-1234] chore: 테스트 추가
+                  - [LP-5678] docs: 설명 추가
+              `);
+              
+              core.setFailed(errorMessage);
+            } else {
+              console.log("✅ PR 제목 통과");
+            }
