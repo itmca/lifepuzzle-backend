@@ -1,0 +1,33 @@
+name: PR Stale Notifier
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # ✅ 매일 UTC 00:00 = KST 오전 9시
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. PR에 stale 라벨 & 코멘트 달기
+      - uses: actions/stale@v9
+        id: stale
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-pr-message: |
+            ⚠️ 최근 활동이 없어 자동 알림을 보냅니다.
+            확인 후 머지하거나 코멘트를 남겨주세요!
+          stale-pr-label: stale
+          days-before-stale: 3
+          days-before-close: -1
+
+      # 2. Slack 알림 보내기 (stale 처리된 경우에만)
+      - name: Notify Slack
+        if: steps.stale.outputs.stale-prs != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{
+            "text": ":warning: *다음 PR이 3일간 비활성 상태입니다!*\n${{ steps.stale.outputs.stale-prs }}"
+          }' $SLACK_WEBHOOK_URL
