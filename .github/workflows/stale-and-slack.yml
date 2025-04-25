@@ -2,7 +2,8 @@ name: PR Stale Notifier
 
 on:
   schedule:
-    - cron: '15 0 * * *'  # ✅ 매일 UTC 00:00 = KST 오전 9시
+    - cron: '0 0 * * *'  # ✅ 매일 UTC 00:00 = KST 오전 9시
+  workflow_dispatch:
 
 jobs:
   stale:
