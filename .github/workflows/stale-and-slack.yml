@@ -2,7 +2,7 @@ name: PR Stale Notifier
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # ✅ 매일 UTC 00:00 = KST 오전 9시
+    - cron: '15 0 * * *'  # ✅ 매일 UTC 00:00 = KST 오전 9시
 
 jobs:
   stale:
@@ -18,7 +18,7 @@ jobs:
             ⚠️ 최근 활동이 없어 자동 알림을 보냅니다.
             확인 후 머지하거나 코멘트를 남겨주세요!
           stale-pr-label: stale
-          days-before-stale: 3
+          days-before-stale: 1
           days-before-close: -1
 
       # 2. Slack 알림 보내기 (stale 처리된 경우에만)
