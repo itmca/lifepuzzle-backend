@@ -19,16 +19,34 @@ jobs:
             ⚠️ 최근 활동이 없어 자동 알림을 보냅니다.
             확인 후 머지하거나 코멘트를 남겨주세요!
           stale-pr-label: stale
-          days-before-stale: 1
+          days-before-stale: 0
           days-before-close: -1
-
-      # 2. Slack 알림 보내기 (stale 처리된 경우에만)
+      # PR URL 파싱 (staled-issues-prs가 존재할 때만)
+      - name: Parse stale PR urls
+        id: extract_urls
+        if: >
+          steps.stale.outputs.staled-issues-prs != '' &&
+          steps.stale.outputs.staled-issues-prs != '[]'
+        run: |
+          # JSON 파싱을 위해 임시 파일에 저장
+          echo '${{ steps.stale.outputs.staled-issues-prs }}' > staled_prs.json
+          
+          # html_url 추출해서 슬랙 메시지 포맷 생성
+          message=$(jq -r '.[] | .pull_request.html_url' staled_prs.json | sed 's/^/• /')
+          
+          echo "Formatted message:"
+          echo "$message"
+          
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          echo "$message" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      # Slack 알림 전송 (message가 존재할 때만)
       - name: Notify Slack
-        if: steps.stale.outputs.stale-prs != ''
+        if: steps.extract_urls.outputs.message != ''
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data '{
-            "text": ":warning: *다음 PR이 3일간 비활성 상태입니다!*\n${{ steps.stale.outputs.stale-prs }}"
+            "text": ":warning: *다음 PR이 2일간 비활성 상태입니다!*\n${{ steps.extract_urls.outputs.message }}"
           }' $SLACK_WEBHOOK_URL
