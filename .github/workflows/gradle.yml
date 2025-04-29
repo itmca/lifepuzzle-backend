@@ -31,7 +31,7 @@ jobs:
     # Configure Gradle for optimal use in GiHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@ec92e829475ac0c2315ea8f9eced72db85bb337a # v3.0.0
+      uses: gradle/actions/setup-gradle@06832c7b30a0129d7fb559bcc6e43d26f6374244 # v4.3.1
 
     # test is included for build without test
     - name: Build with Gradle Wrapper
@@ -41,7 +41,7 @@ jobs:
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
     #
     # - name: Setup Gradle
-    #   uses: gradle/actions/setup-gradle@ec92e829475ac0c2315ea8f9eced72db85bb337a # v3.0.0
+    #   uses: gradle/actions/setup-gradle@06832c7b30a0129d7fb559bcc6e43d26f6374244 # v4.3.1
     #   with:
     #     gradle-version: '8.5'
     #
@@ -65,4 +65,4 @@ jobs:
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
     # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
     - name: Generate and submit dependency graph
-      uses: gradle/actions/dependency-submission@ec92e829475ac0c2315ea8f9eced72db85bb337a # v3.0.0
+      uses: gradle/actions/dependency-submission@06832c7b30a0129d7fb559bcc6e43d26f6374244 # v4.3.1
