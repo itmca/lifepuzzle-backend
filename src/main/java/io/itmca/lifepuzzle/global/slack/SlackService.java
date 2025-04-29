@@ -1,5 +1,9 @@
 package io.itmca.lifepuzzle.global.slack;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -7,25 +11,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
 public class SlackService {
   private final SlackProperties slackProperties;
 
-  public SlackService(SlackProperties slackProperties) {
-    this.slackProperties = slackProperties;
-  }
-
   public void sendNoti(String format, Object... args) {
-    String message = String.format(format, args);
+    var message = String.format(format, args);
+    var payload = Map.of(
+        "text", message,
+        "mrkdwn", true
+    );
 
-    RestTemplate restTemplate = new RestTemplate();
+    String payloadJson;
+    try {
+      payloadJson = new ObjectMapper().writeValueAsString(payload);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
 
-    HttpHeaders headers = new HttpHeaders();
+    var headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
+    var entity = new HttpEntity<>(payloadJson, headers);
 
-    String payload = "{\"text\": \"" + message + "\"}";
-
-    HttpEntity<String> entity = new HttpEntity<>(payload, headers);
-
-    restTemplate.postForObject(slackProperties.getWebhookUrl(), entity, String.class);
+    new RestTemplate().postForObject(slackProperties.getWebhookUrl(), entity, String.class);
   }
 }
