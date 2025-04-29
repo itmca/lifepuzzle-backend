@@ -28,15 +28,6 @@ public class StoryWriteService {
   private final S3UploadService s3UploadService;
   private final StoryPhotoMapRepository storyPhotoMapRepository;
 
-  @Deprecated
-  public Story create(Story story, StoryFile storyFile) {
-    uploadStoryFile(storyFile);
-
-    story.addStoryFile(storyFile);
-
-    return storyRepository.save(story);
-  }
-
   @Transactional
   public String create(Story story, List<Long> galleryIds, @Nullable MultipartFile voice) {
     if (voice != null) {

@@ -22,8 +22,10 @@ import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +38,13 @@ public class StoryPhotoService {
   private final StoryPhotoRepository storyPhotoRepository;
   private final HeroQueryService heroQueryService;
   private final S3UploadService s3UploadService;
+  private final StoryPhotoAsyncService storyPhotoAsyncService;
 
   @Transactional
   public void saveGallery(Long heroId, List<MultipartFile> gallery, AgeGroup ageGroup) {
     List<StoryImageFile> storyImageFiles = StoryImageFile.listFrom(gallery, heroId);
     List<StoryVideoFile> storyVideoFiles = StoryVideoFile.listFrom(gallery, heroId);
+
     List<StoryPhoto> saveGalleryFiles = new ArrayList<>();
 
     saveGalleryFiles.addAll(StoryPhoto.listFrom(storyImageFiles, heroId, ageGroup, IMAGE));
@@ -49,7 +53,24 @@ public class StoryPhotoService {
     s3UploadService.upload(storyImageFiles);
     s3UploadService.upload(storyVideoFiles);
 
-    storyPhotoRepository.saveAll(saveGalleryFiles);
+    storyPhotoRepository.saveAllAndFlush(saveGalleryFiles);
+
+    storyPhotoAsyncService.saveResizeGalleryAsync(
+        getImageIdsWithStoryGallery(saveGalleryFiles, storyImageFiles));
+  }
+
+  private Map<Long, StoryImageFile> getImageIdsWithStoryGallery(
+      List<StoryPhoto> saveGalleryFiles, List<StoryImageFile> storyImageFiles) {
+    Map<Long, StoryImageFile> storyImageFileMap = new HashMap<>();
+    for (StoryImageFile image : storyImageFiles) {
+      Optional<StoryPhoto> targetPhoto = saveGalleryFiles.stream().filter(
+          item -> item.isImage()
+              && item.getUrl().equals(image.getBase() + image.getFileName())
+      ).findFirst();
+
+      targetPhoto.ifPresent(storyPhoto -> storyImageFileMap.put(storyPhoto.getId(), image));
+    }
+    return storyImageFileMap;
   }
 
   @Transactional
@@ -60,6 +81,10 @@ public class StoryPhotoService {
     }
     s3UploadService.delete(storyPhoto.getUrl());
     storyPhotoRepository.delete(storyPhoto);
+  }
+
+  public Optional<List<?>> test() {
+    return Optional.empty();
   }
 
   public GalleryQueryResponse getHeroGallery(Long heroNo) {

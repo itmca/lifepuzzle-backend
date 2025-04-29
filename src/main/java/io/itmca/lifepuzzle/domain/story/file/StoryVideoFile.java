@@ -13,6 +13,7 @@ import io.itmca.lifepuzzle.global.file.CustomFile;
 import io.itmca.lifepuzzle.global.file.Resizable;
 import io.itmca.lifepuzzle.global.util.FileUtil;
 import java.util.List;
+import java.util.Optional;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +39,7 @@ public class StoryVideoFile extends CustomFile implements Resizable<StoryVideoFi
   }
 
   @Override
-  public StoryVideoFile resize() {
+  public Optional<StoryVideoFile> resize() {
     var customRes = new IVSize();
     customRes.setWidth(VIDEO_RESIZING_WIDTH);
     customRes.setHeight(VIDEO_RESIZING_HEIGHT);
@@ -47,13 +48,19 @@ public class StoryVideoFile extends CustomFile implements Resizable<StoryVideoFi
       var resizedVideo =
           new IVCompressor().reduceVideoSizeWithCustomRes(bytes, VideoFormats.MP4, customRes);
 
-      return StoryVideoFile.builder()
+      return Optional.of(StoryVideoFile.builder()
           .storyVideoFile(this)
           .bytes(resizedVideo)
-          .build();
+          .build());
     } catch (VideoException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public Optional<StoryVideoFile> resize(int fixedWidth) {
+    // TODO 구현 필요
+    return Optional.empty();
   }
 
   public static List<StoryVideoFile> listFrom(List<MultipartFile> gallery, Long heroId) {

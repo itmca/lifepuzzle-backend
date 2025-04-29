@@ -1,20 +1,26 @@
 package io.itmca.lifepuzzle.domain.story.entity;
 
+import static io.itmca.lifepuzzle.global.constants.FileConstant.ORIGINAL_BASE_PATH;
+import static io.itmca.lifepuzzle.global.constants.ServerConstant.S3_SERVER_HOST;
+
 import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import io.itmca.lifepuzzle.domain.story.type.GalleryType;
-import io.itmca.lifepuzzle.global.constants.ServerConstant;
 import io.itmca.lifepuzzle.global.file.CustomFile;
+import io.itmca.lifepuzzle.global.jpa.converter.JsonListConverter;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -45,6 +51,9 @@ public class StoryPhoto {
   @Column(name = "type", nullable = false)
   @Enumerated(EnumType.STRING)
   private GalleryType galleryType;
+  @Lob
+  @Convert(converter = JsonListConverter.class)
+  private List<Integer> resizedSizes = new ArrayList<>();
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
   private LocalDateTime createdAt;
@@ -72,6 +81,23 @@ public class StoryPhoto {
       return "";
     }
 
-    return ServerConstant.S3_SERVER_HOST + url;
+    return S3_SERVER_HOST + url;
+  }
+
+  public String getImageUrl(Integer size) {
+    var isExistResizedFile = resizedSizes != null && resizedSizes.contains(size);
+    var thumbnailFilePath = isExistResizedFile
+        ? url.replace(ORIGINAL_BASE_PATH, String.valueOf(size))
+        : url;
+
+    return S3_SERVER_HOST + thumbnailFilePath;
+  }
+
+  public void addResizedSizes(List<Integer> resizedSizes) {
+    this.resizedSizes.addAll(resizedSizes);
+  }
+
+  public boolean isImage() {
+    return galleryType == GalleryType.IMAGE;
   }
 }

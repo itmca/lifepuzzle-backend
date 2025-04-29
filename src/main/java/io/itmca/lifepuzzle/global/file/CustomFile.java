@@ -43,6 +43,14 @@ public abstract class CustomFile {
     this.contentType = customFile.getContentType();
   }
 
+  protected CustomFile(CustomFile customFile, byte[] bytes, String base) {
+    this.base = base;
+    this.fileName = customFile.getFileName();
+    this.bytes = bytes;
+    this.uploaded = customFile.uploaded;
+    this.contentType = customFile.getContentType();
+  }
+
   private String normalizeFileName(String fileName, String postfix) {
     var normalized = URLDecoder.decode(fileName, StandardCharsets.UTF_8)
         .replaceFirst("^" + FILE_DUPLICATE_PREFIX, "");
