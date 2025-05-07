@@ -14,7 +14,7 @@ jobs:
           script: |
             const title = context.payload.pull_request.title;
 
-            const regex = /^(\[(SHIP|SHOW|ASK)\])?(\[LP-\d+\])?\s*(feat|fix|chore|docs|test|refactor|style|perf|ci|build|revert)(\([A-Za-z0-9,]+\))?: .+/;
+            const regex = /^(\[(SHIP|SHOW|ASK)\])?(\[LP-\d+\])?\s*(feat|fix|chore|docs|test|refactor|style|perf|ci|build|revert)(\([A-Za-z0-9,\-]+\))?: .+/;
 
             if (!regex.test(title)) {
               const errorMessage = `❌ PR 제목 형식이 올바르지 않습니다: "${title}"`;
