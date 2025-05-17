@@ -22,6 +22,11 @@ public class HeroQueryService {
   private final StoryQueryService storyQueryService;
   private final HeroUserAuthRepository heroUserAuthRepository;
 
+  public void validateHeroExistOrThrow(Long heroNo) {
+    this.heroRepository.findByHeroNoAndIsDeletedFalse(heroNo)
+        .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
+  }
+
   public Hero findHeroByHeroNo(Long heroNo) {
     return this.heroRepository.findByHeroNoAndIsDeletedFalse(heroNo)
         .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));

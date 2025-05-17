@@ -63,6 +63,15 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.11")
 
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+
+    testImplementation("org.testcontainers:junit-jupiter:1.19.7")
+    testImplementation("org.testcontainers:mysql:1.19.7")
+    testImplementation("com.github.database-rider:rider-junit5:1.44.0")
+    testImplementation("com.github.database-rider:rider-spring:1.44.0")
+    testImplementation 'mysql:mysql-connector-java:8.0.33'
+    testImplementation 'javax.persistence:javax.persistence-api:2.2' // DBRider 실행 시 오류 해결을 위해 추가되었다.
+
     // Tool
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'

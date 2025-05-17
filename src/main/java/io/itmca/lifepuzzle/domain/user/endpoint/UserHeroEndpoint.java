@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.user.endpoint;
 
+import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserRecentHeroRequest;
 import io.itmca.lifepuzzle.domain.user.endpoint.response.UserHeroShareResponse;
@@ -19,13 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "현재 주인공 변경")
 public class UserHeroEndpoint {
   private final UserWriteService userWriteService;
+  private final HeroValidationService heroValidationService;
 
   @Operation(summary = "현재 주인공 변경")
   @PostMapping({"/user/hero/recent", // TODO: FE 전환 후 제거
       "/v1/users/hero/recent"})
-  public void updateRecentHero(@RequestBody UserRecentHeroRequest recentHeroResponse,
+  public void updateRecentHero(@RequestBody UserRecentHeroRequest request,
                                @CurrentUser User user) {
-    userWriteService.changeRecentHeroNo(user, recentHeroResponse.getHeroNo());
+    Long heroNo = request.heroNo();
+    heroValidationService.validateUserCanAccessHero(user.getId(), heroNo);
+
+    userWriteService.changeRecentHeroNo(user, heroNo);
   }
 
   @Operation(summary = "주인공 권한 링크 조회")
