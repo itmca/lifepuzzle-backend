@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class StoryPhotoMapId implements Serializable {
+public class StoryGalleryMapId implements Serializable {
   private String storyId;
   private Long photoId;
 }

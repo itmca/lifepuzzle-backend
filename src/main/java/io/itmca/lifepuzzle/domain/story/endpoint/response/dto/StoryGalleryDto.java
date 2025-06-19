@@ -13,15 +13,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class GalleryStoryDto {
+public class StoryGalleryDto {
   private String id;
   private String title;
   private String content;
   private List<String> audios;
   private LocalDate date;
 
-  public static GalleryStoryDto from(Story story) {
-    return GalleryStoryDto.builder()
+  public static StoryGalleryDto from(Story story) {
+    return StoryGalleryDto.builder()
         .id(story.getId())
         .title(story.getTitle())
         .content(story.getContent())

@@ -1,12 +1,12 @@
-package io.itmca.lifepuzzle.domain.story.service;
+package io.itmca.lifepuzzle.domain.gallery.service;
 
 import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_LIST_WIDTH;
 import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH;
 import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH;
 
-import io.itmca.lifepuzzle.domain.story.entity.StoryPhoto;
+import io.itmca.lifepuzzle.domain.gallery.repository.GalleryRepository;
+import io.itmca.lifepuzzle.domain.story.entity.Gallery;
 import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
-import io.itmca.lifepuzzle.domain.story.repository.StoryPhotoRepository;
 import io.itmca.lifepuzzle.global.exception.GalleryItemNotFoundException;
 import io.itmca.lifepuzzle.global.file.CustomFile;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
@@ -21,18 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class StoryPhotoAsyncService {
-  private final StoryPhotoRepository storyPhotoRepository;
+public class GalleryAsyncService {
+  private final GalleryRepository galleryRepository;
   private final S3UploadService s3UploadService;
 
   @Async
   @Transactional
   public void saveResizeGalleryAsync(Map<Long, StoryImageFile> storyImageFiles) {
     List<CustomFile> s3UploadStoryImageFiles = new ArrayList<>();
-    List<StoryPhoto> updateGallery = new ArrayList<>();
+    List<Gallery> updateGallery = new ArrayList<>();
 
     storyImageFiles.forEach((galleryId, file) -> {
-      var gallery = storyPhotoRepository.findById(galleryId)
+      var gallery = galleryRepository.findById(galleryId)
           .orElseThrow(() -> GalleryItemNotFoundException.of(galleryId));
 
       var targetResizeSizes = Arrays.asList(STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH,
@@ -55,6 +55,6 @@ public class StoryPhotoAsyncService {
     });
 
     s3UploadService.upload(s3UploadStoryImageFiles);
-    storyPhotoRepository.saveAll(updateGallery);
+    galleryRepository.saveAll(updateGallery);
   }
 }

@@ -16,7 +16,7 @@ public class UserQueryEndpoint {
 
   private final UserQueryService userQueryService;
 
-  @GetMapping(value = {"/users/{id}", "/v1/users/{id}"})
+  @GetMapping({"/v1/users/{id}"})
   @Operation(summary = "유저 조회")
   public UserQueryDto getOne(@PathVariable("id") Long id) {
     var user = userQueryService.findByUserNo(id);

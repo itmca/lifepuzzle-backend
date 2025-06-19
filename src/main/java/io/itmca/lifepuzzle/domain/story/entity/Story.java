@@ -61,7 +61,7 @@ public class Story {
   private List<Like> likes;
 
   @OneToMany(mappedBy = "story", orphanRemoval = true)
-  private List<StoryPhotoMap> photoMaps;
+  private List<StoryGallery> photoMaps;
 
   private LocalDate date;
 

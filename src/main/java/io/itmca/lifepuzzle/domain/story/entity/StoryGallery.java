@@ -24,8 +24,8 @@ import org.hibernate.annotations.CreationTimestamp;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
-@IdClass(StoryPhotoMapId.class)
-public class StoryPhotoMap {
+@IdClass(StoryGalleryMapId.class)
+public class StoryGallery {
   @Id
   @Column(name = "story_id", nullable = false)
   private String storyId;
@@ -39,14 +39,14 @@ public class StoryPhotoMap {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "photo_id", referencedColumnName = "id", insertable = false, updatable = false)
-  private StoryPhoto photo;
+  private Gallery photo;
 
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
   private LocalDateTime createdAt;
 
-  public static StoryPhotoMap create(Story story, Long galleryId) {
-    return StoryPhotoMap.builder()
+  public static StoryGallery create(Story story, Long galleryId) {
+    return StoryGallery.builder()
         .storyId(story.getId())
         .photoId(galleryId)
         .build();

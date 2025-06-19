@@ -5,8 +5,8 @@ import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESI
 import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.itmca.lifepuzzle.domain.story.entity.StoryPhoto;
-import io.itmca.lifepuzzle.domain.story.entity.StoryPhotoMap;
+import io.itmca.lifepuzzle.domain.story.entity.Gallery;
+import io.itmca.lifepuzzle.domain.story.entity.StoryGallery;
 import io.itmca.lifepuzzle.domain.story.type.GalleryType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,25 +28,23 @@ public class GalleryDto {
   private String thumbnailUrl;
   private String bigSizeUrl;
   // 향후 N:M 관계를 고려하여 DB 테이블 설계되어 있지만 현재 정책은 1:N 관계이므로 단건만 응답
-  private GalleryStoryDto story;
+  private StoryGalleryDto story;
 
-  public static GalleryDto from(StoryPhoto photo, int index) {
-    var storyDTO = photo.getStoryMaps().stream()
-        .map(StoryPhotoMap::getStory)
-        .map(GalleryStoryDto::from)
+  public static GalleryDto from(Gallery gallery, int index) {
+    var storyDTO = gallery.getStoryMaps().stream()
+        .map(StoryGallery::getStory)
+        .map(StoryGalleryDto::from)
         .findFirst()
         .orElse(null);
 
     return GalleryDto.builder()
-        .id(photo.getId())
+        .id(gallery.getId())
         .index(index)
-        .type(photo.getGalleryType())
-        .url(photo.getImageUrl(STORY_IMAGE_RESIZING_LIST_WIDTH))
-        .bigSizeUrl(photo.getImageUrl(STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH))
-        .thumbnailUrl(photo.getImageUrl(STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH))
+        .type(gallery.getGalleryType())
+        .url(gallery.getImageUrl(STORY_IMAGE_RESIZING_LIST_WIDTH))
+        .bigSizeUrl(gallery.getImageUrl(STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH))
+        .thumbnailUrl(gallery.getImageUrl(STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH))
         .story(storyDTO)
         .build();
   }
-
-
 }

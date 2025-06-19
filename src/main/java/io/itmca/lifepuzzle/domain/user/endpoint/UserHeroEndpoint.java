@@ -23,8 +23,7 @@ public class UserHeroEndpoint {
   private final HeroValidationService heroValidationService;
 
   @Operation(summary = "현재 주인공 변경")
-  @PostMapping({"/user/hero/recent", // TODO: FE 전환 후 제거
-      "/v1/users/hero/recent"})
+  @PostMapping({"/v1/users/hero/recent"})
   public void updateRecentHero(@RequestBody UserRecentHeroRequest request,
                                @CurrentUser User user) {
     Long heroNo = request.heroNo();
@@ -34,8 +33,7 @@ public class UserHeroEndpoint {
   }
 
   @Operation(summary = "주인공 권한 링크 조회")
-  @PostMapping({"/user/hero/link", // TODO: FE 전환 후 제거
-      "/v1/users/hero/link"})
+  @PostMapping({"/v1/users/hero/link"})
   public UserHeroShareResponse getHeroAuthLink(@RequestParam("heroNo") Long heroNo,
                                                @RequestParam("auth") HeroAuthStatus shareAuth,
                                                @CurrentUser User user) {

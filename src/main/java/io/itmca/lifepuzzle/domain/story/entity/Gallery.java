@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class StoryPhoto {
+public class Gallery {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -62,12 +62,12 @@ public class StoryPhoto {
   private LocalDateTime updatedAt;
 
   @OneToMany(mappedBy = "photo", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<StoryPhotoMap> storyMaps;
+  private List<StoryGallery> storyMaps;
 
-  public static List<StoryPhoto> listFrom(List<? extends CustomFile> galleryFiles, Long heroId,
-                                          AgeGroup ageGroup, GalleryType galleryType) {
+  public static List<Gallery> listFrom(List<? extends CustomFile> galleryFiles, Long heroId,
+                                       AgeGroup ageGroup, GalleryType galleryType) {
     return galleryFiles.stream().map(storyImageFile ->
-        StoryPhoto.builder()
+        Gallery.builder()
             .heroId(heroId)
             .ageGroup(ageGroup)
             .galleryType(galleryType)

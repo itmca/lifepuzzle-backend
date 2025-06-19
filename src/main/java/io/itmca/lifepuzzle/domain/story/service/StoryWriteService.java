@@ -6,10 +6,10 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryGalleryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.entity.Story;
-import io.itmca.lifepuzzle.domain.story.entity.StoryPhotoMap;
+import io.itmca.lifepuzzle.domain.story.entity.StoryGallery;
 import io.itmca.lifepuzzle.domain.story.file.StoryFile;
 import io.itmca.lifepuzzle.domain.story.file.StoryVoiceFile;
-import io.itmca.lifepuzzle.domain.story.repository.StoryPhotoMapRepository;
+import io.itmca.lifepuzzle.domain.story.repository.StoryGalleryRepository;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
 import io.itmca.lifepuzzle.global.exception.StoryNotFoundException;
 import io.itmca.lifepuzzle.global.file.CustomFile;
@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class StoryWriteService {
   private final StoryRepository storyRepository;
   private final S3UploadService s3UploadService;
-  private final StoryPhotoMapRepository storyPhotoMapRepository;
+  private final StoryGalleryRepository storyGalleryRepository;
 
   @Transactional
   public String create(Story story, List<Long> galleryIds, @Nullable MultipartFile voice) {
@@ -38,7 +38,7 @@ public class StoryWriteService {
     var savedStory = storyRepository.save(story);
 
     var storyPhotoMaps = galleryIds.stream()
-        .map(id -> StoryPhotoMap.create(story, id))
+        .map(id -> StoryGallery.create(story, id))
         .toList();
     saveStoryPhotoMaps(storyPhotoMaps);
 
@@ -69,9 +69,9 @@ public class StoryWriteService {
     story.addStoryFile(storyFile);
   }
 
-  private void saveStoryPhotoMaps(List<StoryPhotoMap> storyPhotoMaps) {
-    for (StoryPhotoMap storyPhotoMap : storyPhotoMaps) {
-      storyPhotoMapRepository.save(storyPhotoMap);
+  private void saveStoryPhotoMaps(List<StoryGallery> storyGalleries) {
+    for (StoryGallery storyGallery : storyGalleries) {
+      storyGalleryRepository.save(storyGallery);
     }
   }
 

@@ -25,7 +25,7 @@ public class HeroQueryEndpoint {
   private final UserQueryService userQueryService;
 
   @Operation(summary = "주인공 전체 목록 조회")
-  @GetMapping(value = {"/heroes/v2", "/v1/heroes"})
+  @GetMapping({"/v1/heroes"})
   public HeroListQueryResponse getHeroesV2(@AuthenticationPrincipal AuthPayload authPayload) {
     var user = userQueryService.findByUserNo(authPayload.getUserId());
 
@@ -33,7 +33,7 @@ public class HeroQueryEndpoint {
   }
 
   @Operation(summary = "주인공 조회")
-  @GetMapping(value = {"/heroes/{heroNo}", "/v1/heroes/{heroNo}"})
+  @GetMapping({"/v1/heroes/{heroNo}"})
   public HeroQueryResponse getHeroDetail(
       @PathVariable("heroNo") @Schema(description = "주인공키") Long heroNo,
       @AuthenticationPrincipal AuthPayload authPayload) {

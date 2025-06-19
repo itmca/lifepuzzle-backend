@@ -5,22 +5,17 @@ import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.WRITER;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
-import io.itmca.lifepuzzle.domain.story.endpoint.request.GalleryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.endpoint.request.StoryGalleryWriteRequest;
 import io.itmca.lifepuzzle.domain.story.repository.StoryRepository;
-import io.itmca.lifepuzzle.domain.story.service.StoryPhotoService;
 import io.itmca.lifepuzzle.domain.story.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.story.service.StoryWriteService;
 import io.itmca.lifepuzzle.domain.user.service.UserQueryService;
-import io.itmca.lifepuzzle.global.ai.chat.OpenAiChatService;
-import io.itmca.lifepuzzle.global.ai.stt.SpeechToTextService;
 import io.itmca.lifepuzzle.global.aop.AuthCheck;
 import io.itmca.lifepuzzle.global.aop.HeroNo;
 import io.itmca.lifepuzzle.global.exception.HeroNotAccessibleToStoryException;
 import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToStoryException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,11 +35,9 @@ public class StoryWriteEndpoint {
   private final StoryWriteService storyWriteService;
   private final StoryQueryService storyQueryService;
   private final UserQueryService userQueryService;
-  private final SpeechToTextService speechToTextService;
-  private final OpenAiChatService openAiChatService;
-  private final StoryPhotoService storyPhotoService;
   private final StoryRepository storyRepository;
 
+  @Deprecated
   @AuthCheck(auths = {WRITER, ADMIN, OWNER})
   @Operation(summary = "스토리 등록")
   @PostMapping(value = {"/v2/heroes/{heroId}/stories",
@@ -60,6 +53,20 @@ public class StoryWriteEndpoint {
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
+  //@AuthCheck(auths = {WRITER, ADMIN, OWNER})
+  @Operation(summary = "스토리 등록")
+  @PostMapping({"/v3/galleries/stories"})
+  public ResponseEntity<Void> createStoryV2(
+      @RequestPart(value = "story") StoryGalleryWriteRequest storyGalleryWriteRequest,
+      @RequestPart(value = "voice", required = false) MultipartFile voice,
+      @AuthenticationPrincipal AuthPayload authPayload) {
+    var story = storyGalleryWriteRequest.toStory(authPayload.getUserId());
+
+    storyWriteService.create(story, storyGalleryWriteRequest.getGalleryIds(), voice);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @Deprecated
   @AuthCheck(auths = {WRITER, ADMIN, OWNER})
   @Operation(summary = "스토리 수정")
   @PutMapping(value = {"/v2/heroes/{heroId}/stories/{storyId}",
@@ -74,8 +81,20 @@ public class StoryWriteEndpoint {
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
+  //@AuthCheck(auths = {WRITER, ADMIN, OWNER})
+  @Operation(summary = "스토리 수정")
+  @PutMapping({"/v3/galleries/stories/{storyId}"})
+  public ResponseEntity<Void> putStoryV2(
+      @PathVariable("storyId") String storyId,
+      @RequestPart(value = "story") StoryGalleryWriteRequest storyGalleryWriteRequest,
+      @RequestPart(value = "voice", required = false) MultipartFile voice) {
+    storyWriteService.update(storyId, storyGalleryWriteRequest, voice);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
   @Operation(summary = "스토리 삭제")
-  @DeleteMapping(value = {"/v2/stories/{storyKey}", "/v1/stories/{storyKey}"})
+  @DeleteMapping({"/v1/stories/{storyKey}", // TODO: FE 전환 후 제거
+                  "/v2/galleries/stories/{storyKey}"})
   public void deleteStory(@PathVariable("storyKey") String storyKey,
                           @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyQueryService.findById(storyKey);
@@ -90,18 +109,5 @@ public class StoryWriteEndpoint {
     }
 
     storyRepository.delete(story);
-  }
-
-  @PostMapping({"v1/heroes/gallery"})
-  public void savePhoto(
-      @RequestPart List<MultipartFile> gallery,
-      @RequestPart(value = "galleryInfo") GalleryWriteRequest galleryWriteRequest) {
-    storyPhotoService.saveGallery(galleryWriteRequest.getHeroId(),
-        gallery, galleryWriteRequest.getAgeGroup());
-  }
-
-  @DeleteMapping({"v1/heroes/gallery/{galleryId}"})
-  public void deleteGalleryItem(@PathVariable Long galleryId) {
-    storyPhotoService.deleteGalleryItem(galleryId);
   }
 }

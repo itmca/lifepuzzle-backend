@@ -39,7 +39,7 @@ public class UserWriteEndpoint {
   private final WithdrawService withdrawService;
   private final UserWriteService userWriteService;
 
-  @RequestMapping(value = {"/users/{id}", "/v1/users/{id}"}, method = {PUT, PATCH})
+  @RequestMapping(value = {"/v1/users/{id}"}, method = {PUT, PATCH})
   @Operation(summary = "유저 수정")
   public UserQueryDto updateUser(@PathVariable("id") Long id,
                                  @RequestPart("toUpdate") UserUpdateRequest userUpdateRequest,
@@ -53,7 +53,7 @@ public class UserWriteEndpoint {
     return UserQueryDto.from(userWriteService.update(user, userUpdateRequest, photo));
   }
 
-  @RequestMapping(value = {"/users/{id}/password", "/v1/users/{id}/password"},
+  @RequestMapping(value = {"/v1/users/{id}/password"},
       method = {PUT, PATCH})
   @Operation(summary = "비밀번호 변경")
   public void updateUserPassword(@PathVariable("id") Long id,
@@ -79,8 +79,7 @@ public class UserWriteEndpoint {
   }
 
   @Operation(summary = "회원가입")
-  @PostMapping(value = {"/user", // TODO: FE 전환 후 제거
-      "/v1/users"})
+  @PostMapping({"/v1/users"})
   public HttpStatus register(@RequestBody UserRegisterRequest userRegisterRequest) {
     var user = userRegisterRequest.toUser();
 
@@ -89,7 +88,7 @@ public class UserWriteEndpoint {
     return HttpStatus.OK;
   }
 
-  @DeleteMapping(value = {"/users/{id}", "/v1/users/{id}"})
+  @DeleteMapping({"/v1/users/{id}"})
   @Operation(summary = "회원탈퇴")
   public void withdraw(@PathVariable("id") Long id, @CurrentUser User user,
                        @RequestBody(required = false) UserWithdrawRequest userWithdrawRequest) {

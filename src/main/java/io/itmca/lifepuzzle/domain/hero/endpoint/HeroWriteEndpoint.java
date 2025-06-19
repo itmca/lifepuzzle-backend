@@ -37,7 +37,7 @@ public class HeroWriteEndpoint {
   private final HeroUserAuthWriteService heroUserAuthWriteService;
 
   @Operation(summary = "주인공 등록")
-  @PostMapping(value = {"/heroes", "/v1/heroes"})
+  @PostMapping({"/v1/heroes"})
   public HeroQueryDto createHero(@RequestPart("toWrite") HeroWriteRequest request,
                                  @RequestPart(value = "photo", required = false)
                                  MultipartFile profile,
@@ -49,7 +49,7 @@ public class HeroWriteEndpoint {
 
   @AuthCheck(auths = {ADMIN, OWNER})
   @Operation(summary = "주인공 수정")
-  @PutMapping(value = {"heroes/{heroNo}", "/v1/heroes/{heroNo}"})
+  @PutMapping({"/v1/heroes/{heroNo}"})
   public HeroQueryDto updateHero(
       @PathVariable("heroNo") @HeroNo Long heroNo,
       @RequestPart("toWrite")
@@ -63,7 +63,7 @@ public class HeroWriteEndpoint {
 
   @AuthCheck(auths = {OWNER})
   @Operation(summary = "주인공 삭제")
-  @DeleteMapping(value = {"heroes/{heroNo}", "/v1/heroes/{heroNo}"})
+  @DeleteMapping({"/v1/heroes/{heroNo}"})
   public void deleteHero(@PathVariable("heroNo") @HeroNo Long heroNo,
                          @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
@@ -71,7 +71,7 @@ public class HeroWriteEndpoint {
   }
 
   @Operation(summary = "유저의 주인공 권한 변경")
-  @PutMapping(value = {"heroes/auth", "/v1/heroes/auth"})
+  @PutMapping({"/v1/heroes/auth"})
   public void changeHeroAuthOfUser(@RequestBody HeroChangeAuthRequest heroChangeAuthRequest,
                                    @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserId(),
@@ -81,7 +81,7 @@ public class HeroWriteEndpoint {
   }
 
   @Operation(summary = "유저의 주인공 권한 추가")
-  @PostMapping(value = {"heroes/auth", "/v1/heroes/auth"})
+  @PostMapping({"/v1/heroes/auth"})
   public void createHeroAuthOfUser(@RequestParam String shareKey,
                                    @CurrentUser User user) {
     heroUserAuthWriteService.createByShareKey(user, shareKey);

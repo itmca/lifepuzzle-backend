@@ -32,8 +32,7 @@ public class AppleAuthEndpoint {
   private final HeroUserAuthWriteService heroUserAuthWriteService;
 
   @Operation(summary = "애플 로그인")
-  @PostMapping({"/auth/social/apple", // TODO: FE 전환 후 제거
-      "/auth/login/apple"})
+  @PostMapping({"/auth/login/apple"})
   public LoginResponse login(@RequestBody AppleAuthRequest appleAuthRequest) throws ParseException {
     log.info("Apple Body : {}", appleAuthRequest);
     verify(appleAuthRequest);

@@ -18,7 +18,7 @@ public class UserValidateEndpoint {
 
   private final UserQueryService userQueryService;
 
-  @GetMapping(value = {"/user/dupcheck/id", "/v1/users/dupcheck/id"})
+  @GetMapping({"/v1/users/dupcheck/id"})
   @Operation(summary = "아이디 중복 체크")
   public boolean checkId(@RequestParam("id") String id) {
     try {

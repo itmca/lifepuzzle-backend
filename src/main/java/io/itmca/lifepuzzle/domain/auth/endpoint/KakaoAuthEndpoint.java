@@ -31,8 +31,7 @@ public class KakaoAuthEndpoint {
   private final HeroUserAuthWriteService heroUserAuthWriteService;
 
   @Operation(summary = "카카오 로그인")
-  @PostMapping({"/auth/social/kakao", // TODO: FE 전환 후 제거
-      "/auth/login/kakao"})
+  @PostMapping({"/auth/login/kakao"})
   public LoginResponse login(@RequestHeader("kakao-access-token") String kakaoAccessToken,
                              @RequestBody KakaoAuthRequest kakaoAuthRequest) {
     var kakaoId = getKakaoId(kakaoAccessToken);

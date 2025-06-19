@@ -26,8 +26,7 @@ public class LoginEndpoint {
   private final UserQueryService userQueryService;
   private final HeroUserAuthWriteService heroUserAuthWriteService;
 
-  @PostMapping({"/auth/login", // TODO: FE 전환 후 제거
-      "/auth/login/email"})
+  @PostMapping({"/auth/login/email"})
   @Operation(summary = "일반 로그인")
   public LoginResponse login(@RequestBody LoginRequest loginRequest) {
     var username = loginRequest.getUsername();

@@ -2,7 +2,7 @@ package io.itmca.lifepuzzle.domain.story.endpoint.response.dto;
 
 import static java.util.Comparator.comparingInt;
 
-import io.itmca.lifepuzzle.domain.story.entity.StoryPhoto;
+import io.itmca.lifepuzzle.domain.story.entity.Gallery;
 import io.itmca.lifepuzzle.domain.story.type.AgeGroup;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
@@ -26,7 +26,7 @@ public class AgeGroupGalleryDto {
   private int galleryCount;
   private List<GalleryDto> gallery;
 
-  public static AgeGroupGalleryDto from(List<StoryPhoto> photos, LocalDate birthdate,
+  public static AgeGroupGalleryDto from(List<Gallery> photos, LocalDate birthdate,
                                         AtomicInteger index) {
     var ageGroup = photos.getFirst().getAgeGroup();
     var startYear = ageGroup.getStartYear(birthdate);
@@ -45,7 +45,7 @@ public class AgeGroupGalleryDto {
   }
 
   public static Map<AgeGroup, AgeGroupGalleryDto> fromGroupedGallery(
-      Map<AgeGroup, List<StoryPhoto>> groupedPhotos, LocalDate birthdate) {
+          Map<AgeGroup, List<Gallery>> groupedPhotos, LocalDate birthdate) {
     var index = new AtomicInteger(1);
     return groupedPhotos.entrySet().stream()
         .sorted(comparingInt(entry -> entry.getKey().getRepresentativeAge()))
