@@ -94,7 +94,7 @@ public class StoryWriteEndpoint {
 
   @Operation(summary = "스토리 삭제")
   @DeleteMapping({"/v1/stories/{storyKey}", // TODO: FE 전환 후 제거
-                  "/v2/galleries/stories/{storyKey}"})
+                  "/v1/galleries/stories/{storyKey}"})
   public void deleteStory(@PathVariable("storyKey") String storyKey,
                           @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyQueryService.findById(storyKey);
