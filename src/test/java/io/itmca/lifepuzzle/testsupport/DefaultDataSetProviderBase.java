@@ -3,6 +3,10 @@ package io.itmca.lifepuzzle.testsupport;
 import com.github.database.rider.core.api.dataset.DataSetProvider;
 import com.github.database.rider.core.configuration.DBUnitConfig;
 import com.github.database.rider.core.dataset.builder.DataSetBuilder;
+import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.dbunit.dataset.IDataSet;
 
 public abstract class DefaultDataSetProviderBase implements DataSetProvider {
@@ -16,6 +20,22 @@ public abstract class DefaultDataSetProviderBase implements DataSetProvider {
   public static final Long DEFAULT_HERO_ID1 = 1L;
   public static final Long DEFAULT_HERO_ID2 = 2L;
 
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+  @Override
+  public IDataSet provide() {
+    var builder = getBuilder();
+
+    provideCommonData(builder);
+    provideCustomData(builder);
+
+    return builder.build();
+  }
+
+  protected abstract void provideCommonData(DataSetBuilder builder);
+
+  protected void provideCustomData(DataSetBuilder builder) {}
+
   protected DataSetBuilder getBuilder() {
     // Same configuration with DBUnit annotation on IntegrationTestBase class except replacers
     DBUnitConfig config = new DBUnitConfig();
@@ -27,6 +47,24 @@ public abstract class DefaultDataSetProviderBase implements DataSetProvider {
     setTableDefaultValue(builder);
 
     return builder;
+  }
+
+  protected void addDefaultUser(DataSetBuilder builder) {
+    builder.table("user").columns("id").values(DEFAULT_USER_ID);
+  }
+
+  protected void addUser(DataSetBuilder builder, Long userId) {
+    builder.table("user").columns("id", "login_id").values(userId, "login_id" + userId);
+  }
+
+  protected void addDefaultHero(DataSetBuilder builder) {
+    builder.table("hero").columns("id").values(DEFAULT_HERO_ID1);
+  }
+
+  protected void addUserHeroAuth(DataSetBuilder builder, Long userNo, Long heroNo, HeroAuthStatus status) {
+    builder.table("user_hero_auth")
+        .columns("user_id", "hero_id", "auth")
+        .values(userNo, heroNo, status);
   }
 
   private void setTableDefaultValue(DataSetBuilder builder) {
@@ -60,16 +98,18 @@ public abstract class DefaultDataSetProviderBase implements DataSetProvider {
         .defaultValue("created_at", "[DAY,NOW]")
         .defaultValue("updated_at", "[DAY,NOW]")
         .defaultValue("deleted", false);
+
+    builder.table("user_hero_share")
+        .defaultValue("created_at", "[DAY,NOW]")
+        .defaultValue("expired_at", "[DAY,TOMORROW]");
+
   }
 
-  @Override
-  public IDataSet provide() {
-    var builder = getBuilder();
-
-    provide(builder);
-
-    return builder.build();
+  protected String format(LocalDateTime dateTime) {
+    return DATE_TIME_FORMATTER.format(dateTime);
   }
 
-  protected abstract void provide(DataSetBuilder builder);
+  protected String format(LocalDate date) {
+    return date.toString();
+  }
 }

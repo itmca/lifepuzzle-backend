@@ -7,6 +7,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+// TODO(border-line): AuthCheckerAspect에서 권한 체크가 이루어지고 있어서 필요 없어진 클래스로 해아 클래스 및 사용처 제거 필요
 @Service
 @RequiredArgsConstructor
 public class HeroValidationService {
