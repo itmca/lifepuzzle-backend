@@ -8,6 +8,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    permissions: 
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout
@@ -36,23 +40,16 @@ jobs:
       - name: Set artifact
         run: echo "artifact=$(ls ./build/libs/*.jar)" >> $GITHUB_ENV
 
-      - name: Prepare deployment package
-        run: |
-          mkdir -p deploy
-          cp ${{env.artifact}} deploy/
-          cp -r .platform deploy/.platform
-          cp -r .ebextensions deploy/.ebextensions
-          cd deploy && zip -r ../deploy-package.zip .
-        shell: bash
-
-      - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v22
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: lifepuzzle-api
-          environment_name: lifepuzzle-api-env-java-21
-          version_label: github-action-${{steps.current-time.outputs.formattedTime}}
-          region: ***REMOVED***
-          deployment_package: ./deploy-package.zip
-          wait_for_environment_recovery: 180
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:latest
