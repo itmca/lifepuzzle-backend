@@ -60,6 +60,7 @@ jobs:
           host: ${{ secrets.HOME_SERVER_HOST }}
           username: ${{ secrets.HOME_SERVER_USER }}
           key: ${{ secrets.HOME_SERVER_SSH_KEY }}
+          port: ${{ secrets.HOME_SERVER_PORT }}
           script: |
             echo "Restarting deployment..."
             kubectl config use-context prod-app
