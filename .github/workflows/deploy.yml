@@ -53,3 +53,15 @@ jobs:
           build-args: |
             JAR_PATH=${{ env.artifact }}
           tags: ghcr.io/${{ github.repository }}:latest
+
+      - name: SSH into Home Server and Restart Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOME_SERVER_HOST }}
+          username: ${{ secrets.HOME_SERVER_USER }}
+          key: ${{ secrets.HOME_SERVER_SSH_KEY }}
+          script: |
+            echo "Restarting deployment..."
+            kubectl config use-context prod-app
+            kubectl rollout restart deployment/lifepuzzle
+            kubectl rollout status deployment/lifepuzzle
