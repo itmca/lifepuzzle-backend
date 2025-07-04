@@ -43,7 +43,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // AWS
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1'
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
 
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
