@@ -8,6 +8,7 @@ import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.entity.UserHeroShare;
 import io.itmca.lifepuzzle.domain.user.repository.UserHeroShareRepository;
+import io.itmca.lifepuzzle.global.exception.HeroAccessDeniedException;
 import io.itmca.lifepuzzle.global.exception.HeroAuthAlreadyExistsException;
 import io.itmca.lifepuzzle.global.exception.UserHeroShareExpiredDateException;
 import io.itmca.lifepuzzle.global.exception.UserHeroShareKeyNotFoundException;
@@ -18,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class HeroUserAuthWriteService {
   private final HeroUserAuthRepository heroUserAuthRepository;
@@ -68,7 +71,6 @@ public class HeroUserAuthWriteService {
     );
   }
 
-  @Transactional
   public void update(HeroChangeAuthRequest heroChangeAuthRequest) {
     HeroUserAuth heroUserAuth = heroUserAuthRepository
         .findByUserNoAndHeroNo(heroChangeAuthRequest.userNo(), heroChangeAuthRequest.heroNo())
@@ -77,7 +79,15 @@ public class HeroUserAuthWriteService {
     heroUserAuth.changeAuth(heroChangeAuthRequest.heroAuthStatus());
   }
 
-  public void remove(HeroUserAuth heroUserAuth) {
+  public void removeByUserAndHero(Long userNo, Long heroNo) {
+    HeroUserAuth heroUserAuth = heroUserAuthRepository
+        .findByUserNoAndHeroNo(userNo, heroNo)
+        .orElseThrow(UserNotAccessibleToHeroException::new);
+
+    if (heroUserAuth.getAuth() == HeroAuthStatus.OWNER) {
+      throw new HeroAccessDeniedException();
+    }
+
     heroUserAuthRepository.delete(heroUserAuth);
   }
 }

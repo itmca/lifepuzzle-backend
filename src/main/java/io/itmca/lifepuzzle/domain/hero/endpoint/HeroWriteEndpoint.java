@@ -4,7 +4,6 @@ import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.ADMIN;
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
-import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroChangeAuthRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDto;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
@@ -22,8 +21,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -68,22 +65,5 @@ public class HeroWriteEndpoint {
                          @AuthenticationPrincipal AuthPayload authPayload) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
     heroWriteService.delete(heroNo);
-  }
-
-  @Operation(summary = "유저의 주인공 권한 변경")
-  @PutMapping({"/v1/heroes/auth"})
-  public void changeHeroAuthOfUser(@RequestBody HeroChangeAuthRequest heroChangeAuthRequest,
-                                   @AuthenticationPrincipal AuthPayload authPayload) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(),
-        heroChangeAuthRequest.heroNo());
-
-    heroUserAuthWriteService.update(heroChangeAuthRequest);
-  }
-
-  @Operation(summary = "유저의 주인공 권한 추가")
-  @PostMapping({"/v1/heroes/auth"})
-  public void createHeroAuthOfUser(@RequestParam String shareKey,
-                                   @CurrentUser User user) {
-    heroUserAuthWriteService.createByShareKey(user, shareKey);
   }
 }

@@ -29,11 +29,7 @@ class UserHeroEndpointTest extends IntegrationTestBase {
 
   public static class SuccessDataSet extends DefaultDataSetProviderBase {
     @Override
-    protected void provide(DataSetBuilder builder) {
-      builder.table("user")
-          .columns("recent_hero")
-          .values(DEFAULT_HERO_ID1);
-
+    protected void provideCommonData(DataSetBuilder builder) {
       builder.table("hero")
           .columns("id")
           .values(DEFAULT_HERO_ID1)
@@ -44,24 +40,21 @@ class UserHeroEndpointTest extends IntegrationTestBase {
           .values(DEFAULT_USER_ID, DEFAULT_HERO_ID1)
           .values(DEFAULT_USER_ID, DEFAULT_HERO_ID2);
     }
+
+    @Override
+    protected void provideCustomData(DataSetBuilder builder) {
+      builder.table("user")
+          .columns("recent_hero")
+          .values(DEFAULT_HERO_ID1);
+    }
   }
 
-  public static class SuccessExpectedDataSet extends DefaultDataSetProviderBase {
+  public static class SuccessExpectedDataSet extends SuccessDataSet {
     @Override
-    public void provide(DataSetBuilder builder) {
+    public void provideCustomData(DataSetBuilder builder) {
       builder.table("user")
           .columns("recent_hero")
           .values(DEFAULT_HERO_ID2);
-
-      builder.table("hero")
-          .columns("id")
-          .values(DEFAULT_HERO_ID1)
-          .values(DEFAULT_HERO_ID2);
-
-      builder.table("user_hero_auth")
-          .columns("user_id", "hero_id")
-          .values(DEFAULT_USER_ID, DEFAULT_HERO_ID1)
-          .values(DEFAULT_USER_ID, DEFAULT_HERO_ID2);
     }
   }
 
@@ -77,7 +70,7 @@ class UserHeroEndpointTest extends IntegrationTestBase {
 
   public static class NotExistingHeroCaseDataSet extends DefaultDataSetProviderBase {
     @Override
-    protected void provide(DataSetBuilder builder) {
+    protected void provideCommonData(DataSetBuilder builder) {
       builder.table("user")
           .columns("recent_hero")
           .values(DEFAULT_HERO_ID1);
@@ -104,7 +97,7 @@ class UserHeroEndpointTest extends IntegrationTestBase {
 
   public static class NoAuthCaseDataSet extends DefaultDataSetProviderBase {
     @Override
-    protected void provide(DataSetBuilder builder) {
+    protected void provideCommonData(DataSetBuilder builder) {
       builder.table("user")
           .columns("recent_hero")
           .values(DEFAULT_HERO_ID1);

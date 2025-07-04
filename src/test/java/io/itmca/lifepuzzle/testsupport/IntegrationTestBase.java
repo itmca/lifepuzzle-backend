@@ -6,15 +6,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.database.rider.core.api.configuration.DBUnit;
 import com.github.database.rider.junit5.api.DBRider;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
@@ -26,6 +27,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class IntegrationTestBase {
 
   private static final String PROD_MYSQL_VERSION = "8.0";
@@ -39,13 +41,21 @@ public abstract class IntegrationTestBase {
   protected ObjectMapper objectMapper;
 
   @SuppressWarnings("resource")
-  @Container
-  @ServiceConnection
   public static MySQLContainer<?> mysqlContainer =
       new MySQLContainer<>("mysql:" + PROD_MYSQL_VERSION)
-          .withReuse(true)
+          // TODO(border-line): reuse 시 발생하는 flyway, db rider 타이밍 이슈 해결 후 true로 변경
+          .withReuse(false)
           .withUsername(DB_USERNAME)
           .withPassword(DB_PASSWORD);
+
+  @DynamicPropertySource
+  public static void setup(DynamicPropertyRegistry registry) {
+    mysqlContainer.start();
+
+    registry.add("spring.datasource.url", mysqlContainer::getJdbcUrl);
+    registry.add("spring.datasource.username", mysqlContainer::getUsername);
+    registry.add("spring.datasource.password", mysqlContainer::getPassword);
+  }
 
   /**
    * login with the default user.
