@@ -33,7 +33,7 @@ repositories {
 }
 
 ext {
-    sentryVersion = '7.12.1'
+    sentryVersion = '8.12.0'
     jwtVersion = '0.12.6'
 }
 
