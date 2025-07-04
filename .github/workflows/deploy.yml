@@ -63,6 +63,6 @@ jobs:
           port: ${{ secrets.HOME_SERVER_PORT }}
           script: |
             echo "Restarting deployment..."
-            kubectl config use-context prod-app
-            kubectl rollout restart deployment/lifepuzzle
-            kubectl rollout status deployment/lifepuzzle
+            /opt/homebrew/bin/kubectl config use-context prod-app
+            /opt/homebrew/bin/kubectl rollout restart deployment/lifepuzzle
+            /opt/homebrew/bin/kubectl rollout status deployment/lifepuzzle
