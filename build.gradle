@@ -73,8 +73,8 @@ dependencies {
     testImplementation 'javax.persistence:javax.persistence-api:2.2' // DBRider 실행 시 오류 해결을 위해 추가되었다.
 
     // Tool
-    compileOnly 'org.projectlombok:lombok:1.18.34'
-    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    compileOnly 'org.projectlombok:lombok:1.18.38'
+    annotationProcessor 'org.projectlombok:lombok:1.18.38'
     implementation 'org.json:json:20240303'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'io.github.techgnious:IVCompressor:2.0.2'
