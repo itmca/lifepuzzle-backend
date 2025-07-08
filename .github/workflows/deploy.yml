@@ -6,6 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: build
     
     permissions: 
       contents: read
@@ -27,6 +28,7 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew clean build
+        env: ${{ secrets }}
 
       - name: Get current time
         uses: josStorer/get-current-time@v2.1.2
