@@ -1,0 +1,46 @@
+### 회원 탈퇴 API 테스트
+
+@baseUrl = http://localhost:8080
+
+# 사용 전 준비사항:
+# 1. register.http에서 탈퇴 테스트 사용자 생성
+# 2. login.http에서 로그인하여 토큰 획득
+
+### 1. 일반 사용자 탈퇴 (카카오, 일반 회원)
+DELETE {{baseUrl}}/v1/users/{{withdrawTestUserNo}}
+Authorization: Bearer {{withdrawTestToken}}
+Content-Type: application/json
+
+{}
+
+### 2. 애플 사용자 탈퇴 (소셜 토큰 필요)
+DELETE {{baseUrl}}/v1/users/{{withdrawTestUserNo}}
+Authorization: Bearer {{withdrawTestToken}}
+Content-Type: application/json
+
+{
+  "socialToken": "APPLE_SOCIAL_TOKEN_HERE"
+}
+
+### 3. 프로덕션 환경 테스트 (일반 사용자)
+DELETE https://your-production-domain.com/v1/users/{{withdrawTestUserNo}}
+Authorization: Bearer {{withdrawTestToken}}
+Content-Type: application/json
+
+{}
+
+### 4. 프로덕션 환경 테스트 (애플 사용자)
+DELETE https://your-production-domain.com/v1/users/{{withdrawTestUserNo}}
+Authorization: Bearer {{withdrawTestToken}}
+Content-Type: application/json
+
+{
+  "socialToken": "APPLE_SOCIAL_TOKEN_HERE"
+}
+
+### 5. 개발 디버깅용 - 다른 사용자 ID로 탈퇴 시도 확인
+DELETE {{baseUrl}}/v1/users/999
+Authorization: Bearer {{withdrawTestToken}}
+Content-Type: application/json
+
+{}

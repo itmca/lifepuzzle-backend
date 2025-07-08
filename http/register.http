@@ -1,0 +1,51 @@
+### 회원가입 API 테스트
+
+@baseUrl = http://localhost:8080
+
+### 1. 일반 회원가입
+POST {{baseUrl}}/v1/users
+Content-Type: application/json
+
+{
+  "id": "testuser001",
+  "nickName": "테스트유저",
+  "email": "test@example.com",
+  "password": "testpass123",
+  "birthday": "1990-01-01"
+}
+
+### 2. 탈퇴 테스트용 사용자 생성
+POST {{baseUrl}}/v1/users
+Content-Type: application/json
+
+{
+  "id": "withdrawtest",
+  "nickName": "탈퇴테스트유저",
+  "email": "withdrawtest@example.com",
+  "password": "testpass123",
+  "birthday": "1990-01-01"
+}
+
+### 3. 애플 소셜 테스트용 사용자 생성
+POST {{baseUrl}}/v1/users
+Content-Type: application/json
+
+{
+  "id": "appletest",
+  "nickName": "애플테스트유저", 
+  "email": "appletest@example.com",
+  "password": "testpass123",
+  "birthday": "1990-01-01"
+}
+
+### 4. 개발 디버깅용 - 중복 ID 확인
+POST {{baseUrl}}/v1/users
+Content-Type: application/json
+
+{
+  "id": "testuser001",
+  "nickName": "중복테스트",
+  "email": "duplicate@example.com",
+  "password": "testpass123",
+  "birthday": "1990-01-01"
+}

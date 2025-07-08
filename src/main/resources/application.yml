@@ -8,10 +8,10 @@ spring:
   #    hibernate:
   #      ddl-auto: validate
   mail:
-    host: ***REMOVED***
-    port: 587
-    username: ***REMOVED***
-    password: ***REMOVED***
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -30,18 +30,18 @@ spring:
   cloud:
     aws:
       credentials:
-        accessKey: ***REMOVED***
-        secretKey: ***REMOVED***
+        accessKey: ${AWS_ACCESS_KEY}
+        secretKey: ${AWS_SECRET_KEY}
       s3:
-        bucket: ***REMOVED***
+        bucket: ${AWS_S3_BUCKET}
         dir: /
       region:
-        static: ***REMOVED***
+        static: ${AWS_REGION}
       stack:
         auto: false
     deepgram:
       credentials:
-        acessKey: ***REMOVED***
+        acessKey: ${DEEPGRAM_ACCESS_KEY}
 
 springdoc:
   packages-to-scan: io.itmca.lifepuzzle.domain
@@ -65,7 +65,7 @@ springdoc:
       paths-to-match:   /**/galleries/**
 
 sentry:
-  dsn: ***REMOVED***
+  dsn: ${SENTRY_DSN}
   enable-tracing: true
   logging:
     enabled: true
@@ -73,12 +73,18 @@ sentry:
     minimum-breadcrumb-level: info
 
 slack:
-  webhook-url: ***REMOVED***
+  webhook-url: ${SLACK_WEBHOOK_URL}
 
 api:
   chat-gpt:
-    uri: ***REMOVED***
-    key: ***REMOVED***
+    uri: ${OPENAI_API_URI}
+    key: ${OPENAI_API_KEY}
   deepgram:
-    uri: ***REMOVED***
-    key: ***REMOVED***
+    uri: ${DEEPGRAM_API_URI}
+    key: ${DEEPGRAM_API_KEY}
+
+apple:
+  team-id: ${APPLE_TEAM_ID}
+  bundle-id: ${APPLE_BUNDLE_ID}
+  private-key-id: ${APPLE_PRIVATE_KEY_ID}
+  private-key: ${APPLE_PRIVATE_KEY}

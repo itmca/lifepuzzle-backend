@@ -1,0 +1,73 @@
+### 로그인 API 테스트
+
+@baseUrl = http://localhost:8080
+
+### 1. 이메일/비밀번호 로그인
+POST {{baseUrl}}/auth/login/email
+Content-Type: application/json
+
+{
+  "username": "testuser001",
+  "password": "testpass123"
+}
+
+> {% 
+client.global.set("accessToken", response.body.tokens.accessToken);
+client.global.set("userNo", response.body.user.userNo);
+client.global.set("refreshToken", response.body.tokens.refreshToken);
+%}
+
+### 2. 탈퇴 테스트 사용자 로그인
+POST {{baseUrl}}/auth/login/email
+Content-Type: application/json
+
+{
+  "username": "withdrawtest",
+  "password": "testpass123"
+}
+
+> {% 
+client.global.set("withdrawTestToken", response.body.tokens.accessToken);
+client.global.set("withdrawTestUserNo", response.body.user.userNo);
+%}
+
+### 3. 카카오 로그인
+POST {{baseUrl}}/auth/login/kakao
+Content-Type: application/json
+kakao-access-token: KAKAO_ACCESS_TOKEN_HERE
+
+{
+  "shareKey": "optional_share_key"
+}
+
+### 4. 애플 로그인
+POST {{baseUrl}}/auth/login/apple
+Content-Type: application/json
+
+{
+  "appleUserId": "apple_user_id",
+  "identityToken": "apple_identity_token",
+  "shareKey": "optional_share_key"
+}
+
+### 5. 토큰 갱신
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {% 
+client.global.set("accessToken", response.body.tokens.accessToken);
+client.global.set("refreshToken", response.body.tokens.refreshToken);
+%}
+
+### 6. 개발 디버깅용 - 잘못된 비밀번호 확인
+POST {{baseUrl}}/auth/login/email
+Content-Type: application/json
+
+{
+  "username": "testuser001",
+  "password": "wrongpassword"
+}

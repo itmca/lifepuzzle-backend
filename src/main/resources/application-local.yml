@@ -1,5 +1,5 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/***REMOVED***
-    username: ***REMOVED***
-    password: ***REMOVED***
+    url: ${DB_LOCAL_URL}
+    username: ${DB_LOCAL_USERNAME}
+    password: ${DB_LOCAL_PASSWORD}

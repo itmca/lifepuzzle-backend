@@ -2,6 +2,7 @@ package io.itmca.lifepuzzle.domain.user.service;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+import io.itmca.lifepuzzle.config.AppleConfig;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserWithdrawRequest;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.type.UserType;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 public class WithdrawService {
 
   private final UserWriteService userWriteService;
+  private final AppleConfig appleConfig;
 
   public void withdraw(User user, UserWithdrawRequest userWithdrawRequest) {
     var socialToken = getSocialToken(userWithdrawRequest);
@@ -64,7 +66,7 @@ public class WithdrawService {
 
     var body = new JSONObject();
 
-    body.put("client_id", "io.itmca.lifepuzzle");
+    body.put("client_id", appleConfig.getBundleId());
     body.put("client_secret", getAppleSecret());
     body.put("token", socialToken);
 
@@ -81,10 +83,6 @@ public class WithdrawService {
   }
 
   private String getAppleSecret() {
-    var appleTeamId = "***REMOVED***";
-    var appleBundleId = "io.itmca.lifepuzzle";
-    var applePrivateKeyId = "***REMOVED***";
-
     var nowInSeconds = Instant.now().getEpochSecond();
     var durationInSeconds = 60 * 5;
 
@@ -92,30 +90,22 @@ public class WithdrawService {
         .header()
         .add(Map.of(
             "algorithm", "ES256",
-            "keyId", applePrivateKeyId
+            "keyId", appleConfig.getPrivateKeyId()
         ))
         .and()
         .claims(Map.of(
-            "iss", appleTeamId,
+            "iss", appleConfig.getTeamId(),
             "iat", nowInSeconds,
             "exp", nowInSeconds + durationInSeconds,
             "aud", "https://appleid.apple.com",
-            "sub", appleBundleId
+            "sub", appleConfig.getBundleId()
         ))
         .signWith(getApplePrivateKey(), Jwts.SIG.ES256)
         .compact();
   }
 
   private PrivateKey getApplePrivateKey() {
-    var privateKey = "***REMOVED***"
-        + "***REMOVED***"
-        + "***REMOVED***"
-        + "***REMOVED***"
-        + "***REMOVED***"
-        + "***REMOVED***";
-
-    privateKey = privateKey.replace("***REMOVED***", "");
-    privateKey = privateKey.replace("***REMOVED***", "");
+    var privateKey = appleConfig.getPrivateKey();
 
     try {
       var keyFactory = KeyFactory.getInstance("EC");
