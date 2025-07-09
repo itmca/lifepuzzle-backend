@@ -57,7 +57,7 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:latest
 
       - name: SSH into Home Server and Restart Deployment
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.HOME_SERVER_HOST }}
           username: ${{ secrets.HOME_SERVER_USER }}
