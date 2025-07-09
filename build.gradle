@@ -50,7 +50,7 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-api:${jwtVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${jwtVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jwtVersion}"
-    implementation 'com.nimbusds:nimbus-jose-jwt:9.40'
+    implementation 'com.nimbusds:nimbus-jose-jwt:10.3.1'
     implementation "io.sentry:sentry-spring-boot-starter-jakarta:${sentryVersion}"
     implementation "io.sentry:sentry-logback:${sentryVersion}"
 
