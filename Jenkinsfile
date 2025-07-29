@@ -12,14 +12,14 @@ pipeline {
     stage('Build') {
       steps {
         sh 'pwd'
-        sh './gradlew buildZip'
+        sh './gradlew :services:lifepuzzle-api:buildZip'
       }
     }
 
     stage('S3 Upload') {
       steps {
         echo 'Uploading'
-        sh 'aws s3 cp build/lifepuzzle.zip s3://itmca-deploy/${JOB_NAME}-${BUILD_TIMESTAMP}.zip --region ***REMOVED***'
+        sh 'aws s3 cp services/lifepuzzle-api/build/lifepuzzle-api.zip s3://itmca-deploy/${JOB_NAME}-${BUILD_TIMESTAMP}.zip --region ***REMOVED***'
       }
     }
 

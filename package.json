@@ -1,5 +1,10 @@
 {
-  "name": "lifepuzzle-api",
+  "name": "lifepuzzle-monorepo",
+  "private": true,
+  "workspaces": [
+    "services/*",
+    "shared/*"
+  ],
   "scripts": {
     "prepare": "husky install"
   },
