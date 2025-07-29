@@ -48,6 +48,7 @@ public class Hero {
 
   @Setter
   @OneToMany(mappedBy = "hero")
+  @Builder.Default
   private List<HeroUserAuth> heroUserAuths = new ArrayList<>();
 
   @Column(nullable = false, updatable = false)

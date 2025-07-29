@@ -53,6 +53,7 @@ public class Gallery {
   private GalleryType galleryType;
   @Lob
   @Convert(converter = JsonListConverter.class)
+  @Builder.Default
   private List<Integer> resizedSizes = new ArrayList<>();
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
