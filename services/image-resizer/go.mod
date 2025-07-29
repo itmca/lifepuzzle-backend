@@ -1,4 +1,4 @@
-module lifepuzzle-monorepo/services/image-resizer
+module lifepuzzle-backend/services/image-resizer
 
 go 1.21
 

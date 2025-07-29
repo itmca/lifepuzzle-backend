@@ -1,5 +1,5 @@
 {
-  "name": "lifepuzzle-monorepo",
+  "name": "lifepuzzle-backend",
   "private": true,
   "workspaces": [
     "services/*",

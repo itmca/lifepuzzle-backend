@@ -6,11 +6,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"lifepuzzle-monorepo/services/image-resizer/config"
-	"lifepuzzle-monorepo/services/image-resizer/database"
-	"lifepuzzle-monorepo/services/image-resizer/messaging"
-	"lifepuzzle-monorepo/services/image-resizer/resizer"
-	"lifepuzzle-monorepo/services/image-resizer/storage"
+	"lifepuzzle-backend/services/image-resizer/config"
+	"lifepuzzle-backend/services/image-resizer/database"
+	"lifepuzzle-backend/services/image-resizer/messaging"
+	"lifepuzzle-backend/services/image-resizer/resizer"
+	"lifepuzzle-backend/services/image-resizer/storage"
 )
 
 func main() {
