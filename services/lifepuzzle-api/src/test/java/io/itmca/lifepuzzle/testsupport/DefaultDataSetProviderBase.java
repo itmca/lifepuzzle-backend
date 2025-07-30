@@ -103,6 +103,11 @@ public abstract class DefaultDataSetProviderBase implements DataSetProvider {
         .defaultValue("created_at", "[DAY,NOW]")
         .defaultValue("expired_at", "[DAY,TOMORROW]");
 
+    builder.table("user_hero_auth")
+        .defaultValue("auth", "VIEWER")
+        .defaultValue("created_at", "[DAY,NOW]")
+        .defaultValue("updated_at", "[DAY,NOW]");
+
   }
 
   protected String format(LocalDateTime dateTime) {
