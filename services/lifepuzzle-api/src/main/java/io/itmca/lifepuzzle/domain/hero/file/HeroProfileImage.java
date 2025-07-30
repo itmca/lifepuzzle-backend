@@ -22,7 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class HeroProfileImage extends CustomFile implements Resizable<HeroProfileImage> {
   public HeroProfileImage(Hero hero, MultipartFile file, String postfix) {
     super(
-        HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(hero.getHeroNo().toString()),
+        HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(
+            hero.getHeroNo() != null ? hero.getHeroNo().toString() : "temp"
+        ),
         file,
         postfix
     );

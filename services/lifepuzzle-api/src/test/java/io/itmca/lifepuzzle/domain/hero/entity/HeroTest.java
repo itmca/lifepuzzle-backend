@@ -27,10 +27,7 @@ class HeroTest {
     var file = fixtureMonkey.giveMeBuilder(MockMultipartFile.class)
         .set("name", "new_image.png")
         .sample();
-    var newProfileImage = fixtureMonkey.giveMeBuilder(HeroProfileImage.class)
-        .set("hero", hero)
-        .set("file", file)
-        .sample();
+    var newProfileImage = new HeroProfileImage(hero, file, "postfix");
 
     // when
     hero.setProfileImage(newProfileImage);
