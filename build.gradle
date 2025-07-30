@@ -1,115 +1,42 @@
 plugins {
-    id 'org.springframework.boot' version '3.3.2'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'java'
-    id 'checkstyle'
-}
-
-jar {
-    enabled = false
+    id 'org.springframework.boot' version '3.3.2' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
 static def getDate() {
     new Date().format('yyyy.MM')
 }
 
-group = 'io.itmca'
-version = getDate()
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+allprojects {
+    group = 'io.itmca'
+    version = getDate()
+    
+    repositories {
+        mavenCentral()
+        maven {
+            name = "TarsosDSP repository"
+            url = "https://mvn.0110.be/releases"
+        }
     }
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
 }
 
-repositories {
-    mavenCentral()
-    maven {
-        name = "TarsosDSP repository"
-        url = "https://mvn.0110.be/releases"
+subprojects {
+    apply plugin: 'java'
+    
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+    
+    tasks.named('test') {
+        useJUnitPlatform()
     }
 }
 
 ext {
     sentryVersion = '8.12.0'
     jwtVersion = '0.12.6'
-}
-
-dependencies {
-    // Web
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-
-    // AWS
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
-
-    // Security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation "io.jsonwebtoken:jjwt-api:${jwtVersion}"
-    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jwtVersion}"
-    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jwtVersion}"
-    implementation 'com.nimbusds:nimbus-jose-jwt:9.40'
-    implementation "io.sentry:sentry-spring-boot-starter-jakarta:${sentryVersion}"
-    implementation "io.sentry:sentry-logback:${sentryVersion}"
-
-    // Data
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-
-    //	Test
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.11")
-
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-
-    testImplementation("org.testcontainers:junit-jupiter:1.19.7")
-    testImplementation("org.testcontainers:mysql:1.19.7")
-    testImplementation("com.github.database-rider:rider-junit5:1.44.0")
-    testImplementation("com.github.database-rider:rider-spring:1.44.0")
-    testImplementation 'mysql:mysql-connector-java:8.0.33'
-    testImplementation 'javax.persistence:javax.persistence-api:2.2' // DBRider 실행 시 오류 해결을 위해 추가되었다.
-
-    // Tool
-    compileOnly 'org.projectlombok:lombok:1.18.38'
-    annotationProcessor 'org.projectlombok:lombok:1.18.38'
-    implementation 'org.json:json:20240303'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'io.github.techgnious:IVCompressor:2.0.2'
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
-    implementation 'org.apache.tika:tika-core:3.2.0'
-
-    // Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
-
-    implementation 'org.flywaydb:flyway-core:11.8.0'
-    implementation 'org.flywaydb:flyway-mysql:11.0.1'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
-
-processResources {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
-task buildZip(type: Zip) {
-    from('src/.platform') {
-        into '.platform'
-    }
-
-    from(bootJar.outputs.files) {
-        into "."
-    }
-    destinationDirectory = layout.buildDirectory.get().asFile
-    archiveFileName = project.name + ".zip"
-}
-
-checkstyle {
-    toolVersion('10.10.0')
-    configFile = rootProject.file('checkstyle/checkstyle.xml')
-    maxWarnings = 0
 }

@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: ${DB_LOCAL_URL}
+    username: ${DB_LOCAL_USERNAME}
+    password: ${DB_LOCAL_PASSWORD}

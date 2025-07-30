@@ -1,0 +1,43 @@
+plugins {
+    id 'java-library'
+    id 'io.spring.dependency-management'
+}
+
+static def getDate() {
+    new Date().format('yyyy.MM')
+}
+
+group = 'io.itmca'
+version = getDate()
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+    }
+}
+
+dependencies {
+    // Common utilities and shared code
+    api 'org.springframework.boot:spring-boot-starter'
+    api 'org.projectlombok:lombok:1.18.38'
+    annotationProcessor 'org.projectlombok:lombok:1.18.38'
+    
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

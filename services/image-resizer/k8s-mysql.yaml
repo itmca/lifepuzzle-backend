@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+data:
+  MYSQL_ROOT_PASSWORD: rootpassword
+  MYSQL_DATABASE: lifepuzzle
+  MYSQL_USER: user
+  MYSQL_PASSWORD: password
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb
+data:
+  01-init.sql: |
+    CREATE TABLE IF NOT EXISTS story_photo (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        original_path VARCHAR(500) NOT NULL,
+        resized_sizes JSON DEFAULT ('[]'),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+    
+    -- Insert sample data for testing
+    INSERT IGNORE INTO story_photo (id, original_path, resized_sizes) VALUES 
+    (1, 'photos/original/sample1.jpg', '[]'),
+    (2, 'photos/original/sample2.png', '[640]');
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        envFrom:
+        - configMapRef:
+            name: mysql-config
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        - name: mysql-initdb
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: mysql-data
+        emptyDir: {}
+      - name: mysql-initdb
+        configMap:
+          name: mysql-initdb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  selector:
+    app: mysql
+  ports:
+  - port: 3306
+    targetPort: 3306
+    nodePort: 30306
+  type: NodePort

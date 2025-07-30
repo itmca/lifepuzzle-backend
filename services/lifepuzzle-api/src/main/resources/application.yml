@@ -1,0 +1,90 @@
+spring:
+  profiles:
+    active: prod
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+  #    hibernate:
+  #      ddl-auto: validate
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    ignore-migration-patterns: "*:missing"
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  cloud:
+    aws:
+      credentials:
+        accessKey: ${AWS_ACCESS_KEY}
+        secretKey: ${AWS_SECRET_KEY}
+      s3:
+        bucket: ${AWS_S3_BUCKET}
+        dir: /
+      region:
+        static: ${AWS_REGION}
+      stack:
+        auto: false
+    deepgram:
+      credentials:
+        acessKey: ${DEEPGRAM_ACCESS_KEY}
+
+springdoc:
+  packages-to-scan: io.itmca.lifepuzzle.domain
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
+  cache:
+    disabled: true
+  group-configs:
+    - group: 이야기
+      paths-to-match: /**/story/**, /**/stories/**
+    - group: 권한
+      paths-to-match: /**/auth/**
+    - group: 유저
+      paths-to-match: /**/user/**, /**/users/**
+    - group: 주인공
+      paths-to-match: /**/hero/**, /**/heroes/**
+    - group: 갤러리
+      paths-to-match:   /**/galleries/**
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  enable-tracing: true
+  logging:
+    enabled: true
+    minimum-event-level: warn
+    minimum-breadcrumb-level: info
+
+slack:
+  webhook-url: ${SLACK_WEBHOOK_URL}
+
+api:
+  chat-gpt:
+    uri: ${OPENAI_API_URI}
+    key: ${OPENAI_API_KEY}
+  deepgram:
+    uri: ${DEEPGRAM_API_URI}
+    key: ${DEEPGRAM_API_KEY}
+
+apple:
+  team-id: ${APPLE_TEAM_ID}
+  bundle-id: ${APPLE_BUNDLE_ID}
+  private-key-id: ${APPLE_PRIVATE_KEY_ID}
+  private-key: ${APPLE_PRIVATE_KEY}

@@ -1,0 +1,84 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # URL, username, password are set dynamically by @DynamicPropertySource
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: create-drop
+  mail:
+    host: smtp.test.com
+    port: 587
+    username: test@test.com
+    password: testpassword
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    ignore-migration-patterns: "*:missing"
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  cloud:
+    aws:
+      credentials:
+        accessKey: test-access-key
+        secretKey: test-secret-key
+      s3:
+        bucket: test-bucket
+        dir: /
+      region:
+        static: us-east-1
+      stack:
+        auto: false
+    deepgram:
+      credentials:
+        acessKey: test-deepgram-key
+
+springdoc:
+  packages-to-scan: io.itmca.lifepuzzle.domain
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
+  cache:
+    disabled: true
+
+sentry:
+  dsn: https://test@sentry.io/test
+  enable-tracing: false
+  logging:
+    enabled: false
+
+slack:
+  webhook-url: https://hooks.slack.com/test
+
+api:
+  chat-gpt:
+    uri: https://api.openai.com/v1/chat/completions
+    key: test-openai-key
+  deepgram:
+    uri: https://api.deepgram.com/v1
+    key: test-deepgram-key
+
+apple:
+  team-id: TEST123456
+  bundle-id: com.test.lifepuzzle
+  private-key-id: TEST123456
+  private-key: |
+    -----BEGIN PRIVATE KEY-----
+    TEST_PRIVATE_KEY_FOR_TESTING_ONLY
+    -----END PRIVATE KEY-----
+
+logging:
+  level:
+    io.itmca.lifepuzzle: DEBUG
+    org.springframework.security: DEBUG
