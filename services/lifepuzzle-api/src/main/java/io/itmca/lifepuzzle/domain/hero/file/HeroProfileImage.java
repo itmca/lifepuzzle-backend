@@ -23,6 +23,7 @@ public class HeroProfileImage extends CustomFile implements Resizable<HeroProfil
   public HeroProfileImage(Hero hero, MultipartFile file, String postfix) {
     super(
         HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(
+            // TODO: HeroTest 실패 원인 확인 후 null 방어 코드 제거
             hero.getHeroNo() != null ? hero.getHeroNo().toString() : "temp"
         ),
         file,

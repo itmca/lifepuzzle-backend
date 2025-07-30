@@ -20,6 +20,7 @@ class HeroTest {
   @Test
   public void testSettingNewImage() {
     // given
+    // TODO: hero 필드들이 null로 초기화 되는 이슈 확인 후 HeroProfileImage 방어 코드 제거 필요
     var hero = fixtureMonkey.giveMeBuilder(Hero.class)
         .set("heroNo", 1L)
         .set("image", "before_update.png")
