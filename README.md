@@ -1,35 +1,30 @@
-# lifepuzzle-api
+# lifepuzzle-backend
 
-### Project Structure
+## Services
+
+This monorepo contains the following services:
+
+- **[lifepuzzle-api](./services/lifepuzzle-api/README.md)** - Spring Boot REST API service
+- **[image-resizer](./services/image-resizer/README.md)** - Go-based image processing service
+
+## Shared Libraries
+
+- **shared/java-common** - Common Java utilities and configurations
+- **shared/go-common** - Common Go packages
+
+## Project Structure
 
 ```bash
-lifepuzzle
-│
-├── domain
-│   ├── hero
-│   │   ├── endpoint
-│   │   │   ├── response [ 외부 요청에 대한 응답 관련 클래스 폴더 ]
-│   │   │   ├── request  [ 외부 요청에 대한 요청 관련 클래스 폴더 ]
-│   │   │   └── HeroQueryEndpoint.java
-│   │   ├── service [ 비즈니스 로직 폴더 ]
-│   │   ├── repository [ DB 관련 클래스 폴더 ]
-│   │   └── entity [ 엔티티 클래스 폴더 ]
-│   ├── story
-│   └── ...
-│
-├── global
-│   ├── ai
-│   ├── aop
-│   ├── config
-│   ├── constant
-│   ├── exception
-│   ├── infra
-│   ├── monitoring
-│   ├── resolver
-│   ├── slack
-│   └── util
-│
-└── LifePuzzleApplication.Java
+lifepuzzle-backend/
+├── services/
+│   ├── lifepuzzle-api/          # Spring Boot API service
+│   └── image-resizer/           # Go image processing service
+├── shared/
+│   ├── java-common/             # Shared Java libraries
+│   └── go-common/               # Shared Go libraries
+└── tools/
+    ├── checkstyle/              # Code style configuration
+    └── scripts/                 # Build and deployment scripts
 ```
 
 ### Versioning [수정 필요]
