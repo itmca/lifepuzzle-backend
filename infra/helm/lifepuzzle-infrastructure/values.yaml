@@ -1,0 +1,183 @@
+# Default values for lifepuzzle-infrastructure
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Global settings
+global:
+  storageClass: "standard"
+  namespace: lifepuzzle
+
+# MySQL configuration using Bitnami MySQL chart
+mysql:
+  enabled: true
+  auth:
+    rootPassword: "rootpassword"
+    database: "lifepuzzle"
+    username: "lifepuzzle"
+    password: "lifepuzzlepass"
+  
+  architecture: standalone
+  
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: ""  # Uses global.storageClass
+    
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 250m
+      limits:
+        memory: 1Gi
+        cpu: 500m
+    
+    configuration: |-
+      [mysqld]
+      default-time-zone='+09:00'
+      character-set-server=utf8mb4
+      collation-server=utf8mb4_unicode_ci
+      max_connections=200
+      innodb_buffer_pool_size=256M
+      innodb_log_file_size=64M
+      innodb_flush_log_at_trx_commit=2
+      innodb_flush_method=O_DIRECT
+      
+      [mysql]
+      default-character-set=utf8mb4
+      
+      [client]
+      default-character-set=utf8mb4
+    
+    initdb:
+      scripts:
+        init.sql: |
+          CREATE DATABASE IF NOT EXISTS lifepuzzle;
+          CREATE USER IF NOT EXISTS 'lifepuzzle'@'%' IDENTIFIED BY 'lifepuzzlepass';
+          GRANT ALL PRIVILEGES ON lifepuzzle.* TO 'lifepuzzle'@'%';
+          FLUSH PRIVILEGES;
+          USE lifepuzzle;
+          SET time_zone = '+09:00';
+  
+  service:
+    type: ClusterIP
+    ports:
+      mysql: 3306
+  
+  # For development/testing - enable NodePort
+  nodePort:
+    enabled: false
+    port: 30306
+
+# RabbitMQ configuration using Bitnami RabbitMQ chart
+rabbitmq:
+  enabled: true
+  
+  auth:
+    username: "lifepuzzle"
+    password: "lifepuzzlepass"
+    erlangCookie: "secretcookieforcluster"
+  
+  clustering:
+    enabled: true
+    rebalance: true
+  
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: ""  # Uses global.storageClass
+  
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m
+  
+  # Load balancer configuration
+  loadDefinition:
+    enabled: true
+    existingSecret: "rabbitmq-load-definition"
+  
+  # Advanced configuration
+  advancedConfiguration: |-
+    # Memory and disk limits
+    vm_memory_high_watermark.relative = 0.6
+    disk_free_limit.relative = 2.0
+    
+    # Queue configuration
+    queue_master_locator = min-masters
+    
+    # Management plugin
+    management.tcp.port = 15672
+  
+  service:
+    type: ClusterIP
+    ports:
+      amqp: 5672
+      manager: 15672
+  
+  # For development/testing - enable NodePort
+  nodePort:
+    enabled: false
+    amqpPort: 30672
+    managerPort: 31672
+  
+  # Metrics and monitoring
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false
+
+# Custom resources
+customResources:
+  # Create namespace
+  namespace:
+    enabled: true
+    name: lifepuzzle
+  
+  # RabbitMQ definitions (queues, exchanges, etc.)
+  rabbitmqDefinitions:
+    enabled: true
+    definitions:
+      users:
+        - name: "lifepuzzle"
+          password: "lifepuzzlepass"
+          tags: "administrator"
+      
+      vhosts:
+        - name: "lifepuzzle"
+      
+      permissions:
+        - user: "lifepuzzle"
+          vhost: "lifepuzzle"
+          configure: ".*"
+          write: ".*"
+          read: ".*"
+      
+      queues:
+        - name: "image.resize"
+          vhost: "lifepuzzle"
+          durable: true
+          auto_delete: false
+          arguments:
+            x-message-ttl: 3600000
+            x-max-retries: 3
+      
+      exchanges:
+        - name: "image.exchange"
+          vhost: "lifepuzzle"
+          type: "direct"
+          durable: true
+          auto_delete: false
+      
+      bindings:
+        - source: "image.exchange"
+          vhost: "lifepuzzle"
+          destination: "image.resize"
+          destination_type: "queue"
+          routing_key: "resize"

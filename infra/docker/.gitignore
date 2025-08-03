@@ -1,0 +1,6 @@
+# Environment file with sensitive data
+.env
+
+# Docker volume data
+mysql_data/
+rabbitmq_data/

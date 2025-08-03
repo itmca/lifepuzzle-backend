@@ -1,0 +1,9 @@
+{{- if .Values.customResources.namespace.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.customResources.namespace.name | default .Values.global.namespace }}
+  labels:
+    name: {{ .Values.customResources.namespace.name | default .Values.global.namespace }}
+    {{- include "lifepuzzle-infrastructure.labels" . | nindent 4 }}
+{{- end }}
