@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy go workspace files
 COPY go.work go.work.sum* ./
-COPY shared/go ./shared/go
+COPY shared/go-common ./shared/go-common
 
 # Copy service files
 COPY services/image-resizer ./services/image-resizer
