@@ -53,7 +53,7 @@
 ### 전체 스택 실행 시 (`start-full.sh`)
 
 - **LifePuzzle API**: http://localhost:8080
-  - Health Check: http://localhost:8080/actuator/health
+  - Health Check: http://localhost:8080/hc
 - **Image Resizer**: http://localhost:9000  
   - Health Check: http://localhost:9000/health
 - **MySQL**: localhost:3306

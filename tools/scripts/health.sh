@@ -80,7 +80,7 @@ echo ""
 echo -e "${BLUE}📱 Application Services:${NC}"
 if docker ps --filter "name=lifepuzzle-api" --format "{{.Names}}" | grep -q "lifepuzzle-api"; then
     check_container "LifePuzzle API" "lifepuzzle-api"
-    check_http "API Health" "http://localhost:8080/actuator/health"
+    check_http "API Health" "http://localhost:8080/hc"
 else
     printf "%-20s " "LifePuzzle API:"
     echo -e "${YELLOW}⚠️  Not running${NC}"

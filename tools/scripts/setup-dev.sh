@@ -110,7 +110,7 @@ sleep 10  # Give MySQL time to initialize
 
 # Check services
 echo -e "${BLUE}🔍 Checking service health...${NC}"
-check_health "LifePuzzle API" "http://localhost:8080/actuator/health"
+check_health "LifePuzzle API" "http://localhost:8080/hc"
 check_health "Image Resizer" "http://localhost:9000/health"
 
 # Show service status
@@ -123,7 +123,7 @@ docker-compose -f docker-compose.full.yml ps
 echo ""
 echo -e "${BLUE}🌐 Available Services:${NC}"
 echo -e "  • ${GREEN}LifePuzzle API${NC}:     http://localhost:8080"
-echo -e "    - Health Check:       http://localhost:8080/actuator/health"
+echo -e "    - Health Check:       http://localhost:8080/hc"
 echo -e "    - API Documentation:  http://localhost:8080/swagger-ui.html (if enabled)"
 echo ""
 echo -e "  • ${GREEN}Image Resizer${NC}:      http://localhost:9000"

@@ -2,8 +2,6 @@
 # Use this for backend development when you want to run applications separately
 # Usage: docker-compose up -d
 
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
