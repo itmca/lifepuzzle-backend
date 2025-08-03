@@ -111,7 +111,7 @@ sleep 10  # Give MySQL time to initialize
 # Check services
 echo -e "${BLUE}🔍 Checking service health...${NC}"
 check_health "LifePuzzle API" "http://localhost:8080/actuator/health"
-check_health "Image Resizer" "http://localhost:8081/health"
+check_health "Image Resizer" "http://localhost:9000/health"
 
 # Show service status
 echo ""
@@ -126,8 +126,8 @@ echo -e "  • ${GREEN}LifePuzzle API${NC}:     http://localhost:8080"
 echo -e "    - Health Check:       http://localhost:8080/actuator/health"
 echo -e "    - API Documentation:  http://localhost:8080/swagger-ui.html (if enabled)"
 echo ""
-echo -e "  • ${GREEN}Image Resizer${NC}:      http://localhost:8081"
-echo -e "    - Health Check:       http://localhost:8081/health"
+echo -e "  • ${GREEN}Image Resizer${NC}:      http://localhost:9000"
+echo -e "    - Health Check:       http://localhost:9000/health"
 echo ""
 echo -e "  • ${GREEN}MySQL Database${NC}:     localhost:3306"
 echo -e "    - Database: lifepuzzle"

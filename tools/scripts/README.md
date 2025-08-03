@@ -54,8 +54,8 @@
 
 - **LifePuzzle API**: http://localhost:8080
   - Health Check: http://localhost:8080/actuator/health
-- **Image Resizer**: http://localhost:8081  
-  - Health Check: http://localhost:8081/health
+- **Image Resizer**: http://localhost:9000  
+  - Health Check: http://localhost:9000/health
 - **MySQL**: localhost:3306
   - Database: `lifepuzzle`
   - Username: `lifepuzzle`

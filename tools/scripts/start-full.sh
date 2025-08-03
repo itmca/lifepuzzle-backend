@@ -44,7 +44,7 @@ docker-compose -f docker-compose.full.yml ps
 echo ""
 echo -e "${BLUE}🌐 Available Services:${NC}"
 echo -e "  • ${GREEN}LifePuzzle API${NC}:     http://localhost:8080"
-echo -e "  • ${GREEN}Image Resizer${NC}:      http://localhost:8081"
+echo -e "  • ${GREEN}Image Resizer${NC}:      http://localhost:9000"
 echo -e "  • ${GREEN}MySQL Database${NC}:     localhost:3306"
 echo -e "  • ${GREEN}RabbitMQ Management${NC}: http://localhost:15672"
 

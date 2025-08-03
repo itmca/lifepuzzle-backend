@@ -88,7 +88,7 @@ fi
 
 if docker ps --filter "name=lifepuzzle-image-resizer" --format "{{.Names}}" | grep -q "lifepuzzle-image-resizer"; then
     check_container "Image Resizer" "lifepuzzle-image-resizer"
-    check_http "Resizer Health" "http://localhost:8081/health"
+    check_http "Resizer Health" "http://localhost:9000/health"
 else
     printf "%-20s " "Image Resizer:"
     echo -e "${YELLOW}⚠️  Not running${NC}"

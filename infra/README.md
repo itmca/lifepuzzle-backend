@@ -62,8 +62,8 @@ docker-compose -f docker-compose.full.yml up -d
   - Management UI: `http://localhost:15672`
 - **LifePuzzle API**: `http://localhost:8080`
   - Health check: `http://localhost:8080/actuator/health`
-- **Image Resizer**: `http://localhost:8081`
-  - Health check: `http://localhost:8081/health`
+- **Image Resizer**: `http://localhost:9000`
+  - Health check: `http://localhost:9000/health`
 
 ### Environment Configuration
 
