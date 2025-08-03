@@ -98,6 +98,13 @@ services:
       
       # Slack integration (optional for local development)
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-}
+      
+      # Email configuration (optional for local development)
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-noreply@lifepuzzle.com}
     ports:
       - "8080:8080"
     networks:
