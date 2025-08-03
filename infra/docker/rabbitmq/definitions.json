@@ -6,8 +6,7 @@
   "users": [
     {
       "name": "lifepuzzle",
-      "password_hash": "lifepuzzlepass",
-      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "password": "lifepuzzlepass",
       "tags": "administrator"
     }
   ],
