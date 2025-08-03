@@ -80,6 +80,24 @@ services:
       # Logging
       LOGGING_LEVEL_ROOT: INFO
       LOGGING_LEVEL_IO_ITMCA_LIFEPUZZLE: DEBUG
+      
+      # Sentry configuration (optional for local development)
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      
+      # AI Services (optional for local development)
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      DEEPGRAM_API_KEY: ${DEEPGRAM_API_KEY:-}
+      
+      # Social Login (optional for local development)
+      APPLE_CLIENT_ID: ${APPLE_CLIENT_ID:-}
+      APPLE_KEY_ID: ${APPLE_KEY_ID:-}
+      APPLE_TEAM_ID: ${APPLE_TEAM_ID:-}
+      APPLE_PRIVATE_KEY: ${APPLE_PRIVATE_KEY:-}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID:-}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET:-}
+      
+      # Slack integration (optional for local development)
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-}
     ports:
       - "8080:8080"
     networks:
