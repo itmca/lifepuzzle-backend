@@ -1,0 +1,12 @@
+{{- if and .Values.rabbitmq.enabled .Values.customResources.rabbitmqDefinitions.enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbitmq-load-definition
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "lifepuzzle-infrastructure.rabbitmq.labels" . | nindent 4 }}
+type: Opaque
+data:
+  load_definition.json: {{ .Values.customResources.rabbitmqDefinitions.definitions | toJson | b64enc }}
+{{- end }}

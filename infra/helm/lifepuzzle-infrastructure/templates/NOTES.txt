@@ -1,0 +1,57 @@
+1. Get the application URL by running these commands:
+
+{{- if .Values.mysql.enabled }}
+## MySQL
+Your MySQL database is available at:
+  - Internal: {{ include "lifepuzzle-infrastructure.mysql.serviceName" . }}.{{ .Values.global.namespace }}.svc.cluster.local:3306
+  
+Database credentials:
+  - Database: {{ .Values.mysql.auth.database }}
+  - Username: {{ .Values.mysql.auth.username }}
+  - Password: (stored in secret {{ include "lifepuzzle-infrastructure.mysql.serviceName" . }})
+
+{{- if .Values.mysql.nodePort.enabled }}
+  - External (NodePort): <NODE_IP>:{{ .Values.mysql.nodePort.port }}
+{{- end }}
+
+To connect to MySQL:
+  kubectl run mysql-client --rm --tty -i --restart='Never' --image mysql:8.0 --namespace {{ .Values.global.namespace }} -- mysql -h {{ include "lifepuzzle-infrastructure.mysql.serviceName" . }} -u {{ .Values.mysql.auth.username }} -p{{ .Values.mysql.auth.password }}
+{{- end }}
+
+{{- if .Values.rabbitmq.enabled }}
+## RabbitMQ
+Your RabbitMQ server is available at:
+  - Internal AMQP: {{ include "lifepuzzle-infrastructure.rabbitmq.serviceName" . }}.{{ .Values.global.namespace }}.svc.cluster.local:5672
+  - Internal Management: {{ include "lifepuzzle-infrastructure.rabbitmq.serviceName" . }}.{{ .Values.global.namespace }}.svc.cluster.local:15672
+
+RabbitMQ credentials:
+  - Username: {{ .Values.rabbitmq.auth.username }}
+  - Password: (stored in secret {{ include "lifepuzzle-infrastructure.rabbitmq.serviceName" . }})
+
+{{- if .Values.rabbitmq.nodePort.enabled }}
+  - External AMQP (NodePort): <NODE_IP>:{{ .Values.rabbitmq.nodePort.amqpPort }}
+  - External Management (NodePort): <NODE_IP>:{{ .Values.rabbitmq.nodePort.managerPort }}
+{{- end }}
+
+To access the RabbitMQ Management UI:
+{{- if .Values.rabbitmq.nodePort.enabled }}
+  Open http://<NODE_IP>:{{ .Values.rabbitmq.nodePort.managerPort }} in your browser
+{{- else }}
+  kubectl port-forward --namespace {{ .Values.global.namespace }} svc/{{ include "lifepuzzle-infrastructure.rabbitmq.serviceName" . }} 15672:15672
+  Then open http://127.0.0.1:15672 in your browser
+{{- end }}
+{{- end }}
+
+## Environment Variables for Applications
+Add these environment variables to your application deployments:
+
+Database:
+{{- include "lifepuzzle-infrastructure.env.database" . | nindent 2 }}
+
+RabbitMQ:
+{{- include "lifepuzzle-infrastructure.env.rabbitmq" . | nindent 2 }}
+
+## Useful Commands
+- Check pod status: kubectl get pods -n {{ .Values.global.namespace }}
+- View logs: kubectl logs -f <pod-name> -n {{ .Values.global.namespace }}
+- Delete release: helm uninstall {{ .Release.Name }} -n {{ .Release.Namespace }}
