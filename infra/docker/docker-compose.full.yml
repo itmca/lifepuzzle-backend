@@ -54,6 +54,8 @@ services:
       context: ../../
       dockerfile: services/lifepuzzle-api/Dockerfile
     container_name: lifepuzzle-api
+    env_file:
+      - .env
     environment:
       # Database configuration
       DB_HOST: mysql
@@ -61,6 +63,11 @@ services:
       DB_NAME: lifepuzzle
       DB_USER: lifepuzzle
       DB_PASSWORD: lifepuzzlepass
+      
+      # Local database configuration for Spring application
+      DB_LOCAL_URL: ${DB_LOCAL_URL}
+      DB_LOCAL_USERNAME: ${DB_LOCAL_USERNAME}
+      DB_LOCAL_PASSWORD: ${DB_LOCAL_PASSWORD}
       
       # RabbitMQ configuration
       RABBITMQ_HOST: rabbitmq
@@ -82,6 +89,12 @@ services:
       # Sentry configuration (optional for local development)
       SENTRY_DSN: ${SENTRY_DSN:-}
       
+      # AWS S3 configuration
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+
       # AI Services (optional for local development)
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       DEEPGRAM_API_KEY: ${DEEPGRAM_API_KEY:-}
@@ -125,6 +138,8 @@ services:
       context: ../../
       dockerfile: services/image-resizer/Dockerfile
     container_name: lifepuzzle-image-resizer
+    env_file:
+      - .env
     environment:
       # Database configuration
       DB_HOST: mysql
@@ -137,10 +152,10 @@ services:
       RABBITMQ_URL: amqp://lifepuzzle:lifepuzzlepass@rabbitmq:5672/lifepuzzle
       
       # AWS S3 configuration (set these in .env file)
-      AWS_REGION: ${AWS_REGION:-us-west-2}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      S3_BUCKET: ${S3_BUCKET:-lifepuzzle-dev}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
       
       # Application configuration
       PORT: 9000
