@@ -30,7 +30,7 @@ COPY --from=builder --chown=appuser:appgroup /app/services/image-resizer/main .
 USER appuser
 
 # Expose port
-EXPOSE 9000
+EXPOSE 900
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \

@@ -26,6 +26,7 @@ echo -e "${GREEN}✅ Docker is running${NC}"
 # Navigate to docker directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOCKER_DIR="$SCRIPT_DIR/../../infra/docker"
+ROOT_DIR="$SCRIPT_DIR/../.."
 
 if [ ! -d "$DOCKER_DIR" ]; then
     echo -e "${RED}❌ Docker directory not found: $DOCKER_DIR${NC}"
@@ -34,38 +35,55 @@ fi
 
 cd "$DOCKER_DIR"
 
-# Check if .env file exists, if not copy from example
-if [ ! -f ".env" ]; then
-    echo -e "${YELLOW}⚠️  .env file not found. Creating from .env.example...${NC}"
-    if [ -f ".env.example" ]; then
-        cp .env.example .env
-        echo -e "${BLUE}📝 .env file created. Please update AWS credentials if needed:${NC}"
-        echo "   - AWS_ACCESS_KEY_ID"
-        echo "   - AWS_SECRET_ACCESS_KEY"
-        echo "   - S3_BUCKET"
+# Check if root .env file exists, if not create from example
+if [ ! -f "$ROOT_DIR/.env" ]; then
+    echo -e "${YELLOW}⚠️  Root .env file not found. Creating from .env.example...${NC}"
+    if [ -f "$ROOT_DIR/.env.example" ]; then
+        cp "$ROOT_DIR/.env.example" "$ROOT_DIR/.env"
+        echo -e "${BLUE}📝 .env file created. Please update the following values:${NC}"
+        echo "   - AWS_ACCESS_KEY (your AWS access key)"
+        echo "   - AWS_SECRET_KEY (your AWS secret key)"
+        echo "   - AWS_S3_BUCKET (your S3 bucket name)"
+        echo "   - Database credentials if different from defaults"
+        echo "   - API keys for external services (OpenAI, Deepgram, etc.)"
         echo ""
-        echo -e "${YELLOW}💡 You can edit the .env file now or later: nano $DOCKER_DIR/.env${NC}"
+        echo -e "${YELLOW}💡 You can edit the .env file now: nano $ROOT_DIR/.env${NC}"
         echo ""
         read -p "Press Enter to continue or Ctrl+C to edit .env file first..."
     else
-        echo -e "${RED}❌ .env.example file not found${NC}"
+        echo -e "${RED}❌ .env.example file not found in project root${NC}"
+        echo -e "${BLUE}💡 Please create $ROOT_DIR/.env with your configuration${NC}"
         exit 1
     fi
 else
-    echo -e "${GREEN}✅ .env file exists${NC}"
+    echo -e "${GREEN}✅ Root .env file exists${NC}"
+fi
+
+# Create symbolic link to root .env file if it doesn't exist
+if [ ! -f ".env" ]; then
+    echo -e "${BLUE}🔗 Creating symbolic link to root .env file...${NC}"
+    ln -s "$ROOT_DIR/.env" ".env"
+    echo -e "${GREEN}✅ Symbolic link created${NC}"
+elif [ ! -L ".env" ]; then
+    echo -e "${YELLOW}⚠️  Local .env file exists but is not a symbolic link. Backing up and creating symbolic link...${NC}"
+    mv ".env" ".env.backup"
+    ln -s "$ROOT_DIR/.env" ".env"
+    echo -e "${GREEN}✅ Symbolic link created (old .env backed up as .env.backup)${NC}"
+else
+    echo -e "${GREEN}✅ Symbolic link to root .env already exists${NC}"
 fi
 
 # Check if there are running containers and ask to stop them
-if docker-compose ps | grep -q "Up"; then
+if docker-compose -f docker-compose.full.yml ps | grep -q "Up"; then
     echo -e "${YELLOW}⚠️  Some containers are already running.${NC}"
     echo "Running containers:"
-    docker-compose ps
+    docker-compose -f docker-compose.full.yml ps
     echo ""
     read -p "Do you want to stop them and restart with full stack? (y/N): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo -e "${BLUE}🛑 Stopping existing containers...${NC}"
-        docker-compose down
+        docker-compose -f docker-compose.yml down
         docker-compose -f docker-compose.full.yml down
     fi
 fi
@@ -111,7 +129,13 @@ sleep 10  # Give MySQL time to initialize
 # Check services
 echo -e "${BLUE}🔍 Checking service health...${NC}"
 check_health "LifePuzzle API" "http://localhost:8080/hc"
-check_health "Image Resizer" "http://localhost:9000/health"
+
+# Check if image-resizer container is running (no HTTP endpoint available)
+if docker-compose -f docker-compose.full.yml ps lifepuzzle-image-resizer | grep -q "Up"; then
+    echo -e "${GREEN}✅ Image Resizer is running${NC}"
+else
+    echo -e "${RED}❌ Image Resizer is not running${NC}"
+fi
 
 # Show service status
 echo ""
@@ -126,8 +150,8 @@ echo -e "  • ${GREEN}LifePuzzle API${NC}:     http://localhost:8080"
 echo -e "    - Health Check:       http://localhost:8080/hc"
 echo -e "    - API Documentation:  http://localhost:8080/swagger-ui.html (if enabled)"
 echo ""
-echo -e "  • ${GREEN}Image Resizer${NC}:      http://localhost:9000"
-echo -e "    - Health Check:       http://localhost:9000/health"
+echo -e "  • ${GREEN}Image Resizer${NC}:      Message Queue Consumer"
+echo -e "    - Service:            Processing image resize requests"
 echo ""
 echo -e "  • ${GREEN}MySQL Database${NC}:     localhost:3306"
 echo -e "    - Database: lifepuzzle"
