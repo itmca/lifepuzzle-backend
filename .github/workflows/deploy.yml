@@ -1,4 +1,4 @@
-name: Deploy-to-EB
+name: Deploy to Production (lifepuzzle-api)
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: build
+    environment: production
     
     permissions: 
       contents: read
