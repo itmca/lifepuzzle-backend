@@ -13,41 +13,49 @@ public class CustomExceptionHandler {
 
   @ExceptionHandler(AuthException.class)
   public ResponseEntity handleUnAuthorizedException(AuthException e) {
+    log.debug("Auth exception occurred: {}", e.getMessage());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
   }
 
   @ExceptionHandler(NotFoundException.class)
   public ResponseEntity handleNotFoundException(NotFoundException e) {
+    log.debug("Not found exception occurred: {}", e.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
 
   @ExceptionHandler(AlreadyExistsException.class)
   public ResponseEntity handleAlreadyExistsException(AlreadyExistsException e) {
+    log.debug("Already exists exception occurred: {}", e.getMessage());
     return ResponseEntity.status(HttpStatus.CONFLICT).build();
   }
 
   @ExceptionHandler(ServerExecutionFailException.class)
   public ResponseEntity handleServerExecutionFailException(ServerExecutionFailException e) {
+    log.info("Server execution fail exception occurred: {}", e.getMessage());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
   @ExceptionHandler(MissingArgumentException.class)
   public ResponseEntity handleIllegalArgumentException(MissingArgumentException e) {
+    log.debug("Missing argument exception occurred: {}", e.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
   }
 
   @ExceptionHandler(AccessDeniedException.class)
   public ResponseEntity handleAccessDeniedException(AccessDeniedException e) {
+    log.debug("Access denied exception occurred: {}", e.getMessage());
     return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
   }
 
   @ExceptionHandler(ExpiredException.class)
   public ResponseEntity handleExpiredException(ExpiredException e) {
+    log.debug("Expired exception occurred: {}", e.getMessage());
     return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
   }
 
   @ExceptionHandler(ExternalApiException.class)
   public ResponseEntity handleExternalApiException(ExternalApiException e) {
+    log.info("External API exception occurred: {}", e.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
   }
 }
