@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# Production deployment script for LifePuzzle Infrastructure
+# Full infrastructure production deployment script for LifePuzzle Infrastructure
+# This deploys both MySQL and RabbitMQ together
 # Usage: ./deploy-prod.sh
+# 
+# For individual deployments, use:
+# - ./deploy-mysql-prod.sh (MySQL only)
+# - ./deploy-rabbitmq-prod.sh (RabbitMQ only)
 
 set -e
 
-echo "🚀 Deploying LifePuzzle Infrastructure to Production..."
+echo "🚀 Deploying Full LifePuzzle Infrastructure to Production..."
 
 # Check if required environment variables are set
 required_vars=(
