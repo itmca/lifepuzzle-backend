@@ -47,6 +47,7 @@ helm upgrade --install lifepuzzle-rabbitmq ./lifepuzzle-infrastructure \
     --set rabbitmq.enabled=true \
     --set rabbitmq.auth.password="$RABBITMQ_PASSWORD" \
     --set rabbitmq.auth.erlangCookie="$RABBITMQ_ERLANG_COOKIE" \
+    --set rabbitmq.auth.vhost="$RABBITMQ_DEFAULT_VHOST" \
     --wait \
     --timeout=10m
 

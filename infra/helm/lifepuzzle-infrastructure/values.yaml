@@ -79,6 +79,7 @@ rabbitmq:
   auth:
     username: "lifepuzzle"
     password: "lifepuzzlepass"
+    vhost: "lifepuzzle"
     erlangCookie: "secretcookieforcluster"
   
   clustering:
