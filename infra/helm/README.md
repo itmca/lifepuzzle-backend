@@ -14,7 +14,52 @@ A comprehensive Helm chart that manages MySQL and RabbitMQ infrastructure using 
 - Kubernetes cluster
 - kubectl configured
 
-## Quick Start
+## Deployment Options
+
+### Full Infrastructure Deployment
+Deploy both MySQL and RabbitMQ together:
+```bash
+./deploy-prod.sh
+```
+
+### Individual Component Deployments
+
+#### MySQL Only
+```bash
+./deploy-mysql-prod.sh
+```
+Required environment variables:
+- `MYSQL_ROOT_PASSWORD`
+- `MYSQL_PASSWORD`
+
+#### RabbitMQ Only
+```bash
+./deploy-rabbitmq-prod.sh
+```
+Required environment variables:
+- `RABBITMQ_PASSWORD`
+- `RABBITMQ_ERLANG_COOKIE`
+
+### Environment Variables Setup
+```bash
+# MySQL credentials
+export MYSQL_ROOT_PASSWORD='your-secure-root-password'
+export MYSQL_PASSWORD='your-secure-lifepuzzle-password'
+
+# RabbitMQ credentials
+export RABBITMQ_PASSWORD='your-secure-rabbitmq-password'
+export RABBITMQ_ERLANG_COOKIE='your-secure-erlang-cookie'
+```
+
+## Helm Releases
+
+| Script | Helm Release Name | Components |
+|--------|------------------|------------|
+| `deploy-prod.sh` | `lifepuzzle-infra` | MySQL + RabbitMQ |
+| `deploy-mysql-prod.sh` | `lifepuzzle-mysql` | MySQL only |
+| `deploy-rabbitmq-prod.sh` | `lifepuzzle-rabbitmq` | RabbitMQ only |
+
+## Manual Installation
 
 ### 1. Add Bitnami Repository
 
