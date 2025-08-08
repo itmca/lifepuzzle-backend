@@ -41,6 +41,26 @@ Required environment variables:
 - `RABBITMQ_ERLANG_COOKIE`
 
 ### Environment Variables Setup
+
+#### Option 1: Using .env file (Recommended)
+1. Copy the example file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Edit `.env` file in the root directory and update the infrastructure variables:
+   ```bash
+   # Infrastructure Deployment Variables
+   MYSQL_ROOT_PASSWORD=your-secure-root-password
+   MYSQL_PASSWORD=your-secure-lifepuzzle-password
+   RABBITMQ_PASSWORD=your-secure-rabbitmq-password
+   RABBITMQ_ERLANG_COOKIE=your-secure-erlang-cookie
+   ```
+3. Run deployment scripts (they will automatically load the .env file):
+   ```bash
+   ./deploy-prod.sh
+   ```
+
+#### Option 2: Manual export
 ```bash
 # MySQL credentials
 export MYSQL_ROOT_PASSWORD='your-secure-root-password'
