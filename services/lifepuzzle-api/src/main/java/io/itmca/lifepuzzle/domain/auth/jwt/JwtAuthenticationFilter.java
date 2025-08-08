@@ -25,6 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     try {
       trySettingAuthentication(request);
     } catch (JwtException e) {
+      logger.debug("JWT authentication failed: " + e.getMessage());
       response.setStatus(HttpStatus.UNAUTHORIZED.value());
       return;
     }
