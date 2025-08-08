@@ -5,6 +5,13 @@
 
 set -e
 
+# Load environment variables from root .env file if it exists
+ROOT_ENV_FILE="$(cd "$(dirname "$0")/../.." && pwd)/.env"
+if [ -f "$ROOT_ENV_FILE" ]; then
+    echo "📁 Loading environment variables from .env file..."
+    export $(cat "$ROOT_ENV_FILE" | grep -v '^#' | grep -v '^$' | xargs)
+fi
+
 echo "🐰 Deploying RabbitMQ to Production..."
 
 # Check if required environment variables are set
