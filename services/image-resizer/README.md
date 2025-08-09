@@ -44,7 +44,7 @@ The image-resizer service follows a message-driven architecture:
 
 ## Technology Stack
 
-- **Language**: Go 1.21+
+- **Language**: Go 1.24+
 - **Message Queue**: RabbitMQ
 - **Storage**: AWS S3
 - **Database**: MySQL (shared with lifepuzzle-api)
@@ -81,7 +81,7 @@ LOG_LEVEL=info
 
 ### Prerequisites
 
-- Go 1.21+
+- Go 1.24+
 - RabbitMQ
 - MySQL (shared with lifepuzzle-api)
 - AWS S3 bucket and credentials
