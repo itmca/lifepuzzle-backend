@@ -79,11 +79,12 @@ rabbitmq:
   auth:
     username: "lifepuzzle"
     password: "lifepuzzlepass"
+    vhost: "lifepuzzle"
     erlangCookie: "secretcookieforcluster"
   
   clustering:
-    enabled: true
-    rebalance: true
+    enabled: false
+    rebalance: false
   
   persistence:
     enabled: true
@@ -100,7 +101,7 @@ rabbitmq:
   
   # Load balancer configuration
   loadDefinition:
-    enabled: true
+    enabled: false
     existingSecret: "rabbitmq-load-definition"
   
   # Advanced configuration
@@ -127,17 +128,19 @@ rabbitmq:
     amqpPort: 30672
     managerPort: 31672
   
-  # Metrics and monitoring
+  # Metrics and monitoring  
   metrics:
-    enabled: true
+    enabled: false
     serviceMonitor:
+      enabled: false
+    prometheusRule:
       enabled: false
 
 # Custom resources
 customResources:
   # Create namespace
   namespace:
-    enabled: true
+    enabled: false
     name: lifepuzzle
   
   # RabbitMQ definitions (queues, exchanges, etc.)
