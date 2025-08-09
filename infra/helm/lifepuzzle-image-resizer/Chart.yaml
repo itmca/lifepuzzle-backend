@@ -1,0 +1,16 @@
+apiVersion: v2
+name: lifepuzzle-image-resizer
+description: A Helm chart for LifePuzzle Image Resizer service
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - image-resizer
+  - microservice
+  - go
+  - lifepuzzle
+home: https://github.com/itmca/lifepuzzle-backend
+sources:
+  - https://github.com/itmca/lifepuzzle-backend
+maintainers:
+  - name: LifePuzzle Team

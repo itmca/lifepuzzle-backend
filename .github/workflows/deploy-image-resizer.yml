@@ -1,0 +1,73 @@
+name: Deploy to Production (image-resizer)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    permissions: 
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Get current time
+        uses: josStorer/get-current-time@v2.1.2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./services/image-resizer/Dockerfile
+          push: true
+          tags: ${{ secrets.GHCR_IMAGE_RESIZER }}:latest
+
+      - name: SSH into Home Server and Deploy with Helm
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOME_SERVER_HOST }}
+          username: ${{ secrets.HOME_SERVER_USER }}
+          key: ${{ secrets.HOME_SERVER_SSH_KEY }}
+          port: ${{ secrets.HOME_SERVER_PORT }}
+          script: |
+            echo "Deploying image-resizer with Helm..."
+            cd /path/to/lifepuzzle-backend/infra/helm
+            /opt/homebrew/bin/kubectl config use-context prod-app
+            
+            # Deploy image-resizer using Helm
+            /opt/homebrew/bin/helm upgrade --install lifepuzzle-image-resizer ./lifepuzzle-image-resizer \
+              --namespace lifepuzzle \
+              --create-namespace \
+              --values ./lifepuzzle-image-resizer/values-prod.yaml \
+              --set secrets.dbPassword="${{ secrets.MYSQL_PASSWORD }}" \
+              --set secrets.rabbitmqPassword="${{ secrets.RABBITMQ_PASSWORD }}" \
+              --set secrets.awsAccessKey="${{ secrets.AWS_ACCESS_KEY }}" \
+              --set secrets.awsSecretKey="${{ secrets.AWS_SECRET_KEY }}" \
+              --set secrets.awsS3Bucket="${{ secrets.AWS_S3_BUCKET }}" \
+              --set image.tag="latest" \
+              --wait \
+              --timeout=10m
+            
+            echo "Deployment completed successfully!"
+            /opt/homebrew/bin/kubectl get pods -n lifepuzzle -l app.kubernetes.io/name=lifepuzzle-image-resizer

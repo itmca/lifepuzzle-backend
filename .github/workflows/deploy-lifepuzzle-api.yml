@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     environment: production
     
@@ -54,7 +54,7 @@ jobs:
           push: true
           build-args: |
             JAR_PATH=${{ env.artifact }}
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ${{ secrets.GHCR_LIFEPUZZLE_API }}:latest
 
       - name: SSH into Home Server and Restart Deployment
         uses: appleboy/ssh-action@v1.0.3
