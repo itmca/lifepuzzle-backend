@@ -37,6 +37,10 @@ echo "📦 Adding Bitnami Helm repository..."
 helm repo add bitnami https://charts.bitnami.com/bitnami || true
 helm repo update
 
+# Build dependencies
+echo "🔧 Building Helm chart dependencies..."
+helm dependency build ./lifepuzzle-infrastructure
+
 # Deploy or upgrade MySQL only
 echo "🔧 Deploying MySQL..."
 helm upgrade --install lifepuzzle-mysql ./lifepuzzle-infrastructure \

@@ -37,17 +37,23 @@ echo "📦 Adding Bitnami Helm repository..."
 helm repo add bitnami https://charts.bitnami.com/bitnami || true
 helm repo update
 
+# Build dependencies
+echo "🔧 Building Helm chart dependencies..."
+helm dependency build ./lifepuzzle-infrastructure
+
 # Deploy or upgrade RabbitMQ only
 echo "🔧 Deploying RabbitMQ..."
-helm upgrade --install lifepuzzle-rabbitmq ./lifepuzzle-infrastructure \
+helm upgrade --install lifepuzzle-rabbitmq bitnami/rabbitmq \
     --namespace lifepuzzle \
     --create-namespace \
-    --values ./lifepuzzle-infrastructure/values-prod.yaml \
-    --set mysql.enabled=false \
-    --set rabbitmq.enabled=true \
-    --set rabbitmq.auth.password="$RABBITMQ_PASSWORD" \
-    --set rabbitmq.auth.erlangCookie="$RABBITMQ_ERLANG_COOKIE" \
-    --set rabbitmq.auth.vhost="$RABBITMQ_DEFAULT_VHOST" \
+    --set auth.username="lifepuzzle" \
+    --set auth.password="$RABBITMQ_PASSWORD" \
+    --set auth.erlangCookie="$RABBITMQ_ERLANG_COOKIE" \
+    --set persistence.enabled=true \
+    --set persistence.size=5Gi \
+    --set persistence.storageClass=standard \
+    --set clustering.enabled=false \
+    --set metrics.enabled=false \
     --wait \
     --timeout=10m
 
