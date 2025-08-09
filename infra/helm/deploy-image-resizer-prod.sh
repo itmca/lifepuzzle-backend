@@ -18,9 +18,9 @@ echo "🚀 Deploying LifePuzzle Image Resizer to Production..."
 required_vars=(
     "MYSQL_PASSWORD"
     "RABBITMQ_PASSWORD"
-    "AWS_ACCESS_KEY_ID"
-    "AWS_SECRET_ACCESS_KEY"
-    "S3_BUCKET_NAME"
+    "AWS_ACCESS_KEY"
+    "AWS_SECRET_KEY"
+    "AWS_S3_BUCKET"
 )
 
 echo "🔍 Checking environment variables..."
@@ -30,9 +30,9 @@ for var in "${required_vars[@]}"; do
         echo "Please set all required variables:"
         echo "  export MYSQL_PASSWORD='your-mysql-password'"
         echo "  export RABBITMQ_PASSWORD='your-rabbitmq-password'"
-        echo "  export AWS_ACCESS_KEY_ID='your-aws-access-key'"
-        echo "  export AWS_SECRET_ACCESS_KEY='your-aws-secret-key'"
-        echo "  export S3_BUCKET_NAME='your-s3-bucket-name'"
+        echo "  export AWS_ACCESS_KEY='your-aws-access-key'"
+        echo "  export AWS_SECRET_KEY='your-aws-secret-key'"
+        echo "  export AWS_S3_BUCKET='your-s3-bucket-name'"
         exit 1
     fi
     echo "✅ $var is set"
@@ -46,9 +46,9 @@ helm upgrade --install lifepuzzle-image-resizer ./lifepuzzle-image-resizer \
     --values ./lifepuzzle-image-resizer/values-prod.yaml \
     --set secrets.dbPassword="$MYSQL_PASSWORD" \
     --set secrets.rabbitmqPassword="$RABBITMQ_PASSWORD" \
-    --set secrets.awsAccessKeyId="$AWS_ACCESS_KEY_ID" \
-    --set secrets.awsSecretAccessKey="$AWS_SECRET_ACCESS_KEY" \
-    --set secrets.s3BucketName="$S3_BUCKET_NAME" \
+    --set secrets.awsAccessKey="$AWS_ACCESS_KEY" \
+    --set secrets.awsSecretKey="$AWS_SECRET_KEY" \
+    --set secrets.awsS3Bucket="$AWS_S3_BUCKET" \
     --wait \
     --timeout=10m
 

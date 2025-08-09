@@ -1,7 +1,7 @@
 # Default values for lifepuzzle-image-resizer
 # This is a YAML-formatted file.
 
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: ghcr.io/itmca/lifepuzzle-image-resizer
@@ -9,6 +9,7 @@ image:
   tag: "latest"
 
 imagePullSecrets: []
+
 nameOverride: ""
 fullnameOverride: ""
 
@@ -52,8 +53,8 @@ resources:
 
 autoscaling:
   enabled: true
-  minReplicas: 2
-  maxReplicas: 10
+  minReplicas: 1
+  maxReplicas: 5
   targetCPUUtilizationPercentage: 70
   targetMemoryUtilizationPercentage: 80
 
@@ -97,9 +98,9 @@ secrets:
   rabbitmqPassword: ""
   
   # AWS credentials
-  awsAccessKeyId: ""
-  awsSecretAccessKey: ""
-  s3BucketName: ""
+  awsAccessKey: ""
+  awsSecretKey: ""
+  awsS3Bucket: ""
 
 # Health check configuration
 healthCheck:

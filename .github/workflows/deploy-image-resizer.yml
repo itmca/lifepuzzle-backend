@@ -62,9 +62,9 @@ jobs:
               --values ./lifepuzzle-image-resizer/values-prod.yaml \
               --set secrets.dbPassword="${{ secrets.MYSQL_PASSWORD }}" \
               --set secrets.rabbitmqPassword="${{ secrets.RABBITMQ_PASSWORD }}" \
-              --set secrets.awsAccessKeyId="${{ secrets.AWS_ACCESS_KEY_ID }}" \
-              --set secrets.awsSecretAccessKey="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-              --set secrets.s3BucketName="${{ secrets.S3_BUCKET_NAME }}" \
+              --set secrets.awsAccessKey="${{ secrets.AWS_ACCESS_KEY }}" \
+              --set secrets.awsSecretKey="${{ secrets.AWS_SECRET_KEY }}" \
+              --set secrets.awsS3Bucket="${{ secrets.AWS_S3_BUCKET }}" \
               --set image.tag="latest" \
               --wait \
               --timeout=10m
