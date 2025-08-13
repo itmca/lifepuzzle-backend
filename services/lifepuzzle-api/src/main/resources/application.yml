@@ -88,3 +88,11 @@ apple:
   bundle-id: ${APPLE_BUNDLE_ID}
   private-key-id: ${APPLE_PRIVATE_KEY_ID}
   private-key: ${APPLE_PRIVATE_KEY}
+
+facebook:
+  client-id: ${FACEBOOK_CLIENT_ID}
+  client-secret: ${FACEBOOK_CLIENT_SECRET}
+  redirect-uri: ${FACEBOOK_REDIRECT_URI}
+  authorization-grant-type: authorization_code
+  scope:
+    - user_photos
