@@ -53,6 +53,29 @@ jobs:
           context: .
           file: ./services/lifepuzzle-api/Dockerfile
           push: true
+          build-args: |
+            DB_PROD_URL=${{ secrets.DB_PROD_URL }}
+            DB_PROD_USERNAME=${{ secrets.DB_PROD_USERNAME }}
+            DB_PROD_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}
+            MAIL_HOST=${{ secrets.MAIL_HOST }}
+            MAIL_PORT=${{ secrets.MAIL_PORT }}
+            MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}
+            MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
+            AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+            AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
+            AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            DEEPGRAM_ACCESS_KEY=${{ secrets.DEEPGRAM_ACCESS_KEY }}
+            SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+            SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
+            OPENAI_API_URI=${{ secrets.OPENAI_API_URI }}
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            DEEPGRAM_API_URI=${{ secrets.DEEPGRAM_API_URI }}
+            DEEPGRAM_API_KEY=${{ secrets.DEEPGRAM_API_KEY }}
+            APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
+            APPLE_BUNDLE_ID=${{ secrets.APPLE_BUNDLE_ID }}
+            APPLE_PRIVATE_KEY_ID=${{ secrets.APPLE_PRIVATE_KEY_ID }}
+            APPLE_PRIVATE_KEY=${{ secrets.APPLE_PRIVATE_KEY }}
           tags: ${{ secrets.GHCR_LIFEPUZZLE_API }}:latest
 
       - name: SSH into Home Server and Restart Deployment
