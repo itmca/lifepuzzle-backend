@@ -51,9 +51,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./services/lifepuzzle-api/Dockerfile
           push: true
-          build-args: |
-            JAR_PATH=${{ env.artifact }}
           tags: ${{ secrets.GHCR_LIFEPUZZLE_API }}:latest
 
       - name: SSH into Home Server and Restart Deployment
