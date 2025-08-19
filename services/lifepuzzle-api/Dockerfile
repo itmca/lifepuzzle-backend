@@ -14,7 +14,18 @@ COPY services/lifepuzzle-api ./services/lifepuzzle-api
 # Make gradlew executable
 RUN chmod +x ./gradlew
 
-# Declare build arguments for environment variables
+# Build the application (skip tests for faster build)
+RUN ./gradlew services:lifepuzzle-api:bootJar -x test --no-daemon
+
+# Runtime stage
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Declare runtime arguments for environment variables
 ARG DB_PROD_URL
 ARG DB_PROD_USERNAME
 ARG DB_PROD_PASSWORD
@@ -38,7 +49,7 @@ ARG APPLE_BUNDLE_ID
 ARG APPLE_PRIVATE_KEY_ID
 ARG APPLE_PRIVATE_KEY
 
-# Set environment variables for build
+# Set runtime environment variables
 ENV DB_PROD_URL=$DB_PROD_URL
 ENV DB_PROD_USERNAME=$DB_PROD_USERNAME
 ENV DB_PROD_PASSWORD=$DB_PROD_PASSWORD
@@ -61,17 +72,6 @@ ENV APPLE_TEAM_ID=$APPLE_TEAM_ID
 ENV APPLE_BUNDLE_ID=$APPLE_BUNDLE_ID
 ENV APPLE_PRIVATE_KEY_ID=$APPLE_PRIVATE_KEY_ID
 ENV APPLE_PRIVATE_KEY=$APPLE_PRIVATE_KEY
-
-# Build the application (skip tests for faster build)
-RUN ./gradlew services:lifepuzzle-api:bootJar -x test --no-daemon
-
-# Runtime stage
-FROM eclipse-temurin:21-jre
-
-WORKDIR /app
-
-# Install curl for health checks
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
 RUN groupadd -g 1001 appgroup && \
