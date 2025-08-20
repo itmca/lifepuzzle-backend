@@ -65,6 +65,17 @@ jobs:
               --set secrets.awsAccessKey="${{ secrets.AWS_ACCESS_KEY }}" \
               --set secrets.awsSecretKey="${{ secrets.AWS_SECRET_KEY }}" \
               --set secrets.awsS3Bucket="${{ secrets.AWS_S3_BUCKET }}" \
+              --set env.DB_HOST="${{ secrets.DB_HOST }}" \
+              --set env.DB_PORT="${{ secrets.DB_PORT }}" \
+              --set env.DB_NAME="${{ secrets.DB_NAME }}" \
+              --set env.DB_USER="${{ secrets.DB_USER }}" \
+              --set env.RABBITMQ_HOST="${{ secrets.RABBITMQ_HOST }}" \
+              --set env.RABBITMQ_PORT="${{ secrets.RABBITMQ_PORT }}" \
+              --set env.RABBITMQ_USER="${{ secrets.RABBITMQ_USER }}" \
+              --set env.RABBITMQ_VHOST="${{ secrets.RABBITMQ_VHOST }}" \
+              --set env.AWS_REGION="${{ secrets.AWS_REGION }}" \
+              --set env.PORT="9000" \
+              --set env.QUEUE_NAME="image-resize-queue" \
               --set image.tag="latest" \
               --wait \
               --timeout=10m
