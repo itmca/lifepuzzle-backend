@@ -57,6 +57,12 @@ jobs:
             cd infra/helm
             /opt/homebrew/bin/kubectl config use-context prod-app
             
+            # Debug: Check image information
+            echo "=== DEBUG: Image Information ==="
+            echo "GHCR_IMAGE_RESIZER: ${{ secrets.GHCR_IMAGE_RESIZER }}"
+            echo "Expected full image: ${{ secrets.GHCR_IMAGE_RESIZER }}:latest"
+            echo "GitHub Actor: ${{ github.actor }}"
+            
             # Create or update GHCR pull secret
             /opt/homebrew/bin/kubectl create secret docker-registry ghcr-secret \
               --docker-server=ghcr.io \
@@ -64,6 +70,9 @@ jobs:
               --docker-password=${{ secrets.GITHUB_TOKEN }} \
               --namespace=lifepuzzle \
               --dry-run=client -o yaml | /opt/homebrew/bin/kubectl apply -f -
+            
+            # Debug: Check if secret was created
+            /opt/homebrew/bin/kubectl get secret ghcr-secret -n lifepuzzle -o yaml
             
             # Deploy image-resizer using Helm
             /opt/homebrew/bin/helm upgrade --install lifepuzzle-image-resizer ./lifepuzzle-image-resizer \
@@ -94,4 +103,17 @@ jobs:
               --timeout=10m
             
             echo "Deployment completed successfully!"
+            
+            # Debug: Check deployment and pod status
+            echo "=== DEBUG: Deployment Status ==="
+            /opt/homebrew/bin/kubectl get deployment -n lifepuzzle
             /opt/homebrew/bin/kubectl get pods -n lifepuzzle -l app.kubernetes.io/name=lifepuzzle-image-resizer
+            
+            echo "=== DEBUG: Pod Events ==="
+            /opt/homebrew/bin/kubectl get events -n lifepuzzle --sort-by='.lastTimestamp' | tail -10
+            
+            echo "=== DEBUG: Pod Description ==="
+            POD_NAME=$(/opt/homebrew/bin/kubectl get pods -n lifepuzzle -l app.kubernetes.io/name=lifepuzzle-image-resizer -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "no-pod")
+            if [ "$POD_NAME" != "no-pod" ]; then
+              /opt/homebrew/bin/kubectl describe pod $POD_NAME -n lifepuzzle
+            fi
