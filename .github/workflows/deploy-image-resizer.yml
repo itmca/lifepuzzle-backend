@@ -72,7 +72,7 @@ jobs:
               --set image.tag="latest" \
               --set image.pullPolicy="Always" \
               --set "imagePullSecrets[0].name=ghcr-secret" \
-              --set secrets.dbPassword="${{ secrets.MYSQL_PASSWORD }}" \
+              --set secrets.dbPassword="${{ secrets.DB_PROD_PASSWORD }}" \
               --set secrets.rabbitmqPassword="${{ secrets.RABBITMQ_PASSWORD }}" \
               --set secrets.awsAccessKey="${{ secrets.AWS_ACCESS_KEY }}" \
               --set secrets.awsSecretKey="${{ secrets.AWS_SECRET_KEY }}" \
