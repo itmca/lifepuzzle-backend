@@ -57,11 +57,23 @@ jobs:
             cd infra/helm
             /opt/homebrew/bin/kubectl config use-context prod-app
             
+            # Create or update GHCR pull secret
+            /opt/homebrew/bin/kubectl create secret docker-registry ghcr-secret \
+              --docker-server=ghcr.io \
+              --docker-username=${{ github.actor }} \
+              --docker-password=${{ secrets.GITHUB_TOKEN }} \
+              --namespace=lifepuzzle \
+              --dry-run=client -o yaml | /opt/homebrew/bin/kubectl apply -f -
+            
             # Deploy image-resizer using Helm
             /opt/homebrew/bin/helm upgrade --install lifepuzzle-image-resizer ./lifepuzzle-image-resizer \
               --namespace lifepuzzle \
               --create-namespace \
               --values ./lifepuzzle-image-resizer/values-prod.yaml \
+              --set image.repository="${{ secrets.GHCR_IMAGE_RESIZER }}" \
+              --set image.tag="latest" \
+              --set image.pullPolicy="Always" \
+              --set imagePullSecrets[0].name="ghcr-secret" \
               --set secrets.dbPassword="${{ secrets.MYSQL_PASSWORD }}" \
               --set secrets.rabbitmqPassword="${{ secrets.RABBITMQ_PASSWORD }}" \
               --set secrets.awsAccessKey="${{ secrets.AWS_ACCESS_KEY }}" \
@@ -78,7 +90,6 @@ jobs:
               --set env.AWS_REGION="${{ secrets.AWS_REGION }}" \
               --set env.PORT="9000" \
               --set env.QUEUE_NAME="image-resize-queue" \
-              --set image.tag="latest" \
               --wait \
               --timeout=10m
             
