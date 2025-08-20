@@ -73,7 +73,7 @@ jobs:
               --set image.repository="${{ secrets.GHCR_IMAGE_RESIZER }}" \
               --set image.tag="latest" \
               --set image.pullPolicy="Always" \
-              --set imagePullSecrets[0].name="ghcr-secret" \
+              --set "imagePullSecrets[0].name=ghcr-secret" \
               --set secrets.dbPassword="${{ secrets.MYSQL_PASSWORD }}" \
               --set secrets.rabbitmqPassword="${{ secrets.RABBITMQ_PASSWORD }}" \
               --set secrets.awsAccessKey="${{ secrets.AWS_ACCESS_KEY }}" \
