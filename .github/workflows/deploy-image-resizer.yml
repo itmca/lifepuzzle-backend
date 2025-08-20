@@ -52,7 +52,7 @@ jobs:
           port: ${{ secrets.HOME_SERVER_PORT }}
           script: |
             echo "Deploying image-resizer with Helm..."
-            cd ~/workspace/lifepuzzle-backend/infra/helm
+            cd ${{ secrets.HOME_SERVER_WORKSPACE_DIR }}/lifepuzzle-backend/infra/helm
             /opt/homebrew/bin/kubectl config use-context prod-app
             
             # Deploy image-resizer using Helm
