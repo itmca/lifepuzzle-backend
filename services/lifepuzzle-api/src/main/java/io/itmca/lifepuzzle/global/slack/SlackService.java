@@ -4,18 +4,34 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SlackService {
   private final SlackProperties slackProperties;
+  private final Environment environment;
 
   public void sendNoti(String format, Object... args) {
+    String[] activeProfiles = environment.getActiveProfiles();
+    boolean isLocalProfile = java.util.Arrays.asList(activeProfiles).contains("local");
+    boolean isTestProfile = java.util.Arrays.asList(activeProfiles).contains("test");
+    boolean isMacOS = System.getProperty("os.name").toLowerCase().contains("mac");
+    
+    if (isLocalProfile || isTestProfile || isMacOS) {
+      log.debug("Slack notification skipped - running in local, test profile: {} or Mac OS: {}",
+          isLocalProfile, isMacOS);
+      log.debug("Message that would have been sent: {}", String.format(format, args));
+      return;
+    }
+
     var message = String.format(format, args);
     var payload = Map.of(
         "text", message,
