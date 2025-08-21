@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -38,11 +39,18 @@ func Load() (*Config, error) {
 		rabbitmqUser := getEnv("RABBITMQ_USER", "guest")
 		rabbitmqPassword := getEnv("RABBITMQ_PASSWORD", "guest")
 		rabbitmqVHost := getEnv("RABBITMQ_VHOST", "")
+		
+		// Debug logging
+		fmt.Printf("RabbitMQ Config: Host=%s, Port=%s, User=%s, VHost=%s\n", 
+			rabbitmqHost, rabbitmqPort, rabbitmqUser, rabbitmqVHost)
+		
 		if rabbitmqVHost != "" && rabbitmqVHost != "/" {
 			rabbitmqURL = "amqp://" + rabbitmqUser + ":" + rabbitmqPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/" + rabbitmqVHost
 		} else {
 			rabbitmqURL = "amqp://" + rabbitmqUser + ":" + rabbitmqPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/"
 		}
+		
+		fmt.Printf("Generated RabbitMQ URL: %s\n", rabbitmqURL)
 	}
 
 	return &Config{
