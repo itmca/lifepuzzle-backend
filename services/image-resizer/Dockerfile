@@ -12,20 +12,22 @@ COPY services/image-resizer ./services/image-resizer
 WORKDIR /app/services/image-resizer
 
 RUN go mod download
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main .
+RUN chmod +x main
 
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates wget
 
-WORKDIR /root/
+WORKDIR /app
 
-# Create non-root user
+# Copy binary with execute permissions
+COPY --from=builder --chmod=755 /app/services/image-resizer/main ./main
+
+# Create non-root user and change ownership
 RUN addgroup -g 1001 -S appgroup && \
-    adduser -u 1001 -S appuser -G appgroup
-
-COPY --from=builder --chown=appuser:appgroup /app/services/image-resizer/main .
-RUN chmod +x main
+    adduser -u 1001 -S appuser -G appgroup && \
+    chown appuser:appgroup ./main
 
 # Switch to non-root user
 USER appuser
