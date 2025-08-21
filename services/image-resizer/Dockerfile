@@ -25,12 +25,13 @@ RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
 
 COPY --from=builder --chown=appuser:appgroup /app/services/image-resizer/main .
+RUN chmod +x main
 
 # Switch to non-root user
 USER appuser
 
 # Expose port
-EXPOSE 900
+EXPOSE 9000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
