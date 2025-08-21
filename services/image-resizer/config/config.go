@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -44,10 +45,14 @@ func Load() (*Config, error) {
 		fmt.Printf("RabbitMQ Config: Host=%s, Port=%s, User=%s, VHost=%s\n", 
 			rabbitmqHost, rabbitmqPort, rabbitmqUser, rabbitmqVHost)
 		
+		// URL encode credentials to handle special characters
+		encodedUser := url.QueryEscape(rabbitmqUser)
+		encodedPassword := url.QueryEscape(rabbitmqPassword)
+		
 		if rabbitmqVHost != "" && rabbitmqVHost != "/" {
-			rabbitmqURL = "amqp://" + rabbitmqUser + ":" + rabbitmqPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/" + rabbitmqVHost
+			rabbitmqURL = "amqp://" + encodedUser + ":" + encodedPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/" + rabbitmqVHost
 		} else {
-			rabbitmqURL = "amqp://" + rabbitmqUser + ":" + rabbitmqPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/"
+			rabbitmqURL = "amqp://" + encodedUser + ":" + encodedPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/"
 		}
 		
 		fmt.Printf("Generated RabbitMQ URL: %s\n", rabbitmqURL)
