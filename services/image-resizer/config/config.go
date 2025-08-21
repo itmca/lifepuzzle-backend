@@ -30,9 +30,24 @@ func Load() (*Config, error) {
 		databaseURL = dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName
 	}
 
+	// Build RabbitMQ URL from individual components if RABBITMQ_URL not provided
+	rabbitmqURL := getEnv("RABBITMQ_URL", "")
+	if rabbitmqURL == "" {
+		rabbitmqHost := getEnv("RABBITMQ_HOST", "localhost")
+		rabbitmqPort := getEnv("RABBITMQ_PORT", "5672")
+		rabbitmqUser := getEnv("RABBITMQ_USER", "guest")
+		rabbitmqPassword := getEnv("RABBITMQ_PASSWORD", "guest")
+		rabbitmqVHost := getEnv("RABBITMQ_VHOST", "")
+		if rabbitmqVHost != "" && rabbitmqVHost != "/" {
+			rabbitmqURL = "amqp://" + rabbitmqUser + ":" + rabbitmqPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/" + rabbitmqVHost
+		} else {
+			rabbitmqURL = "amqp://" + rabbitmqUser + ":" + rabbitmqPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/"
+		}
+	}
+
 	return &Config{
 		DatabaseURL:      databaseURL,
-		RabbitMQURL:      getEnv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/"),
+		RabbitMQURL:      rabbitmqURL,
 		AWSRegion:        getEnv("AWS_REGION", "us-east-1"),
 		S3Bucket:         getEnvWithFallback("S3_BUCKET", "AWS_S3_BUCKET", "lifepuzzle-images"),
 		AWSAccessKeyID:   getEnvWithFallback("AWS_ACCESS_KEY_ID", "AWS_ACCESS_KEY", ""),
