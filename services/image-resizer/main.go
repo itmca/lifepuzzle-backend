@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -42,6 +44,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to start consuming messages: %v", err)
 	}
+
+	// Start HTTP health check server
+	go startHealthServer()
 
 	log.Println("Image resizer service started. Waiting for messages...")
 
@@ -109,4 +114,21 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 
 	log.Printf("Successfully processed photo ID: %d", msg.ID)
 	return nil
+}
+
+func startHealthServer() {
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "OK")
+	})
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9000"
+	}
+
+	log.Printf("Health check server starting on port %s", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Printf("Health server error: %v", err)
+	}
 }
