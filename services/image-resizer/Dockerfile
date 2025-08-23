@@ -1,5 +1,8 @@
 FROM golang:1.24-alpine AS builder
 
+# Install build dependencies for WebP
+RUN apk add --no-cache gcc musl-dev libwebp-dev
+
 WORKDIR /app
 
 # Copy go workspace files
@@ -12,7 +15,7 @@ COPY services/image-resizer ./services/image-resizer
 WORKDIR /app/services/image-resizer
 
 RUN go mod download
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main .
+RUN CGO_ENABLED=1 GOOS=linux go build -a -ldflags '-linkmode external -extldflags "-static"' -o main .
 RUN chmod +x main
 
 FROM alpine:latest
