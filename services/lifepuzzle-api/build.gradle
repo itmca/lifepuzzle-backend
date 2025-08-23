@@ -47,6 +47,9 @@ dependencies {
 
     // AWS
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
+    
+    // Spring Cloud Stream RabbitMQ
+    implementation 'org.springframework.cloud:spring-cloud-starter-stream-rabbit:4.1.3'
 
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
