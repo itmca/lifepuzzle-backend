@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"strings"
 	"syscall"
 
 	"lifepuzzle-backend/services/image-resizer/config"
@@ -89,7 +91,14 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 
 	log.Printf("Missing sizes for photo ID %d: %v", msg.ID, missingSizes)
 
-	originalImage, err := s3Client.DownloadImage(photo.Url)
+	// Download original image as bytes to support WebP conversion
+	originalImageBytes, err := s3Client.DownloadImageBytes(photo.Url)
+	if err != nil {
+		return err
+	}
+
+	// Decode the original image using our custom decoder that supports WebP
+	originalImage, err := imageResizer.DecodeImage(originalImageBytes)
 	if err != nil {
 		return err
 	}
@@ -100,12 +109,41 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 		resizedImage := imageResizer.ResizeImage(originalImage, size)
 		resizedPath := imageResizer.GenerateResizedPath(photo.Url, size)
 
-		if err := s3Client.UploadImage(resizedPath, resizedImage); err != nil {
+		// Convert to WebP and upload as bytes
+		webpBytes, err := imageResizer.ConvertToWebP(resizedImage)
+		if err != nil {
+			return err
+		}
+
+		if err := s3Client.UploadImageBytes(resizedPath, webpBytes); err != nil {
 			return err
 		}
 
 		newSizes = append(newSizes, size)
-		log.Printf("Created resized image for photo ID %d at size %d", msg.ID, size)
+		log.Printf("Created resized WebP image for photo ID %d at size %d", msg.ID, size)
+	}
+
+	// Also convert the original image to WebP if it's not already WebP and larger than 1280px
+	originalBounds := originalImage.Bounds()
+	originalWidth := originalBounds.Dx()
+	originalHeight := originalBounds.Dy()
+
+	if (originalWidth > 1280 || originalHeight > 1280) && !strings.HasSuffix(strings.ToLower(photo.Url), ".webp") {
+		log.Printf("Converting original image to WebP for photo ID: %d", msg.ID)
+
+		processedBytes, err := imageResizer.ProcessImage(originalImageBytes)
+		if err != nil {
+			return err
+		}
+
+		// Generate WebP path for the original
+		webpPath := strings.TrimSuffix(photo.Url, filepath.Ext(photo.Url)) + ".webp"
+
+		if err := s3Client.UploadImageBytes(webpPath, processedBytes); err != nil {
+			return err
+		}
+
+		log.Printf("Converted original image to WebP: %s", webpPath)
 	}
 
 	if err := db.UpdateResizedSizes(msg.ID, newSizes); err != nil {

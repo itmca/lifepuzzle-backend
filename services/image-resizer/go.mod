@@ -10,4 +10,8 @@ require (
 	github.com/rabbitmq/amqp091-go v1.9.0
 )
 
-require github.com/jmespath/go-jmespath v0.4.0 // indirect
+require (
+	github.com/chai2010/webp v1.4.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	golang.org/x/image v0.30.0 // indirect
+)
