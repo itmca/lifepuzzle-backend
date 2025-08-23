@@ -3,6 +3,7 @@ package io.itmca.lifepuzzle.domain.gallery.service;
 import static io.itmca.lifepuzzle.domain.story.type.GalleryType.IMAGE;
 import static io.itmca.lifepuzzle.domain.story.type.GalleryType.VIDEO;
 
+import io.itmca.lifepuzzle.domain.gallery.event.PhotoUploadEventPublisher;
 import io.itmca.lifepuzzle.domain.gallery.repository.GalleryRepository;
 import io.itmca.lifepuzzle.domain.story.entity.Gallery;
 import io.itmca.lifepuzzle.domain.story.file.StoryImageFile;
@@ -27,6 +28,7 @@ public class GalleryWriteService {
   private final GalleryRepository galleryRepository;
   private final S3UploadService s3UploadService;
   private final GalleryAsyncService galleryAsyncService;
+  private final PhotoUploadEventPublisher photoUploadEventPublisher;
 
   @Transactional
   public void saveGallery(Long heroId, List<MultipartFile> gallery, AgeGroup ageGroup) {
@@ -42,6 +44,9 @@ public class GalleryWriteService {
     s3UploadService.upload(storyVideoFiles);
 
     galleryRepository.saveAllAndFlush(saveGalleryFiles);
+
+    // Publish photo upload events to RabbitMQ for image resizing
+    publishPhotoUploadEvents(saveGalleryFiles, heroId);
 
     galleryAsyncService.saveResizeGalleryAsync(
         getImageIdsWithStoryGallery(saveGalleryFiles, storyImageFiles));
@@ -69,6 +74,18 @@ public class GalleryWriteService {
     }
     s3UploadService.delete(gallery.getUrl());
     galleryRepository.delete(gallery);
+  }
+
+  private void publishPhotoUploadEvents(List<Gallery> galleries, Long heroId) {
+    galleries.stream()
+        .filter(Gallery::isImage) // Only publish events for images, not videos
+        .forEach(gallery -> {
+          photoUploadEventPublisher.publishPhotoUploadEvent(
+              gallery.getId(),
+              heroId,
+              gallery.getUrl()
+          );
+        });
   }
 
   public Optional<List<?>> test() {

@@ -3,3 +3,14 @@ spring:
     url: ${DB_LOCAL_URL}
     username: ${DB_LOCAL_USERNAME}
     password: ${DB_LOCAL_PASSWORD}
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      rabbit:
+        binder:
+          connection-name-prefix: lifepuzzle-api-local
+          admin-addresses: localhost:15672

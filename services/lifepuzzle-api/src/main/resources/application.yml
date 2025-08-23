@@ -27,6 +27,11 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
   cloud:
     aws:
       credentials:
@@ -42,6 +47,19 @@ spring:
     deepgram:
       credentials:
         acessKey: ${DEEPGRAM_ACCESS_KEY}
+    stream:
+      rabbit:
+        binder:
+          connection-name-prefix: lifepuzzle-api
+          admin-addresses: ${RABBITMQ_HOST:localhost}:${RABBITMQ_ADMIN_PORT:15672}
+        bindings:
+          photoUpload-out-0:
+            producer:
+              routing-key-expression: headers.routingKey
+      bindings:
+        photoUpload-out-0:
+          destination: photo.upload
+          content-type: application/json
 
 springdoc:
   packages-to-scan: io.itmca.lifepuzzle.domain
