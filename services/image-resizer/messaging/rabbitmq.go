@@ -15,12 +15,14 @@ type Message struct {
 }
 
 type RabbitMQConsumer struct {
-	connection *amqp.Connection
-	channel    *amqp.Channel
-	queue      amqp.Queue
+	connection   *amqp.Connection
+	channel      *amqp.Channel
+	queue        amqp.Queue
+	exchangeName string
+	routingKey   string
 }
 
-func NewRabbitMQConsumer(url, queueName string) (*RabbitMQConsumer, error) {
+func NewRabbitMQConsumer(url, queueName, exchangeName, routingKey string) (*RabbitMQConsumer, error) {
 	conn, err := amqp.Dial(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %w", err)
@@ -39,6 +41,23 @@ func NewRabbitMQConsumer(url, queueName string) (*RabbitMQConsumer, error) {
 		return nil, fmt.Errorf("failed to set QoS: %w", err)
 	}
 
+	// Declare exchange
+	err = ch.ExchangeDeclare(
+		exchangeName,
+		"topic", // type: topic exchange for routing key matching
+		true,    // durable
+		false,   // auto-deleted
+		false,   // internal
+		false,   // no-wait
+		nil,     // arguments
+	)
+	if err != nil {
+		ch.Close()
+		conn.Close()
+		return nil, fmt.Errorf("failed to declare exchange: %w", err)
+	}
+
+	// Declare queue
 	q, err := ch.QueueDeclare(
 		queueName,
 		true,  // durable
@@ -53,10 +72,26 @@ func NewRabbitMQConsumer(url, queueName string) (*RabbitMQConsumer, error) {
 		return nil, fmt.Errorf("failed to declare queue: %w", err)
 	}
 
+	// Bind queue to exchange with routing key
+	err = ch.QueueBind(
+		q.Name,       // queue name
+		routingKey,   // routing key
+		exchangeName, // exchange
+		false,
+		nil,
+	)
+	if err != nil {
+		ch.Close()
+		conn.Close()
+		return nil, fmt.Errorf("failed to bind queue: %w", err)
+	}
+
 	return &RabbitMQConsumer{
-		connection: conn,
-		channel:    ch,
-		queue:      q,
+		connection:   conn,
+		channel:      ch,
+		queue:        q,
+		exchangeName: exchangeName,
+		routingKey:   routingKey,
 	}, nil
 }
 

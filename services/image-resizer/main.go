@@ -34,7 +34,7 @@ func main() {
 		log.Fatalf("Failed to create S3 client: %v", err)
 	}
 
-	consumer, err := messaging.NewRabbitMQConsumer(cfg.RabbitMQURL, cfg.QueueName)
+	consumer, err := messaging.NewRabbitMQConsumer(cfg.RabbitMQURL, cfg.QueueName, cfg.ExchangeName, cfg.RoutingKey)
 	if err != nil {
 		log.Fatalf("Failed to create RabbitMQ consumer: %v", err)
 	}
