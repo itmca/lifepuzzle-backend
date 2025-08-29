@@ -187,14 +187,14 @@ public class Story {
 
   public void updateStoryInfo(StoryWriteRequest storyWriteRequest) {
     this.recQuestionId =
-        storyWriteRequest.getRecQuestionNo() == null ? -1 : storyWriteRequest.getRecQuestionNo();
+        storyWriteRequest.recQuestionNo() == null ? -1 : storyWriteRequest.recQuestionNo();
     this.isQuestionModified =
-        storyWriteRequest.getRecQuestionModified() == null ? false :
-            storyWriteRequest.getRecQuestionModified();
-    this.usedQuestion = storyWriteRequest.getHelpQuestionText();
-    this.date = storyWriteRequest.getDate();
-    this.title = storyWriteRequest.getTitle();
-    this.content = storyWriteRequest.getStoryText();
+        storyWriteRequest.recQuestionModified() == null ? false :
+            storyWriteRequest.recQuestionModified();
+    this.usedQuestion = storyWriteRequest.helpQuestionText();
+    this.date = storyWriteRequest.date();
+    this.title = storyWriteRequest.title();
+    this.content = storyWriteRequest.storyText();
   }
 
   public void update(StoryGalleryWriteRequest request) {

@@ -8,28 +8,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.itmca.lifepuzzle.domain.content.entity.Gallery;
 import io.itmca.lifepuzzle.domain.content.entity.StoryGallery;
 import io.itmca.lifepuzzle.domain.content.type.GalleryType;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
-@Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GalleryDto {
-  private Long id;
-  private int index;
-  private GalleryType type;
-  @Deprecated
-  private String url;
-  private String thumbnailUrl;
-  private String bigSizeUrl;
-  // 향후 N:M 관계를 고려하여 DB 테이블 설계되어 있지만 현재 정책은 1:N 관계이므로 단건만 응답
-  private StoryGalleryDto story;
-
+public record GalleryDto(
+    Long id,
+    int index,
+    GalleryType type,
+    @Deprecated
+    String url,
+    String thumbnailUrl,
+    String bigSizeUrl,
+    // 향후 N:M 관계를 고려하여 DB 테이블 설계되어 있지만 현재 정책은 1:N 관계이므로 단건만 응답
+    StoryGalleryDto story
+) {
   public static GalleryDto from(Gallery gallery, int index) {
     var storyDTO = gallery.getStoryMaps().stream()
         .map(StoryGallery::getStory)
@@ -37,14 +28,14 @@ public class GalleryDto {
         .findFirst()
         .orElse(null);
 
-    return GalleryDto.builder()
-        .id(gallery.getId())
-        .index(index)
-        .type(gallery.getGalleryType())
-        .url(gallery.getImageUrl(STORY_IMAGE_RESIZING_LIST_WIDTH))
-        .bigSizeUrl(gallery.getImageUrl(STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH))
-        .thumbnailUrl(gallery.getImageUrl(STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH))
-        .story(storyDTO)
-        .build();
+    return new GalleryDto(
+        gallery.getId(),
+        index,
+        gallery.getGalleryType(),
+        gallery.getImageUrl(STORY_IMAGE_RESIZING_LIST_WIDTH),
+        gallery.getImageUrl(STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH),
+        gallery.getImageUrl(STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH),
+        storyDTO
+    );
   }
 }

@@ -1,10 +1,13 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.request;
 
 import io.itmca.lifepuzzle.domain.content.type.LikeType;
-import lombok.Getter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@Getter
-public class LikeWriteRequest {
-  private String targetId;
-  private LikeType type;
-}
+public record LikeWriteRequest(
+    @NotBlank(message = "Target ID is required")
+    String targetId,
+    
+    @NotNull(message = "Like type is required")
+    LikeType type
+) {}

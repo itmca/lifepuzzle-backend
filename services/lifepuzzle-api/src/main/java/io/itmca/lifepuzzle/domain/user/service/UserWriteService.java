@@ -93,7 +93,7 @@ public class UserWriteService {
   }
 
   public User update(User user, UserUpdateRequest userUpdateRequest, MultipartFile photo) {
-    var isProfileImageUpdate = userUpdateRequest.isProfileImageUpdate();
+    var isProfileImageUpdate = userUpdateRequest.profileImageUpdate();
     if (isProfileImageUpdate) {
       if (photo == null) {
         s3UploadService.delete(
