@@ -5,10 +5,13 @@ import io.itmca.lifepuzzle.domain.content.endpoint.response.dto.StoryTagDto;
 import io.itmca.lifepuzzle.domain.content.entity.Story;
 import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
-import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder

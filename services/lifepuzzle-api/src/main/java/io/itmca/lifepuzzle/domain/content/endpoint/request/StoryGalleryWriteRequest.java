@@ -1,11 +1,10 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.request;
 
 import io.itmca.lifepuzzle.domain.content.entity.Story;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Getter;
 
 @Getter
 public class StoryGalleryWriteRequest {

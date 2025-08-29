@@ -1,12 +1,18 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.response.dto;
 
+import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_LIST_WIDTH;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.itmca.lifepuzzle.domain.content.entity.Gallery;
 import io.itmca.lifepuzzle.domain.content.entity.StoryGallery;
 import io.itmca.lifepuzzle.domain.content.type.GalleryType;
-import lombok.*;
-
-import static io.itmca.lifepuzzle.global.constants.FileConstant.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
