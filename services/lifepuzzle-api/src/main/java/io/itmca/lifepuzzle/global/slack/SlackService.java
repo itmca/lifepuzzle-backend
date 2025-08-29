@@ -23,11 +23,9 @@ public class SlackService {
     String[] activeProfiles = environment.getActiveProfiles();
     boolean isLocalProfile = java.util.Arrays.asList(activeProfiles).contains("local");
     boolean isTestProfile = java.util.Arrays.asList(activeProfiles).contains("test");
-    boolean isMacOS = System.getProperty("os.name").toLowerCase().contains("mac");
     
-    if (isLocalProfile || isTestProfile || isMacOS) {
-      log.debug("Slack notification skipped - running in local, test profile: {} or Mac OS: {}",
-          isLocalProfile, isMacOS);
+    if (isLocalProfile || isTestProfile) {
+      log.debug("Slack notification skipped - running in local, test profile");
       log.debug("Message that would have been sent: {}", String.format(format, args));
       return;
     }
