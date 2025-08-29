@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.hero.file;
+package io.itmca.lifepuzzle.global.file.domain;
 
 import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_IMAGE_RESIZING_LONG_SIDE;
 import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_IMAGE_RESIZING_SHORT_SIDE;

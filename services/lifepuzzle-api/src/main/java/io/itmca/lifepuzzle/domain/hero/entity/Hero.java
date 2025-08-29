@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.hero.entity;
 
-import io.itmca.lifepuzzle.domain.hero.file.HeroProfileImage;
+import io.itmca.lifepuzzle.global.file.domain.HeroProfileImage;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

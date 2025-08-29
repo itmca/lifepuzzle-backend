@@ -5,11 +5,11 @@ import static io.itmca.lifepuzzle.domain.content.type.GalleryType.VIDEO;
 
 import io.itmca.lifepuzzle.domain.content.entity.Gallery;
 import io.itmca.lifepuzzle.domain.content.event.PhotoUploadEventPublisher;
-import io.itmca.lifepuzzle.domain.content.file.StoryImageFile;
-import io.itmca.lifepuzzle.domain.content.file.StoryVideoFile;
 import io.itmca.lifepuzzle.domain.content.repository.GalleryRepository;
 import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
 import io.itmca.lifepuzzle.global.exception.GalleryItemNotFoundException;
+import io.itmca.lifepuzzle.global.file.domain.StoryImageFile;
+import io.itmca.lifepuzzle.global.file.domain.StoryVideoFile;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.util.ArrayList;
 import java.util.HashMap;

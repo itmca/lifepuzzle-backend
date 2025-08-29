@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.user.file;
+package io.itmca.lifepuzzle.global.file.domain;
 
 import static io.itmca.lifepuzzle.global.constants.FileConstant.USER_PROFILE_IMAGE_BASE_PATH_FORMAT;
 

@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.content.file;
+package io.itmca.lifepuzzle.global.file.domain;
 
 import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_VIDEO_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constants.FileConstant.VIDEO_RESIZING_HEIGHT;

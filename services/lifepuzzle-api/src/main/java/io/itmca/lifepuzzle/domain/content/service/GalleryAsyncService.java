@@ -5,10 +5,10 @@ import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESI
 import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH;
 
 import io.itmca.lifepuzzle.domain.content.entity.Gallery;
-import io.itmca.lifepuzzle.domain.content.file.StoryImageFile;
 import io.itmca.lifepuzzle.domain.content.repository.GalleryRepository;
 import io.itmca.lifepuzzle.global.exception.GalleryItemNotFoundException;
 import io.itmca.lifepuzzle.global.file.CustomFile;
+import io.itmca.lifepuzzle.global.file.domain.StoryImageFile;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.util.ArrayList;
 import java.util.Arrays;
