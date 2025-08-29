@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.sites;
+package io.itmca.lifepuzzle.global.link;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
