@@ -6,12 +6,12 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryGalleryWriteRequest;
 import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryWriteRequest;
-import io.itmca.lifepuzzle.domain.content.file.StoryFile;
-import io.itmca.lifepuzzle.domain.content.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.global.constants.ServerConstant;
 import io.itmca.lifepuzzle.global.file.CustomFile;
+import io.itmca.lifepuzzle.global.file.domain.StoryFile;
+import io.itmca.lifepuzzle.global.file.domain.StoryVoiceFile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

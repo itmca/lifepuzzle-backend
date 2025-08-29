@@ -5,11 +5,11 @@ import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_PROFILE_IMA
 
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
-import io.itmca.lifepuzzle.domain.hero.file.HeroProfileImage;
 import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.global.exception.HeroNotFoundException;
+import io.itmca.lifepuzzle.global.file.domain.HeroProfileImage;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

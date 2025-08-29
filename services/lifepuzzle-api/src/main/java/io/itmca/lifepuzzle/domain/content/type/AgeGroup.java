@@ -1,10 +1,11 @@
 package io.itmca.lifepuzzle.domain.content.type;
 
+import lombok.Getter;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.Getter;
 
 @Getter
 public enum AgeGroup {

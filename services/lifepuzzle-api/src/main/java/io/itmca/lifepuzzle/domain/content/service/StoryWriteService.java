@@ -1,25 +1,26 @@
 package io.itmca.lifepuzzle.domain.content.service;
 
-import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_BASE_PATH;
-import static java.io.File.separator;
-import static org.springframework.util.CollectionUtils.isEmpty;
-
 import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryGalleryWriteRequest;
 import io.itmca.lifepuzzle.domain.content.entity.Story;
 import io.itmca.lifepuzzle.domain.content.entity.StoryGallery;
-import io.itmca.lifepuzzle.domain.content.file.StoryFile;
-import io.itmca.lifepuzzle.domain.content.file.StoryVoiceFile;
 import io.itmca.lifepuzzle.domain.content.repository.StoryGalleryRepository;
 import io.itmca.lifepuzzle.domain.content.repository.StoryRepository;
 import io.itmca.lifepuzzle.global.exception.StoryNotFoundException;
 import io.itmca.lifepuzzle.global.file.CustomFile;
+import io.itmca.lifepuzzle.global.file.domain.StoryFile;
+import io.itmca.lifepuzzle.global.file.domain.StoryVoiceFile;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_BASE_PATH;
+import static java.io.File.separator;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @RequiredArgsConstructor

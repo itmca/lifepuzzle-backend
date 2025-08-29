@@ -4,7 +4,7 @@ import io.github.techgnious.IVCompressor;
 import io.github.techgnious.dto.IVSize;
 import io.github.techgnious.dto.ImageFormats;
 import io.github.techgnious.exception.ImageException;
-import io.itmca.lifepuzzle.global.model.FileDimension;
+import io.itmca.lifepuzzle.global.file.FileDimension;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
