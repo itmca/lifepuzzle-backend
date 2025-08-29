@@ -16,6 +16,8 @@ type Config struct {
 	AWSAccessKeyID   string
 	AWSSecretKey     string
 	QueueName        string
+	ExchangeName     string
+	RoutingKey       string
 }
 
 func Load() (*Config, error) {
@@ -50,7 +52,7 @@ func Load() (*Config, error) {
 		encodedPassword := url.QueryEscape(rabbitmqPassword)
 		
 		if rabbitmqVHost != "" && rabbitmqVHost != "/" {
-			rabbitmqURL = "amqp://" + encodedUser + ":" + encodedPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/" + rabbitmqVHost
+			rabbitmqURL = "amqp://" + encodedUser + ":" + encodedPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/" + url.QueryEscape(rabbitmqVHost)
 		} else {
 			rabbitmqURL = "amqp://" + encodedUser + ":" + encodedPassword + "@" + rabbitmqHost + ":" + rabbitmqPort + "/"
 		}
@@ -66,6 +68,8 @@ func Load() (*Config, error) {
 		AWSAccessKeyID:   getEnvWithFallback("AWS_ACCESS_KEY_ID", "AWS_ACCESS_KEY", ""),
 		AWSSecretKey:     getEnvWithFallback("AWS_SECRET_ACCESS_KEY", "AWS_SECRET_KEY", ""),
 		QueueName:        getEnv("QUEUE_NAME", "image-resize-queue"),
+		ExchangeName:     getEnv("EXCHANGE_NAME", "photo.upload"),
+		RoutingKey:       getEnv("ROUTING_KEY", "photo.resizing.request"),
 	}, nil
 }
 

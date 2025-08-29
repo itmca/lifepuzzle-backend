@@ -17,18 +17,17 @@ public class PhotoUploadEventPublisher {
   
   public void publishPhotoUploadEvent(Long photoId, Long heroId, String url) {
     try {
-      PhotoUploadEvent event = PhotoUploadEvent.of(photoId, heroId, url);
+      var payload = java.util.Map.of("id", photoId);
       
-      var message = MessageBuilder.withPayload(event)
+      var message = MessageBuilder.withPayload(payload)
           .setHeader("routingKey", ROUTING_KEY)
           .build();
           
       streamBridge.send(PHOTO_UPLOAD_OUT_BINDING, message);
       
-      log.info("Published photo upload event for photoId: {}, heroId: {}", photoId, heroId);
+      log.info("Published photo upload event for photoId: {}", photoId);
     } catch (Exception e) {
-      log.error("Failed to publish photo upload event for photoId: {}, heroId: {}", 
-                photoId, heroId, e);
+      log.error("Failed to publish photo upload event for photoId: {}", photoId, e);
       // Don't throw exception to avoid breaking the main photo upload flow
     }
   }
