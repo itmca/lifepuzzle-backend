@@ -49,7 +49,7 @@ public class StoryWriteEndpoint {
       @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyGalleryWriteRequest.toStory(heroId, authPayload.getUserId());
 
-    storyWriteService.create(story, storyGalleryWriteRequest.getGalleryIds(), voice);
+    storyWriteService.create(story, storyGalleryWriteRequest.galleryIds(), voice);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
@@ -62,7 +62,7 @@ public class StoryWriteEndpoint {
       @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyGalleryWriteRequest.toStory(authPayload.getUserId());
 
-    storyWriteService.create(story, storyGalleryWriteRequest.getGalleryIds(), voice);
+    storyWriteService.create(story, storyGalleryWriteRequest.galleryIds(), voice);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 

@@ -198,8 +198,8 @@ public class Story {
   }
 
   public void update(StoryGalleryWriteRequest request) {
-    this.date = request.getDate();
-    this.title = request.getTitle();
-    this.content = request.getContent();
+    this.date = request.date();
+    this.title = request.title();
+    this.content = request.content();
   }
 }
