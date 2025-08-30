@@ -39,7 +39,7 @@ public class CustomExceptionHandler {
 
   @ExceptionHandler(ServerExecutionFailException.class)
   public ResponseEntity<Void> handleServerExecutionFailException(ServerExecutionFailException e) {
-    log.info("Server execution fail exception occurred: {}", e.getMessage());
+    log.info("Server execution fail exception occurred", e);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
