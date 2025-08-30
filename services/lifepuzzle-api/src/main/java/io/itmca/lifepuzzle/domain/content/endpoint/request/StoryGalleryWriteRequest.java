@@ -6,15 +6,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
 
-@Getter
-public class StoryGalleryWriteRequest {
-  private String title;
-  private String content;
-  private LocalDate date;
-  // TODO: FE 전환 후 @HeroNo 주석 제거
-  // @HeroNo
-  private Long heroId;
-  private List<Long> galleryIds;
+/**
+ * Request DTO for creating a story with gallery images.
+ *
+ * @param heroId TODO: FE 전환 후 @HeroNo 주석 제거 @HeroNo
+ * @param title story title
+ * @param content story content  
+ * @param date story date
+ * @param galleryIds associated gallery IDs
+ */
+public record StoryGalleryWriteRequest(String title, String content, LocalDate date, Long heroId,
+                                       List<Long> galleryIds) {
 
   @Deprecated
   public Story toStory(Long heroId, Long userId) {

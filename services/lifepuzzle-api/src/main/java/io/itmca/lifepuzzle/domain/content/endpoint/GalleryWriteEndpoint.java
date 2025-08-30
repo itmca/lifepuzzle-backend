@@ -24,8 +24,9 @@ public class GalleryWriteEndpoint {
   public void saveGallery(
       @RequestPart List<MultipartFile> gallery,
       @RequestPart(value = "galleryInfo") GalleryWriteRequest galleryWriteRequest) {
-    galleryWriteService.saveGallery(galleryWriteRequest.getHeroId(),
-        gallery, galleryWriteRequest.getAgeGroup());
+    System.out.println("galleryWriteRequest: " + galleryWriteRequest);
+    galleryWriteService.saveGallery(galleryWriteRequest.heroId(),
+        gallery, galleryWriteRequest.ageGroup());
   }
 
   @DeleteMapping({"/v2/heroes/gallery/{galleryId}", // TODO: FE 전환 후 제거
