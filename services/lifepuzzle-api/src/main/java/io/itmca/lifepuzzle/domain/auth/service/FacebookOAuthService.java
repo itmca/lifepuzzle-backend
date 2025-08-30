@@ -4,13 +4,12 @@ import io.itmca.lifepuzzle.domain.auth.endpoint.response.FacebookTokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestClient;
 
 @Service
 @RequiredArgsConstructor
 public class FacebookOAuthService {
-  private final WebClient webClient;
+  private final RestClient restClient;
 
   @Value("${facebook.client-id}")
   private String clientId;
@@ -21,8 +20,8 @@ public class FacebookOAuthService {
 
   private static final String TOKEN_PATH = "/oauth/access_token";
 
-  public Mono<String> getAccessToken(String code) {
-    return webClient.get()
+  public String getAccessToken(String code) {
+    return restClient.get()
         .uri(uriBuilder -> uriBuilder
             .path(TOKEN_PATH)
             .queryParam("client_id", clientId)
@@ -31,8 +30,8 @@ public class FacebookOAuthService {
             .queryParam("code", code)
             .build())
         .retrieve()
-        .bodyToMono(FacebookTokenResponse.class)
-        .map(FacebookTokenResponse::getAccessToken);
+        .body(FacebookTokenResponse.class)
+        .accessToken();
   }
 }
 
