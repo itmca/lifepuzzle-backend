@@ -1,10 +1,12 @@
 package io.itmca.lifepuzzle.global.config;
 
+import io.itmca.lifepuzzle.global.interceptor.RequestLoggingInterceptor;
 import io.itmca.lifepuzzle.global.resolver.CurrentUserArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -12,9 +14,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
   private final CurrentUserArgumentResolver userArgumentResolver;
+  private final RequestLoggingInterceptor requestLoggingInterceptor;
 
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
     resolvers.add(userArgumentResolver);
+  }
+
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(requestLoggingInterceptor)
+        .addPathPatterns("/**")
+        .excludePathPatterns("/actuator/**", "/health", "/favicon.ico");
   }
 }
