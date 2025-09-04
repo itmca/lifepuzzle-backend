@@ -111,6 +111,7 @@ facebook:
   client-id: ${FACEBOOK_CLIENT_ID:}
   client-secret: ${FACEBOOK_CLIENT_SECRET:}
   redirect-uri: ${FACEBOOK_REDIRECT_URI:}
+
   authorization-grant-type: authorization_code
   scope:
     - user_photos

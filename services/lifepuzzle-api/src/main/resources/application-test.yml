@@ -82,3 +82,11 @@ logging:
   level:
     io.itmca.lifepuzzle: DEBUG
     org.springframework.security: DEBUG
+
+facebook:
+  client-id: test-id
+  client-secret: test-secret
+  redirect-uri: test-uri.com
+  authorization-grant-type: authorization_code
+  scope:
+    - user_photos
