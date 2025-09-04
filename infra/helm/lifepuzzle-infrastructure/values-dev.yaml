@@ -1,0 +1,47 @@
+# Development environment values
+# Extends the base values.yaml with development-specific configurations
+
+# Enable NodePort for external access during development
+mysql:
+  nodePort:
+    enabled: true
+    port: 30306
+  
+  # Smaller resource requirements for development
+  primary:
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+        cpu: 250m
+    
+    persistence:
+      size: 5Gi
+
+rabbitmq:
+  nodePort:
+    enabled: true
+    amqpPort: 30672
+    managerPort: 31672
+  
+  # Smaller resource requirements for development
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 250m
+  
+  persistence:
+    size: 2Gi
+  
+  # Disable clustering in development
+  clustering:
+    enabled: false
+  
+  # Enable metrics for development monitoring
+  metrics:
+    enabled: true

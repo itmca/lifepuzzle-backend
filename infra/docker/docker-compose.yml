@@ -1,0 +1,58 @@
+# Infrastructure only - MySQL and RabbitMQ
+# Use this for backend development when you want to run applications separately
+# Usage: docker-compose up -d
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: lifepuzzle-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: lifepuzzle
+      MYSQL_USER: lifepuzzle
+      MYSQL_PASSWORD: lifepuzzlepass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - lifepuzzle-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: lifepuzzle-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: lifepuzzle
+      RABBITMQ_DEFAULT_PASS: lifepuzzlepass
+      RABBITMQ_DEFAULT_VHOST: lifepuzzle
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672"  # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      - lifepuzzle-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mysql_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+
+networks:
+  lifepuzzle-network:
+    driver: bridge

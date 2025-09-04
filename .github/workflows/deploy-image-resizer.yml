@@ -1,0 +1,108 @@
+name: Deploy to Production (image-resizer)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    permissions: 
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Get current time
+        uses: josStorer/get-current-time@v2.1.2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./services/image-resizer/Dockerfile
+          push: true
+          tags: ${{ secrets.GHCR_IMAGE_RESIZER }}:latest
+
+      - name: SSH into Home Server and Deploy with Helm
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOME_SERVER_HOST }}
+          username: ${{ secrets.HOME_SERVER_USER }}
+          key: ${{ secrets.HOME_SERVER_SSH_KEY }}
+          port: ${{ secrets.HOME_SERVER_PORT }}
+          script: |
+            echo "Deploying image-resizer with Helm..."
+            cd ${{ secrets.HOME_SERVER_WORKSPACE_DIR }}/lifepuzzle-backend
+            git pull origin main
+            cd infra/helm
+            /opt/homebrew/bin/kubectl config use-context prod-app
+            
+            # Debug: Check image information
+            echo "=== DEBUG: Image Information ==="
+            echo "GHCR_IMAGE_RESIZER: ${{ secrets.GHCR_IMAGE_RESIZER }}"
+            echo "Expected full image: ${{ secrets.GHCR_IMAGE_RESIZER }}:latest"
+            echo "GitHub Actor: ${{ github.actor }}"
+            
+            # Deploy image-resizer using Helm
+            /opt/homebrew/bin/helm upgrade --install lifepuzzle-image-resizer ./lifepuzzle-image-resizer \
+              --namespace lifepuzzle \
+              --create-namespace \
+              --values ./lifepuzzle-image-resizer/values-prod.yaml \
+              --set image.repository="${{ secrets.GHCR_IMAGE_RESIZER }}" \
+              --set image.tag="latest" \
+              --set image.pullPolicy="Always" \
+              --set "imagePullSecrets[0].name=ghcr-secret" \
+              --set secrets.dbPassword="${{ secrets.DB_PROD_PASSWORD }}" \
+              --set secrets.rabbitmqPassword="${{ secrets.RABBITMQ_PASSWORD }}" \
+              --set secrets.awsAccessKey="${{ secrets.AWS_ACCESS_KEY }}" \
+              --set secrets.awsSecretKey="${{ secrets.AWS_SECRET_KEY }}" \
+              --set secrets.awsS3Bucket="${{ secrets.AWS_S3_BUCKET }}" \
+              --set env.DB_HOST="${{ secrets.DB_HOST }}" \
+              --set env.DB_PORT="${{ secrets.DB_PORT }}" \
+              --set env.DB_NAME="${{ secrets.DB_NAME }}" \
+              --set env.DB_USER="${{ secrets.DB_USER }}" \
+              --set env.RABBITMQ_HOST="${{ secrets.RABBITMQ_HOST }}" \
+              --set env.RABBITMQ_PORT="${{ secrets.RABBITMQ_PORT }}" \
+              --set env.RABBITMQ_USER="${{ secrets.RABBITMQ_USER }}" \
+              --set env.RABBITMQ_VHOST="${{ secrets.RABBITMQ_VHOST }}" \
+              --set env.AWS_REGION="${{ secrets.AWS_REGION }}" \
+              --set env.PORT="9000" \
+              --set env.QUEUE_NAME="image-resize-queue" \
+              --wait \
+              --timeout=10m
+            
+            echo "Deployment completed successfully!"
+            
+            # Debug: Check deployment and pod status
+            echo "=== DEBUG: Deployment Status ==="
+            /opt/homebrew/bin/kubectl get deployment -n lifepuzzle
+            /opt/homebrew/bin/kubectl get pods -n lifepuzzle -l app.kubernetes.io/name=lifepuzzle-image-resizer
+            
+            echo "=== DEBUG: Pod Events ==="
+            /opt/homebrew/bin/kubectl get events -n lifepuzzle --sort-by='.lastTimestamp' | tail -10
+            
+            echo "=== DEBUG: Pod Description ==="
+            POD_NAME=$(/opt/homebrew/bin/kubectl get pods -n lifepuzzle -l app.kubernetes.io/name=lifepuzzle-image-resizer -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "no-pod")
+            if [ "$POD_NAME" != "no-pod" ]; then
+              /opt/homebrew/bin/kubectl describe pod $POD_NAME -n lifepuzzle
+            fi

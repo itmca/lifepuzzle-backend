@@ -1,0 +1,128 @@
+# Production environment values
+# High availability and production-ready configurations
+
+global:
+  storageClass: "gp3"  # AWS EBS GP3 storage class for better performance
+
+mysql:
+  auth:
+    # Production passwords from environment variables
+    # Set these environment variables before deployment:
+    # export MYSQL_ROOT_PASSWORD="your-secure-root-password"
+    # export MYSQL_PASSWORD="your-secure-lifepuzzle-password"
+    rootPassword: "${MYSQL_ROOT_PASSWORD}"
+    password: "${MYSQL_PASSWORD}"
+  
+  # Production configuration for high performance
+  primary:
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 1
+      limits:
+        memory: 4Gi
+        cpu: 2
+    
+    persistence:
+      size: 100Gi
+      storageClass: "gp3"
+    
+    # Production MySQL configuration
+    configuration: |-
+      [mysqld]
+      default-time-zone='+09:00'
+      character-set-server=utf8mb4
+      collation-server=utf8mb4_unicode_ci
+      max_connections=500
+      innodb_buffer_pool_size=2G
+      innodb_log_file_size=256M
+      innodb_flush_log_at_trx_commit=1
+      innodb_flush_method=O_DIRECT
+      innodb_file_per_table=1
+      slow_query_log=1
+      slow_query_log_file=/var/log/mysql/mysql-slow.log
+      long_query_time=2
+      
+      [mysql]
+      default-character-set=utf8mb4
+      
+      [client]
+      default-character-set=utf8mb4
+  
+  # Disable NodePort for production
+  nodePort:
+    enabled: false
+
+rabbitmq:
+  auth:
+    # Production passwords from environment variables
+    # Set these environment variables before deployment:
+    # export RABBITMQ_PASSWORD="your-secure-rabbitmq-password"
+    # export RABBITMQ_ERLANG_COOKIE="your-secure-erlang-cookie"
+    password: "${RABBITMQ_PASSWORD}"
+    erlangCookie: "${RABBITMQ_ERLANG_COOKIE}"
+  
+  # Production resources
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1
+    limits:
+      memory: 4Gi
+      cpu: 2
+  
+  persistence:
+    size: 50Gi
+    storageClass: "gp3"
+  
+  # Production clustering configuration
+  clustering:
+    enabled: true
+    rebalance: true
+  
+  # Production RabbitMQ configuration
+  advancedConfiguration: |-
+    # Memory and disk limits for production
+    vm_memory_high_watermark.relative = 0.5
+    disk_free_limit.relative = 3.0
+    
+    # Queue configuration
+    queue_master_locator = min-masters
+    
+    # Performance tuning
+    heartbeat = 60
+    frame_max = 131072
+    channel_max = 2047
+    
+    # Management plugin
+    management.tcp.port = 15672
+    management.rates_mode = basic
+  
+  # Enable full monitoring in production
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+    prometheusRule:
+      enabled: true
+  
+  # Disable NodePort for production
+  nodePort:
+    enabled: false
+
+# Production monitoring and alerting
+monitoring:
+  enabled: true
+  namespace: monitoring
+
+# Backup configuration (requires external backup solution)
+backup:
+  mysql:
+    enabled: true
+    schedule: "0 2 * * *"  # Daily at 2 AM
+    retention: "30d"
+  
+  rabbitmq:
+    enabled: true
+    schedule: "0 3 * * *"  # Daily at 3 AM
+    retention: "30d"

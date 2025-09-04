@@ -25,8 +25,8 @@ public class SocialRegisterService {
   }
 
   public void registerAppleUser(AppleAuthRequest appleAuthRequest, String shareKey) {
-    var appleUserId = appleAuthRequest.getAppleUserId();
-    var email = appleAuthRequest.getEmail();
+    var appleUserId = appleAuthRequest.appleUserId();
+    var email = appleAuthRequest.email();
 
     var user = userWriteService.save(
         User.builder()

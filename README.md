@@ -1,5 +1,36 @@
 # lifepuzzle-backend
 
+## Quick Start
+
+### For Frontend Developers
+백엔드 서비스를 로컬에서 실행하여 프론트엔드 개발 및 테스트:
+
+```bash
+# 처음 한 번만 실행 (완전 자동화)
+./tools/scripts/setup-dev.sh
+
+# 이후 매일 사용
+./tools/scripts/start-full.sh    # 모든 백엔드 서비스 시작
+./tools/scripts/health.sh        # 서비스 상태 확인
+./tools/scripts/stop.sh          # 작업 완료 후 중지
+```
+
+**서비스 접근:**
+- API: http://localhost:8080
+- Image Resizer: http://localhost:9000
+- RabbitMQ Management: http://localhost:15672
+
+### For Backend Developers
+인프라만 실행하고 IDE에서 애플리케이션 개발:
+
+```bash
+./tools/scripts/start-infra.sh   # MySQL + RabbitMQ만 시작
+# IDE에서 애플리케이션 실행
+./tools/scripts/stop.sh          # 작업 완료 후 중지
+```
+
+> 📖 자세한 스크립트 사용법: [tools/scripts/README.md](./tools/scripts/README.md)
+
 ## Services
 
 This monorepo contains the following services:
@@ -22,10 +53,18 @@ lifepuzzle-backend/
 ├── shared/
 │   ├── java-common/             # Shared Java libraries
 │   └── go-common/               # Shared Go libraries
+├── infra/
+│   ├── docker/                  # Docker Compose configurations
+│   └── helm/                    # Kubernetes Helm charts
 └── tools/
     ├── checkstyle/              # Code style configuration
-    └── scripts/                 # Build and deployment scripts
+    └── scripts/                 # Development convenience scripts
 ```
+
+## Infrastructure
+
+- **[Docker Compose](./infra/README.md)** - Local development with MySQL and RabbitMQ
+- **[Kubernetes Helm Charts](./infra/helm/README.md)** - Production deployment
 
 ### Versioning [수정 필요]
 

@@ -1,0 +1,121 @@
+# Default values for lifepuzzle-image-resizer
+# This is a YAML-formatted file.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/itmca/lifepuzzle-image-resizer
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+
+service:
+  type: ClusterIP
+  port: 9000
+  targetPort: 9000
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Environment variables
+env:
+  # Database configuration
+  DB_HOST: "lifepuzzle-infra-mysql.lifepuzzle.svc.cluster.local"
+  DB_PORT: "3306"
+  DB_NAME: "lifepuzzle"
+  DB_USER: "lifepuzzle"
+  # DB_PASSWORD will be set via secret
+  
+  # RabbitMQ configuration
+  RABBITMQ_HOST: "lifepuzzle-infra-rabbitmq.lifepuzzle.svc.cluster.local"
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_USER: "lifepuzzle"
+  RABBITMQ_VHOST: "lifepuzzle"
+  # RABBITMQ_PASSWORD will be set via secret
+  
+  # Application configuration
+  PORT: "9000"
+  LOG_LEVEL: "info"
+  WORKER_COUNT: "4"
+  QUEUE_NAME: "image.resize"
+  
+  # AWS S3 configuration (will be set via secrets)
+  AWS_REGION: "us-west-2"
+
+# Secrets configuration
+secrets:
+  # Database password
+  dbPassword: ""
+  
+  # RabbitMQ password 
+  rabbitmqPassword: ""
+  
+  # AWS credentials
+  awsAccessKey: ""
+  awsSecretKey: ""
+  awsS3Bucket: ""
+
+# Health check configuration
+healthCheck:
+  enabled: true
+  path: /health
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+# Monitoring
+monitoring:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+  prometheusRule:
+    enabled: false

@@ -31,13 +31,13 @@ public class LoginService {
       tokens.addSocialToken(socialToken);
     }
 
-    var tokenQueryDTO = TokenQueryDto.builder()
-        .accessToken(tokens.getAccessToken())
-        .accessTokenExpireAt(tokens.getAccessTokenExpireAt())
-        .refreshToken(tokens.getRefreshToken())
-        .refreshTokenExpireAt(tokens.getRefreshTokenExpireAt())
-        .socialToken(tokens.getSocialToken())
-        .build();
+    var tokenQueryDTO = new TokenQueryDto(
+        tokens.getAccessToken(),
+        tokens.getAccessTokenExpireAt(),
+        tokens.getRefreshToken(),
+        tokens.getRefreshTokenExpireAt(),
+        tokens.getSocialToken()
+    );
 
     var userQueryDTO = UserQueryDto.builder()
         .userNo(user.getId())
@@ -45,11 +45,11 @@ public class LoginService {
         .userType(user.getUserType())
         .build();
 
-    return LoginResponse.builder()
-        .user(userQueryDTO)
-        .tokens(tokenQueryDTO)
-        .hero(HeroQueryDto.from(hero, user.getId()))
-        .isNewUser(isNewUser)
-        .build();
+    return new LoginResponse(
+        userQueryDTO,
+        tokenQueryDTO,
+        HeroQueryDto.from(hero, user.getId()),
+        isNewUser
+    );
   }
 }

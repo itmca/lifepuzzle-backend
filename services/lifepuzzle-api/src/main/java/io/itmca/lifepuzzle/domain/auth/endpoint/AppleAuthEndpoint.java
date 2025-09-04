@@ -36,7 +36,7 @@ public class AppleAuthEndpoint {
   public LoginResponse login(@RequestBody AppleAuthRequest appleAuthRequest) throws ParseException {
     log.info("Apple Body : {}", appleAuthRequest);
     verify(appleAuthRequest);
-    var shareKey = appleAuthRequest.getShareKey();
+    var shareKey = appleAuthRequest.shareKey();
     try {
       return tryAppleLogin(appleAuthRequest, shareKey);
     } catch (NotFoundException e) {
@@ -46,7 +46,7 @@ public class AppleAuthEndpoint {
 
   private LoginResponse tryAppleLogin(AppleAuthRequest appleAuthRequest, String shareKey)
       throws NotFoundException {
-    var appleUser = userQueryService.findByAppleId(appleAuthRequest.getAppleUserId());
+    var appleUser = userQueryService.findByAppleId(appleAuthRequest.appleUserId());
     var loginType = Login.builder()
         .user(appleUser)
         .build();
@@ -59,13 +59,13 @@ public class AppleAuthEndpoint {
   }
 
   private void verify(AppleAuthRequest appleAuthRequest) throws ParseException {
-    var sub = appleValidateService.parseToken(appleAuthRequest.getIdentityToken());
+    var sub = appleValidateService.parseToken(appleAuthRequest.identityToken());
   }
 
   private LoginResponse loginAfterRegistration(AppleAuthRequest appleAuthRequest, String shareKey) {
     socialRegisterService.registerAppleUser(appleAuthRequest, shareKey);
-    var newAppleUser = userQueryService.findByAppleId(appleAuthRequest.getAppleUserId());
-    var appleIdentityToken = appleAuthRequest.getIdentityToken();
+    var newAppleUser = userQueryService.findByAppleId(appleAuthRequest.appleUserId());
+    var appleIdentityToken = appleAuthRequest.identityToken();
 
     return loginService.getLoginResponse(
         Login.builder()

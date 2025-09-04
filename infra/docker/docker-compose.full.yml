@@ -1,0 +1,188 @@
+# Full application stack - Infrastructure + Applications
+# Use this for frontend development or full local testing
+# Usage: docker-compose -f docker-compose.full.yml up -d
+
+services:
+  # Infrastructure Services
+  mysql:
+    image: mysql:8.0
+    container_name: lifepuzzle-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: lifepuzzle
+      MYSQL_USER: lifepuzzle
+      MYSQL_PASSWORD: lifepuzzlepass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - lifepuzzle-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: lifepuzzle-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: lifepuzzle
+      RABBITMQ_DEFAULT_PASS: lifepuzzlepass
+      RABBITMQ_DEFAULT_VHOST: lifepuzzle
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672"  # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      - lifepuzzle-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Application Services
+  lifepuzzle-api:
+    build:
+      context: ../../
+      dockerfile: services/lifepuzzle-api/Dockerfile
+    container_name: lifepuzzle-api
+    env_file:
+      - .env
+    environment:
+      # Database configuration
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: lifepuzzle
+      DB_USER: lifepuzzle
+      DB_PASSWORD: lifepuzzlepass
+      
+      # Local database configuration for Spring application
+      DB_LOCAL_URL: ${DB_LOCAL_URL}
+      DB_LOCAL_USERNAME: ${DB_LOCAL_USERNAME}
+      DB_LOCAL_PASSWORD: ${DB_LOCAL_PASSWORD}
+      
+      # RabbitMQ configuration
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: lifepuzzle
+      RABBITMQ_PASSWORD: lifepuzzlepass
+      RABBITMQ_VHOST: lifepuzzle
+      
+      # Spring profiles
+      SPRING_PROFILES_ACTIVE: local
+      
+      # Server configuration
+      SERVER_PORT: 8080
+      
+      # Logging
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_IO_ITMCA_LIFEPUZZLE: DEBUG
+      
+      # Sentry configuration (optional for local development)
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      
+      # AWS S3 configuration
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+
+      # AI Services (optional for local development)
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      DEEPGRAM_API_KEY: ${DEEPGRAM_API_KEY:-}
+      
+      # Social Login (optional for local development)
+      APPLE_CLIENT_ID: ${APPLE_CLIENT_ID:-}
+      APPLE_KEY_ID: ${APPLE_KEY_ID:-}
+      APPLE_TEAM_ID: ${APPLE_TEAM_ID:-}
+      APPLE_PRIVATE_KEY: ${APPLE_PRIVATE_KEY:-}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID:-}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET:-}
+      
+      # Slack integration (optional for local development)
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-}
+      
+      # Email configuration (optional for local development)
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-noreply@lifepuzzle.com}
+    ports:
+      - "8080:8080"
+    networks:
+      - lifepuzzle-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/hc"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  image-resizer:
+    build:
+      context: ../../
+      dockerfile: services/image-resizer/Dockerfile
+    container_name: lifepuzzle-image-resizer
+    env_file:
+      - .env
+    environment:
+      # Database configuration
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: lifepuzzle
+      DB_USER: lifepuzzle
+      DB_PASSWORD: lifepuzzlepass
+      
+      # RabbitMQ configuration
+      RABBITMQ_URL: amqp://lifepuzzle:lifepuzzlepass@rabbitmq:5672/lifepuzzle
+      
+      # AWS S3 configuration (set these in .env file)
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      
+      # Application configuration
+      PORT: 9000
+      LOG_LEVEL: info
+    ports:
+      - "9000:9000"
+    networks:
+      - lifepuzzle-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  mysql_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+
+networks:
+  lifepuzzle-network:
+    driver: bridge

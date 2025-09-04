@@ -1,14 +1,18 @@
 package io.itmca.lifepuzzle.domain.auth.endpoint.request;
 
-import lombok.Getter;
-import lombok.ToString;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
-@Getter
-@ToString
-public class AppleAuthRequest {
-  private String appleUserId;
-  private String email;
-  private String identityToken;
-  private String nonce;
-  private String shareKey;
-}
+public record AppleAuthRequest(
+    @NotBlank(message = "Apple user ID is required")
+    String appleUserId,
+    
+    @Email(message = "Invalid email format")
+    String email,
+    
+    @NotBlank(message = "Identity token is required")
+    String identityToken,
+    
+    String nonce,
+    String shareKey
+) {}

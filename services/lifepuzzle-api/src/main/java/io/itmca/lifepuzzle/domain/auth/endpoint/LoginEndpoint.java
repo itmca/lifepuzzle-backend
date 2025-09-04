@@ -29,11 +29,11 @@ public class LoginEndpoint {
   @PostMapping({"/auth/login/email"})
   @Operation(summary = "일반 로그인")
   public LoginResponse login(@RequestBody LoginRequest loginRequest) {
-    var username = loginRequest.getUsername();
+    var username = loginRequest.username();
     var user = userQueryService.findByLoginId(username);
 
     var passwordVerification = PasswordVerification.builder()
-        .plainPassword(loginRequest.getPassword())
+        .plainPassword(loginRequest.password())
         .salt(user.getSalt())
         .hashedPassword(user.getPassword())
         .build();
@@ -42,7 +42,7 @@ public class LoginEndpoint {
       throw new PasswordMismatchException();
     }
 
-    var shareKey = loginRequest.getShareKey();
+    var shareKey = loginRequest.shareKey();
     if (StringUtil.notNullNorEmpty(shareKey)) {
       heroUserAuthWriteService.createByShareKey(user, shareKey);
     }

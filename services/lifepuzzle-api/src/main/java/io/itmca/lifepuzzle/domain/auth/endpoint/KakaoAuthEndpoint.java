@@ -35,7 +35,7 @@ public class KakaoAuthEndpoint {
   public LoginResponse login(@RequestHeader("kakao-access-token") String kakaoAccessToken,
                              @RequestBody KakaoAuthRequest kakaoAuthRequest) {
     var kakaoId = getKakaoId(kakaoAccessToken);
-    var shareKey = kakaoAuthRequest.getShareKey();
+    var shareKey = kakaoAuthRequest.shareKey();
     try {
       return tryKakaoLogin(kakaoId, shareKey);
     } catch (NotFoundException e) {

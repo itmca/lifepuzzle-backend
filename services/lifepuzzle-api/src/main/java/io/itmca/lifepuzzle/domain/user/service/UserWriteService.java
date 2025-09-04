@@ -9,12 +9,12 @@ import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import io.itmca.lifepuzzle.domain.user.entity.UserHeroShare;
-import io.itmca.lifepuzzle.domain.user.file.UserProfileImage;
 import io.itmca.lifepuzzle.domain.user.repository.UserHeroShareRepository;
 import io.itmca.lifepuzzle.domain.user.repository.UserRepository;
 import io.itmca.lifepuzzle.global.constants.ServerConstant;
 import io.itmca.lifepuzzle.global.exception.UserNotAccessibleToHeroException;
 import io.itmca.lifepuzzle.global.exception.UserNotShareHeroAuthException;
+import io.itmca.lifepuzzle.global.file.domain.UserProfileImage;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -93,7 +93,7 @@ public class UserWriteService {
   }
 
   public User update(User user, UserUpdateRequest userUpdateRequest, MultipartFile photo) {
-    var isProfileImageUpdate = userUpdateRequest.isProfileImageUpdate();
+    var isProfileImageUpdate = userUpdateRequest.profileImageUpdate();
     if (isProfileImageUpdate) {
       if (photo == null) {
         s3UploadService.delete(

@@ -63,6 +63,25 @@ func (s *S3Client) DownloadImage(key string) (image.Image, error) {
 	return img, nil
 }
 
+// DownloadImageBytes downloads image as raw bytes
+func (s *S3Client) DownloadImageBytes(key string) ([]byte, error) {
+	result, err := s.client.GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to download image from S3: %w", err)
+	}
+	defer result.Body.Close()
+
+	data, err := io.ReadAll(result.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read image data: %w", err)
+	}
+
+	return data, nil
+}
+
 func (s *S3Client) UploadImage(key string, img image.Image) error {
 	var buf bytes.Buffer
 	
@@ -95,12 +114,31 @@ func (s *S3Client) UploadImage(key string, img image.Image) error {
 	return nil
 }
 
+// UploadImageBytes uploads image bytes directly
+func (s *S3Client) UploadImageBytes(key string, data []byte) error {
+	ext := strings.ToLower(filepath.Ext(key))
+	
+	_, err := s.client.PutObject(&s3.PutObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(key),
+		Body:   bytes.NewReader(data),
+		ContentType: aws.String(s.getContentType(ext)),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to upload image to S3: %w", err)
+	}
+
+	return nil
+}
+
 func (s *S3Client) getContentType(ext string) string {
 	switch ext {
 	case ".jpg", ".jpeg":
 		return "image/jpeg"
 	case ".png":
 		return "image/png"
+	case ".webp":
+		return "image/webp"
 	default:
 		return "image/jpeg"
 	}
