@@ -10,7 +10,7 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
   @Bean
-  public RestClient restClient(RestClient.Builder builder) {
+  public RestClient facebookRestClient(RestClient.Builder builder) {
     return builder
         .baseUrl("https://graph.facebook.com/v23.0")
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
