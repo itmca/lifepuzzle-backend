@@ -7,6 +7,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
+	"log"
 	"path/filepath"
 	"strings"
 
@@ -22,6 +23,8 @@ type S3Client struct {
 }
 
 func NewS3Client(region, accessKeyID, secretKey, bucket string) (*S3Client, error) {
+	log.Printf("Initializing S3 client with region=%s, bucket=%s", region, bucket)
+	
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(region),
 		Credentials: credentials.NewStaticCredentials(
@@ -34,6 +37,7 @@ func NewS3Client(region, accessKeyID, secretKey, bucket string) (*S3Client, erro
 		return nil, fmt.Errorf("failed to create AWS session: %w", err)
 	}
 
+	log.Printf("S3 client successfully initialized for bucket: %s", bucket)
 	return &S3Client{
 		client: s3.New(sess),
 		bucket: bucket,
@@ -65,20 +69,25 @@ func (s *S3Client) DownloadImage(key string) (image.Image, error) {
 
 // DownloadImageBytes downloads image as raw bytes
 func (s *S3Client) DownloadImageBytes(key string) ([]byte, error) {
+	log.Printf("Downloading image from S3: bucket=%s, key=%s", s.bucket, key)
+	
 	result, err := s.client.GetObject(&s3.GetObjectInput{
 		Bucket: aws.String(s.bucket),
 		Key:    aws.String(key),
 	})
 	if err != nil {
+		log.Printf("Failed to download image from S3: bucket=%s, key=%s, error=%v", s.bucket, key, err)
 		return nil, fmt.Errorf("failed to download image from S3: %w", err)
 	}
 	defer result.Body.Close()
 
 	data, err := io.ReadAll(result.Body)
 	if err != nil {
+		log.Printf("Failed to read image data from S3: bucket=%s, key=%s, error=%v", s.bucket, key, err)
 		return nil, fmt.Errorf("failed to read image data: %w", err)
 	}
 
+	log.Printf("Successfully downloaded image from S3: bucket=%s, key=%s, size=%d bytes", s.bucket, key, len(data))
 	return data, nil
 }
 
@@ -116,6 +125,8 @@ func (s *S3Client) UploadImage(key string, img image.Image) error {
 
 // UploadImageBytes uploads image bytes directly
 func (s *S3Client) UploadImageBytes(key string, data []byte) error {
+	log.Printf("Uploading image to S3: bucket=%s, key=%s, size=%d bytes", s.bucket, key, len(data))
+	
 	ext := strings.ToLower(filepath.Ext(key))
 	
 	_, err := s.client.PutObject(&s3.PutObjectInput{
@@ -125,9 +136,11 @@ func (s *S3Client) UploadImageBytes(key string, data []byte) error {
 		ContentType: aws.String(s.getContentType(ext)),
 	})
 	if err != nil {
+		log.Printf("Failed to upload image to S3: bucket=%s, key=%s, error=%v", s.bucket, key, err)
 		return fmt.Errorf("failed to upload image to S3: %w", err)
 	}
 
+	log.Printf("Successfully uploaded image to S3: bucket=%s, key=%s", s.bucket, key)
 	return nil
 }
 
