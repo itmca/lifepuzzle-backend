@@ -175,7 +175,7 @@ func (r *RabbitMQConsumer) Consume() (<-chan Message, error) {
 					return d.Ack(false)
 				},
 				Nack: func() error {
-					return d.Nack(false, true) // requeue
+					return r.nackWithRetryCount(d, retryCount+1)
 				},
 				NackNoRequeue: func() error {
 					return d.Nack(false, false) // don't requeue
@@ -228,6 +228,41 @@ func (r *RabbitMQConsumer) sendToDLQ(d amqp.Delivery) error {
 	}
 	
 	// Acknowledge the original message after successfully sending to DLQ
+	return d.Ack(false)
+}
+
+func (r *RabbitMQConsumer) nackWithRetryCount(d amqp.Delivery, newRetryCount int) error {
+	// Create headers with updated retry count
+	headers := amqp.Table{}
+	if d.Headers != nil {
+		// Copy existing headers
+		for k, v := range d.Headers {
+			headers[k] = v
+		}
+	}
+	
+	// Update retry count
+	headers["x-retry-count"] = int32(newRetryCount)
+	
+	// Publish back to original queue with updated retry count
+	err := r.channel.Publish(
+		r.exchangeName, // exchange
+		r.routingKey,   // routing key
+		false,          // mandatory
+		false,          // immediate
+		amqp.Publishing{
+			ContentType:  d.ContentType,
+			Body:         d.Body,
+			Headers:      headers,
+			DeliveryMode: amqp.Persistent, // make it persistent
+		})
+	
+	if err != nil {
+		log.Printf("Failed to republish message with retry count: %v", err)
+		return err
+	}
+	
+	// Acknowledge the original message after successfully republishing
 	return d.Ack(false)
 }
 
