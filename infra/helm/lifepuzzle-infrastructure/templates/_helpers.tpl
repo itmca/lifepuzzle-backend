@@ -108,7 +108,7 @@ Common environment variables for RabbitMQ
   value: {{ include "lifepuzzle-infrastructure.rabbitmq.serviceName" . }}
 - name: RABBITMQ_PORT
   value: "5672"
-- name: RABBITMQ_USER
+- name: RABBITMQ_USERNAME
   value: {{ .Values.rabbitmq.auth.username }}
 - name: RABBITMQ_PASSWORD
   valueFrom:

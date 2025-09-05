@@ -58,8 +58,8 @@ spec:
               value: {{ .Values.env.RABBITMQ_HOST | quote }}
             - name: RABBITMQ_PORT
               value: {{ .Values.env.RABBITMQ_PORT | quote }}
-            - name: RABBITMQ_USER
-              value: {{ .Values.env.RABBITMQ_USER | quote }}
+            - name: RABBITMQ_USERNAME
+              value: {{ .Values.env.RABBITMQ_USERNAME | quote }}
             - name: RABBITMQ_VHOST
               value: {{ .Values.env.RABBITMQ_VHOST | quote }}
             - name: RABBITMQ_PASSWORD

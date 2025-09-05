@@ -72,7 +72,7 @@ services:
       # RabbitMQ configuration
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
-      RABBITMQ_USER: lifepuzzle
+      RABBITMQ_USERNAME: lifepuzzle
       RABBITMQ_PASSWORD: lifepuzzlepass
       RABBITMQ_VHOST: lifepuzzle
       

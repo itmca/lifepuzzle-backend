@@ -39,7 +39,7 @@ func Load() (*Config, error) {
 	if rabbitmqURL == "" {
 		rabbitmqHost := getEnv("RABBITMQ_HOST", "localhost")
 		rabbitmqPort := getEnv("RABBITMQ_PORT", "5672")
-		rabbitmqUser := getEnv("RABBITMQ_USER", "guest")
+		rabbitmqUser := getEnv("RABBITMQ_USERNAME", "guest")
 		rabbitmqPassword := getEnv("RABBITMQ_PASSWORD", "guest")
 		rabbitmqVHost := getEnv("RABBITMQ_VHOST", "")
 		
