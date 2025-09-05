@@ -266,7 +266,7 @@ DB_PASSWORD=lifepuzzlepass
 # RabbitMQ
 RABBITMQ_HOST=rabbitmq-service.lifepuzzle.svc.cluster.local  # or localhost for Docker
 RABBITMQ_PORT=5672
-RABBITMQ_USER=lifepuzzle
+RABBITMQ_USERNAME=lifepuzzle
 RABBITMQ_PASSWORD=lifepuzzlepass
 RABBITMQ_VHOST=lifepuzzle
 ```

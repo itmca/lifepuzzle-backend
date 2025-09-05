@@ -83,7 +83,7 @@ jobs:
               --set env.DB_USER="${{ secrets.DB_USER }}" \
               --set env.RABBITMQ_HOST="${{ secrets.RABBITMQ_HOST }}" \
               --set env.RABBITMQ_PORT="${{ secrets.RABBITMQ_PORT }}" \
-              --set env.RABBITMQ_USER="${{ secrets.RABBITMQ_USER }}" \
+              --set env.RABBITMQ_USERNAME="${{ secrets.RABBITMQ_USERNAME }}" \
               --set env.RABBITMQ_VHOST="${{ secrets.RABBITMQ_VHOST }}" \
               --set env.AWS_REGION="${{ secrets.AWS_REGION }}" \
               --set env.PORT="9000" \

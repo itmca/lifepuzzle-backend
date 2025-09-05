@@ -76,7 +76,7 @@ env:
   # RabbitMQ configuration
   RABBITMQ_HOST: "lifepuzzle-infra-rabbitmq.lifepuzzle.svc.cluster.local"
   RABBITMQ_PORT: "5672"
-  RABBITMQ_USER: "lifepuzzle"
+  RABBITMQ_USERNAME: "lifepuzzle"
   RABBITMQ_VHOST: "lifepuzzle"
   # RABBITMQ_PASSWORD will be set via secret
   

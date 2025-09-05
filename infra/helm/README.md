@@ -273,7 +273,7 @@ env:
     value: lifepuzzle-infra-rabbitmq.lifepuzzle.svc.cluster.local
   - name: RABBITMQ_PORT
     value: "5672"
-  - name: RABBITMQ_USER
+  - name: RABBITMQ_USERNAME
     value: lifepuzzle
   - name: RABBITMQ_PASSWORD
     valueFrom:
