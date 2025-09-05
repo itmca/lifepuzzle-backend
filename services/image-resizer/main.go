@@ -59,9 +59,26 @@ func main() {
 		select {
 		case msg := <-messages:
 			if err := processMessage(msg, db, s3Client, imageResizer); err != nil {
-				log.Printf("Failed to process message %d: %v", msg.ID, err)
-				if nackErr := msg.Nack(); nackErr != nil {
-					log.Printf("Failed to nack message %d: %v", msg.ID, nackErr)
+				log.Printf("Failed to process message %d (attempt %d): %v", msg.ID, msg.RetryCount+1, err)
+				
+				// Implement retry logic with exponential backoff
+				const maxRetries = 3
+				if msg.RetryCount >= maxRetries {
+					log.Printf("Message %d exceeded max retries (%d), sending to DLQ", msg.ID, maxRetries)
+					if dlqErr := msg.SendToDLQ(); dlqErr != nil {
+						log.Printf("Failed to send message %d to DLQ: %v", msg.ID, dlqErr)
+						// Fallback: nack without requeue to avoid infinite loops
+						if nackErr := msg.NackNoRequeue(); nackErr != nil {
+							log.Printf("Failed to nack message %d without requeue: %v", msg.ID, nackErr)
+						}
+					} else {
+						log.Printf("Message %d successfully sent to DLQ", msg.ID)
+					}
+				} else {
+					log.Printf("Requeuing message %d for retry (attempt %d/%d)", msg.ID, msg.RetryCount+1, maxRetries)
+					if nackErr := msg.Nack(); nackErr != nil {
+						log.Printf("Failed to nack message %d: %v", msg.ID, nackErr)
+					}
 				}
 			} else {
 				if ackErr := msg.Ack(); ackErr != nil {
