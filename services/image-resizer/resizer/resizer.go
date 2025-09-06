@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/adrium/goheif"
 	"github.com/chai2010/webp"
 	"github.com/nfnt/resize"
 	xwebp "golang.org/x/image/webp"
@@ -86,12 +87,20 @@ func (r *ImageResizer) ConvertToWebP(img image.Image) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// DecodeImage decodes an image from bytes, supporting JPEG, PNG, and WebP
+// DecodeImage decodes an image from bytes, supporting JPEG, PNG, WebP, and HEIC
 func (r *ImageResizer) DecodeImage(data []byte) (image.Image, error) {
 	reader := bytes.NewReader(data)
 	
 	// Try to decode as WebP first
 	if img, err := xwebp.Decode(reader); err == nil {
+		return img, nil
+	}
+	
+	// Reset reader
+	reader.Seek(0, 0)
+	
+	// Try to decode as HEIC/HEIF
+	if img, err := goheif.Decode(reader); err == nil {
 		return img, nil
 	}
 	
@@ -111,7 +120,7 @@ func (r *ImageResizer) DecodeImage(data []byte) (image.Image, error) {
 		return img, nil
 	}
 	
-	return nil, fmt.Errorf("unsupported image format")
+	return nil, fmt.Errorf("unsupported image format (supported: JPEG, PNG, WebP, HEIC)")
 }
 
 // ProcessImage converts image to WebP and resizes if necessary
