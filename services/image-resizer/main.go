@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 	"syscall"
 
@@ -130,11 +129,9 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 
 	newSizes := append([]int{}, photo.ResizedSizes...)
 
-	// Extract hero ID and photo ID from organized URL
-	heroId, photoId, err := extractIdsFromUrl(organizedUrl)
-	if err != nil {
-		return err
-	}
+	// Use hero ID and photo ID from database (no need to parse URL)
+	heroId := photo.HeroID  // Assuming this field exists in StoryPhoto
+	photoId := photo.ID
 
 	for _, size := range missingSizes {
 		resizedImage := imageResizer.ResizeImage(originalImage, size)
@@ -211,17 +208,14 @@ func startHealthServer() {
 // organizePhotoStructure moves photo to organized directory structure if not already organized
 func organizePhotoStructure(photo *database.StoryPhoto, s3Client *storage.S3Client) (string, error) {
 	// Check if photo is already in organized structure (hero/{heroId}/image/{photoId}/original/)
-	if isAlreadyOrganized(photo.Url, photo.ID) {
+	if isAlreadyOrganized(photo.Url, int64(photo.ID)) {
 		log.Printf("Photo %d is already organized: %s", photo.ID, photo.Url)
 		return photo.Url, nil
 	}
 
-	// Extract hero ID from current URL pattern: hero/{heroId}/image/{filename}
-	heroId, err := extractHeroIdFromCurrentUrl(photo.Url)
-	if err != nil {
-		return "", fmt.Errorf("failed to extract hero ID from URL %s: %w", photo.Url, err)
-	}
-
+	// Use hero ID from database instead of parsing URL
+	heroId := photo.HeroID
+	
 	// Generate new organized path: hero/{heroId}/image/{photoId}/original/{filename}
 	filename := filepath.Base(photo.Url)
 	newPath := fmt.Sprintf("hero/%d/image/%d/original/%s", heroId, photo.ID, filename)
@@ -254,41 +248,3 @@ func isAlreadyOrganized(url string, photoId int64) bool {
 	return matched
 }
 
-// extractHeroIdFromCurrentUrl extracts hero ID from current URL format: hero/{heroId}/image/{filename}
-func extractHeroIdFromCurrentUrl(url string) (int64, error) {
-	// Pattern: hero/{heroId}/image/{filename}
-	re := regexp.MustCompile(`hero/(\d+)/image/[^/]+$`)
-	matches := re.FindStringSubmatch(url)
-	if len(matches) != 2 {
-		return 0, fmt.Errorf("URL does not match expected pattern: %s", url)
-	}
-	
-	heroId, err := strconv.ParseInt(matches[1], 10, 64)
-	if err != nil {
-		return 0, fmt.Errorf("failed to parse hero ID: %w", err)
-	}
-	
-	return heroId, nil
-}
-
-// extractIdsFromUrl extracts hero ID and photo ID from organized URL
-func extractIdsFromUrl(url string) (int64, int64, error) {
-	// Pattern: hero/{heroId}/image/{photoId}/{size_or_original}/{filename}
-	re := regexp.MustCompile(`hero/(\d+)/image/(\d+)/(original|\d+)/[^/]+$`)
-	matches := re.FindStringSubmatch(url)
-	if len(matches) != 4 {
-		return 0, 0, fmt.Errorf("URL does not match organized pattern: %s", url)
-	}
-	
-	heroId, err := strconv.ParseInt(matches[1], 10, 64)
-	if err != nil {
-		return 0, 0, fmt.Errorf("failed to parse hero ID: %w", err)
-	}
-	
-	photoId, err := strconv.ParseInt(matches[2], 10, 64)
-	if err != nil {
-		return 0, 0, fmt.Errorf("failed to parse photo ID: %w", err)
-	}
-	
-	return heroId, photoId, nil
-}
