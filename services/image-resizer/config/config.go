@@ -64,7 +64,7 @@ func Load() (*Config, error) {
 		DatabaseURL:      databaseURL,
 		RabbitMQURL:      rabbitmqURL,
 		AWSRegion:        getEnv("AWS_REGION", "us-east-1"),
-		S3Bucket:         getEnvWithFallback("S3_BUCKET", "AWS_S3_BUCKET", "lifepuzzle-images"),
+		S3Bucket:         getEnvWithFallback("AWS_S3_BUCKET", "S3_BUCKET", "lifepuzzle-images"),
 		AWSAccessKeyID:   getEnvWithFallback("AWS_ACCESS_KEY_ID", "AWS_ACCESS_KEY", ""),
 		AWSSecretKey:     getEnvWithFallback("AWS_SECRET_ACCESS_KEY", "AWS_SECRET_KEY", ""),
 		QueueName:        getEnv("QUEUE_NAME", "image-resize-queue"),

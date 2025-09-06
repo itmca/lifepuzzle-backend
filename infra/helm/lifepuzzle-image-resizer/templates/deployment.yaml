@@ -91,11 +91,8 @@ spec:
                 secretKeyRef:
                   name: {{ include "lifepuzzle-image-resizer.fullname" . }}-secrets
                   key: aws-secret-key
-            - name: S3_BUCKET_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "lifepuzzle-image-resizer.fullname" . }}-secrets
-                  key: aws-s3-bucket
+            - name: AWS_S3_BUCKET
+              value: {{ .Values.env.AWS_S3_BUCKET | quote }}
           
           {{- if .Values.healthCheck.enabled }}
           livenessProbe:

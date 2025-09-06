@@ -86,8 +86,9 @@ env:
   WORKER_COUNT: "4"
   QUEUE_NAME: "image.resize"
   
-  # AWS S3 configuration (will be set via secrets)
+  # AWS S3 configuration
   AWS_REGION: "us-west-2"
+  AWS_S3_BUCKET: "lifepuzzle-images"  # default value, will be overridden by --set
 
 # Secrets configuration
 secrets:
