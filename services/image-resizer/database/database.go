@@ -10,6 +10,7 @@ import (
 
 type StoryPhoto struct {
 	ID           int    `json:"id"`
+	HeroID       int    `json:"hero_id"`
 	Url          string `json:"url"`
 	ResizedSizes []int  `json:"resized_sizes"`
 }
@@ -35,8 +36,8 @@ func (d *Database) GetStoryPhoto(id int) (*StoryPhoto, error) {
 	var photo StoryPhoto
 	var resizedSizesJSON []byte
 
-	query := `SELECT id, url, resized_sizes FROM story_photo WHERE id = ?`
-	err := d.db.QueryRow(query, id).Scan(&photo.ID, &photo.Url, &resizedSizesJSON)
+	query := `SELECT id, hero_id, url, resized_sizes FROM story_photo WHERE id = ?`
+	err := d.db.QueryRow(query, id).Scan(&photo.ID, &photo.HeroID, &photo.Url, &resizedSizesJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get story photo: %w", err)
 	}
