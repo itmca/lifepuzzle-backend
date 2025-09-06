@@ -12,9 +12,7 @@ import io.itmca.lifepuzzle.global.file.domain.StoryImageFile;
 import io.itmca.lifepuzzle.global.file.domain.StoryVideoFile;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class GalleryWriteService {
   private final GalleryRepository galleryRepository;
   private final S3UploadService s3UploadService;
-  private final GalleryAsyncService galleryAsyncService;
   private final PhotoUploadEventPublisher photoUploadEventPublisher;
 
   @Transactional
@@ -47,24 +44,8 @@ public class GalleryWriteService {
 
     // Publish photo upload events to RabbitMQ for image resizing
     publishPhotoUploadEvents(saveGalleryFiles, heroId);
-
-    galleryAsyncService.saveResizeGalleryAsync(
-        getImageIdsWithStoryGallery(saveGalleryFiles, storyImageFiles));
   }
 
-  private Map<Long, StoryImageFile> getImageIdsWithStoryGallery(
-      List<Gallery> saveGalleryFiles, List<StoryImageFile> storyImageFiles) {
-    Map<Long, StoryImageFile> storyImageFileMap = new HashMap<>();
-    for (StoryImageFile image : storyImageFiles) {
-      Optional<Gallery> targetGallery = saveGalleryFiles.stream().filter(
-          item -> item.isImage()
-              && item.getUrl().equals(image.getBase() + image.getFileName())
-      ).findFirst();
-
-      targetGallery.ifPresent(storyPhoto -> storyImageFileMap.put(storyPhoto.getId(), image));
-    }
-    return storyImageFileMap;
-  }
 
   @Transactional
   public void deleteGalleryItem(Long galleryId) {

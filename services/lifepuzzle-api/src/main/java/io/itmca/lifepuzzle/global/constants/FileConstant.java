@@ -13,9 +13,9 @@ public class FileConstant {
 
   public static final String HERO_PROFILE_IMAGE_BASE_PATH_FORMAT = "hero/profile/%s/image/";
   public static final String USER_PROFILE_IMAGE_BASE_PATH_FORMAT = "user/profile/%s/image/";
-  public static final String STORY_IMAGE_BASE_PATH_FORMAT = "hero/%s/image/original/";
-  public static final String STORY_VIDEO_BASE_PATH_FORMAT = "hero/%s/video/original/";
-  public static final String STORY_VOICE_BASE_PATH_FORMAT = "stories/%s/voice/original/";
+  public static final String STORY_IMAGE_BASE_PATH_FORMAT = "hero/%s/image/";
+  public static final String STORY_VIDEO_BASE_PATH_FORMAT = "hero/%s/video/";
+  public static final String STORY_VOICE_BASE_PATH_FORMAT = "stories/%s/voice/";
 
   public static final int VIDEO_RESIZING_WIDTH = 854;
   public static final int VIDEO_RESIZING_HEIGHT = 480;
