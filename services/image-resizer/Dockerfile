@@ -1,7 +1,7 @@
 FROM golang:1.24-alpine AS builder
 
-# Install build dependencies for WebP
-RUN apk add --no-cache gcc musl-dev libwebp-dev
+# Install build dependencies for WebP and HEIC
+RUN apk add --no-cache gcc g++ musl-dev libwebp-dev libheif-dev
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN chmod +x main
 
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates wget
+RUN apk --no-cache add ca-certificates wget libheif
 
 WORKDIR /app
 

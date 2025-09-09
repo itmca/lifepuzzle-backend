@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/adrium/goheif"
 	"github.com/chai2010/webp"
 	"github.com/nfnt/resize"
 	xwebp "golang.org/x/image/webp"
@@ -86,7 +87,7 @@ func (r *ImageResizer) ConvertToWebP(img image.Image) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// DecodeImage decodes an image from bytes, supporting JPEG, PNG, and WebP
+// DecodeImage decodes an image from bytes, supporting JPEG, PNG, WebP, and HEIC
 func (r *ImageResizer) DecodeImage(data []byte) (image.Image, error) {
 	reader := bytes.NewReader(data)
 	
@@ -111,7 +112,45 @@ func (r *ImageResizer) DecodeImage(data []byte) (image.Image, error) {
 		return img, nil
 	}
 	
+	// Try to decode as HEIC/HEIF last
+	if img, err := r.decodeHEIC(data); err == nil {
+		return img, nil
+	}
+	
 	return nil, fmt.Errorf("unsupported image format")
+}
+
+// decodeHEIC decodes HEIC/HEIF image format
+func (r *ImageResizer) decodeHEIC(data []byte) (image.Image, error) {
+	// Check if the data starts with HEIC/HEIF magic bytes
+	if len(data) < 12 {
+		return nil, fmt.Errorf("data too short for HEIC")
+	}
+	
+	// HEIC files start with specific byte patterns
+	// ftyp box at offset 4, followed by brand (heic, heix, heis, etc.)
+	if !bytes.Equal(data[4:8], []byte("ftyp")) {
+		return nil, fmt.Errorf("not a valid HEIC file")
+	}
+	
+	// Check for HEIC brand signatures
+	brand := data[8:12]
+	if !bytes.Equal(brand, []byte("heic")) && 
+	   !bytes.Equal(brand, []byte("heix")) && 
+	   !bytes.Equal(brand, []byte("heis")) &&
+	   !bytes.Equal(brand, []byte("hevm")) &&
+	   !bytes.Equal(brand, []byte("heim")) {
+		return nil, fmt.Errorf("not a supported HEIC brand")
+	}
+	
+	// Use goheif to decode HEIC image
+	reader := bytes.NewReader(data)
+	img, err := goheif.Decode(reader)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode HEIF image: %w", err)
+	}
+	
+	return img, nil
 }
 
 // ProcessImage converts image to WebP and resizes if necessary
