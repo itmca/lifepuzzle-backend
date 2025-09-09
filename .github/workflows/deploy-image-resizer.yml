@@ -41,7 +41,9 @@ jobs:
           context: .
           file: ./services/image-resizer/Dockerfile
           push: true
-          tags: ${{ secrets.GHCR_IMAGE_RESIZER }}:latest
+          tags: |
+            ${{ secrets.GHCR_IMAGE_RESIZER }}:latest
+            ${{ secrets.GHCR_IMAGE_RESIZER }}:${{ steps.current-time.outputs.formattedTime }}
 
       - name: SSH into Home Server and Deploy with Helm
         uses: appleboy/ssh-action@v1.0.3
@@ -60,18 +62,20 @@ jobs:
             # Debug: Check image information
             echo "=== DEBUG: Image Information ==="
             echo "GHCR_IMAGE_RESIZER: ${{ secrets.GHCR_IMAGE_RESIZER }}"
-            echo "Expected full image: ${{ secrets.GHCR_IMAGE_RESIZER }}:latest"
+            echo "Image tag with timestamp: ${{ steps.current-time.outputs.formattedTime }}"
+            echo "Expected full image: ${{ secrets.GHCR_IMAGE_RESIZER }}:${{ steps.current-time.outputs.formattedTime }}"
             echo "GitHub Actor: ${{ github.actor }}"
             
-            # Deploy image-resizer using Helm
+            # Deploy image-resizer using Helm with timestamp tag to force pod replacement
             /opt/homebrew/bin/helm upgrade --install lifepuzzle-image-resizer ./lifepuzzle-image-resizer \
               --namespace lifepuzzle \
               --create-namespace \
               --values ./lifepuzzle-image-resizer/values-prod.yaml \
               --set image.repository="${{ secrets.GHCR_IMAGE_RESIZER }}" \
-              --set image.tag="latest" \
+              --set image.tag="${{ steps.current-time.outputs.formattedTime }}" \
               --set image.pullPolicy="Always" \
               --set "imagePullSecrets[0].name=ghcr-secret" \
+              --set "podAnnotations.deployment\.timestamp=${{ steps.current-time.outputs.formattedTime }}" \
               --set secrets.dbPassword="${{ secrets.DB_PROD_PASSWORD }}" \
               --set secrets.rabbitmqPassword="${{ secrets.RABBITMQ_PASSWORD }}" \
               --set secrets.awsAccessKey="${{ secrets.AWS_ACCESS_KEY }}" \
