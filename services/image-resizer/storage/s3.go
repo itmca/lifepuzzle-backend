@@ -115,6 +115,7 @@ func (s *S3Client) UploadImage(key string, img image.Image) error {
 		Key:    aws.String(key),
 		Body:   bytes.NewReader(buf.Bytes()),
 		ContentType: aws.String(s.getContentType(ext)),
+		CacheControl: aws.String("public, max-age=31536000, immutable"),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to upload image to S3: %w", err)
@@ -134,6 +135,7 @@ func (s *S3Client) UploadImageBytes(key string, data []byte) error {
 		Key:    aws.String(key),
 		Body:   bytes.NewReader(data),
 		ContentType: aws.String(s.getContentType(ext)),
+		CacheControl: aws.String("public, max-age=31536000, immutable"),
 	})
 	if err != nil {
 		log.Printf("Failed to upload image to S3: bucket=%s, key=%s, error=%v", s.bucket, key, err)
