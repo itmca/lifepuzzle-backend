@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -18,14 +17,12 @@ type StoryPhoto struct {
 }
 
 type Gallery struct {
-	ID           int       `json:"id"`
-	HeroID       int       `json:"hero_id"`
-	Url          string    `json:"url"`
-	AgeGroup     string    `json:"age_group"`
-	GalleryType  string    `json:"gallery_type"`
-	ResizedSizes []int     `json:"resized_sizes"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID           int    `json:"id"`
+	HeroID       int    `json:"hero_id"`
+	Url          string `json:"url"`
+	AgeGroup     string `json:"age_group"`
+	GalleryType  string `json:"gallery_type"`
+	ResizedSizes []int  `json:"resized_sizes"`
 }
 
 func (g *Gallery) IsImage() bool {
@@ -132,7 +129,7 @@ func (d *Database) UpdateStoryPhotoUrl(id int, url string) error {
 func (d *Database) GetAllGalleries() ([]*Gallery, error) {
 	log.Printf("Fetching all galleries from database")
 	
-	query := `SELECT id, hero_id, url, age_group, type, resized_sizes, created_at, updated_at FROM story_photo ORDER BY id`
+	query := `SELECT id, hero_id, url, age_group, type, resized_sizes FROM story_photo ORDER BY id`
 	rows, err := d.db.Query(query)
 	if err != nil {
 		log.Printf("Failed to execute query for all galleries: %v", err)
@@ -146,7 +143,7 @@ func (d *Database) GetAllGalleries() ([]*Gallery, error) {
 		var resizedSizesJSON []byte
 		
 		err := rows.Scan(&gallery.ID, &gallery.HeroID, &gallery.Url, &gallery.AgeGroup, 
-			&gallery.GalleryType, &resizedSizesJSON, &gallery.CreatedAt, &gallery.UpdatedAt)
+			&gallery.GalleryType, &resizedSizesJSON)
 		if err != nil {
 			log.Printf("Failed to scan gallery row: %v", err)
 			return nil, fmt.Errorf("failed to scan gallery row: %w", err)
