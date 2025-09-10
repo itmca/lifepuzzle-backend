@@ -110,13 +110,12 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 	log.Printf("Missing sizes for photo ID %d: %v", msg.ID, missingSizes)
 
 	// Organize photo into proper directory structure if needed
-	organizedUrl, err := organizePhotoStructure(photo, s3Client)
-	if err != nil {
+	if err := organizePhotoStructure(photo, s3Client, db); err != nil {
 		return err
 	}
 
 	// Download original image as bytes to support WebP conversion
-	originalImageBytes, err := s3Client.DownloadImageBytes(organizedUrl)
+	originalImageBytes, err := s3Client.DownloadImageBytes(photo.Url)
 	if err != nil {
 		return err
 	}
@@ -137,10 +136,10 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 	originalBounds := originalImage.Bounds()
 	originalWidth := originalBounds.Dx()
 	originalHeight := originalBounds.Dy()
-	isOriginalWebP := strings.HasSuffix(strings.ToLower(organizedUrl), ".webp")
+	isOriginalWebP := strings.HasSuffix(strings.ToLower(photo.Url), ".webp")
 
 	for _, size := range missingSizes {
-		filename := filepath.Base(organizedUrl)
+		filename := filepath.Base(photo.Url)
 		webpFilename := strings.TrimSuffix(filename, filepath.Ext(filename)) + ".webp"
 		resizedPath := fmt.Sprintf("hero/%d/image/%d/%d/%s", heroId, photoId, size, webpFilename)
 
@@ -196,11 +195,11 @@ func startHealthServer() {
 }
 
 // organizePhotoStructure moves photo to organized directory structure if not already organized
-func organizePhotoStructure(photo *database.StoryPhoto, s3Client *storage.S3Client) (string, error) {
+func organizePhotoStructure(photo *database.StoryPhoto, s3Client *storage.S3Client, db *database.Database) error {
 	// Check if photo is already in organized structure (hero/{heroId}/image/{photoId}/original/)
 	if isAlreadyOrganized(photo.Url, int64(photo.ID)) {
 		log.Printf("Photo %d is already organized: %s", photo.ID, photo.Url)
-		return photo.Url, nil
+		return nil
 	}
 
 	// Use hero ID from database instead of parsing URL
@@ -215,19 +214,27 @@ func organizePhotoStructure(photo *database.StoryPhoto, s3Client *storage.S3Clie
 	// Download the image from old location
 	imageBytes, err := s3Client.DownloadImageBytes(photo.Url)
 	if err != nil {
-		return "", fmt.Errorf("failed to download image from old location %s: %w", photo.Url, err)
+		return fmt.Errorf("failed to download image from old location %s: %w", photo.Url, err)
 	}
 
 	// Upload to new location
 	if err := s3Client.UploadImageBytes(newPath, imageBytes); err != nil {
-		return "", fmt.Errorf("failed to upload image to new location %s: %w", newPath, err)
+		return fmt.Errorf("failed to upload image to new location %s: %w", newPath, err)
 	}
+
+	// Update photo URL in database
+	if err := db.UpdateStoryPhotoUrl(photo.ID, newPath); err != nil {
+		return fmt.Errorf("failed to update photo URL in database: %w", err)
+	}
+	
+	// Update local photo object for consistency
+	photo.Url = newPath
 
 	// Delete old location (optional, but recommended to avoid duplication)
 	// Note: We're not implementing delete here to be safe, but could be added later
 	log.Printf("Successfully organized photo %d to new location: %s", photo.ID, newPath)
 
-	return newPath, nil
+	return nil
 }
 
 // isAlreadyOrganized checks if photo URL follows the organized structure
