@@ -115,3 +115,7 @@ facebook:
   authorization-grant-type: authorization_code
   scope:
     - user_photos
+
+app:
+  s3:
+    server-host: ${S3_SERVER_HOST:}

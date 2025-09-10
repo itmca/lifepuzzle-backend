@@ -80,6 +80,7 @@ jobs:
             APPLE_BUNDLE_ID=${{ secrets.APPLE_BUNDLE_ID }}
             APPLE_PRIVATE_KEY_ID=${{ secrets.APPLE_PRIVATE_KEY_ID }}
             APPLE_PRIVATE_KEY=${{ secrets.APPLE_PRIVATE_KEY }}
+            S3_SERVER_HOST=${{ secrets.S3_SERVER_HOST }}
           tags: ${{ secrets.GHCR_LIFEPUZZLE_API }}:latest
 
       - name: SSH into Home Server and Restart Deployment
