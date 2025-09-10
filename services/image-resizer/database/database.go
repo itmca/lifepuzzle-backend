@@ -94,6 +94,24 @@ func (d *Database) UpdateResizedSizes(id int, resizedSizes []int) error {
 	return nil
 }
 
+func (d *Database) UpdateStoryPhotoUrl(id int, url string) error {
+	log.Printf("Updating URL for photo ID %d: %s", id, url)
+	
+	query := `UPDATE story_photo SET url = ? WHERE id = ?`
+	log.Printf("Executing SQL update: %s with parameters: [%s, %d]", query, url, id)
+	
+	result, err := d.db.Exec(query, url, id)
+	if err != nil {
+		log.Printf("Database update error for photo ID %d: %v", id, err)
+		return fmt.Errorf("failed to update photo URL: %w", err)
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	log.Printf("Successfully updated photo URL for ID %d, rows affected: %d", id, rowsAffected)
+
+	return nil
+}
+
 func (d *Database) Close() error {
 	return d.db.Close()
 }
