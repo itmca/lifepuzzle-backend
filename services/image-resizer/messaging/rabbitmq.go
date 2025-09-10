@@ -275,3 +275,87 @@ func (r *RabbitMQConsumer) Close() error {
 	}
 	return nil
 }
+
+// RabbitMQProducer for sending messages to queue
+type RabbitMQProducer struct {
+	connection   *amqp.Connection
+	channel      *amqp.Channel
+	exchangeName string
+	routingKey   string
+}
+
+func NewRabbitMQProducer(url, exchangeName, routingKey string) (*RabbitMQProducer, error) {
+	conn, err := amqp.Dial(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to RabbitMQ: %w", err)
+	}
+
+	ch, err := conn.Channel()
+	if err != nil {
+		conn.Close()
+		return nil, fmt.Errorf("failed to open channel: %w", err)
+	}
+
+	// Declare exchange
+	err = ch.ExchangeDeclare(
+		exchangeName,
+		"topic", // type: topic exchange for routing key matching
+		true,    // durable
+		false,   // auto-deleted
+		false,   // internal
+		false,   // no-wait
+		nil,     // arguments
+	)
+	if err != nil {
+		ch.Close()
+		conn.Close()
+		return nil, fmt.Errorf("failed to declare exchange: %w", err)
+	}
+
+	return &RabbitMQProducer{
+		connection:   conn,
+		channel:      ch,
+		exchangeName: exchangeName,
+		routingKey:   routingKey,
+	}, nil
+}
+
+func (p *RabbitMQProducer) SendMessage(photoID int) error {
+	messageData := map[string]interface{}{
+		"id": photoID,
+	}
+
+	body, err := json.Marshal(messageData)
+	if err != nil {
+		return fmt.Errorf("failed to marshal message: %w", err)
+	}
+
+	err = p.channel.Publish(
+		p.exchangeName, // exchange
+		p.routingKey,   // routing key
+		false,          // mandatory
+		false,          // immediate
+		amqp.Publishing{
+			ContentType:  "application/json",
+			Body:         body,
+			DeliveryMode: amqp.Persistent, // make it persistent
+		})
+	
+	if err != nil {
+		log.Printf("Failed to publish message for photo ID %d: %v", photoID, err)
+		return fmt.Errorf("failed to publish message: %w", err)
+	}
+
+	log.Printf("Successfully sent reprocessing message for photo ID: %d", photoID)
+	return nil
+}
+
+func (p *RabbitMQProducer) Close() error {
+	if p.channel != nil {
+		p.channel.Close()
+	}
+	if p.connection != nil {
+		p.connection.Close()
+	}
+	return nil
+}
