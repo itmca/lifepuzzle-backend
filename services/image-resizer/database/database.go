@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -14,6 +15,21 @@ type StoryPhoto struct {
 	HeroID       int    `json:"hero_id"`
 	Url          string `json:"url"`
 	ResizedSizes []int  `json:"resized_sizes"`
+}
+
+type Gallery struct {
+	ID           int       `json:"id"`
+	HeroID       int       `json:"hero_id"`
+	Url          string    `json:"url"`
+	AgeGroup     string    `json:"age_group"`
+	GalleryType  string    `json:"gallery_type"`
+	ResizedSizes []int     `json:"resized_sizes"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+func (g *Gallery) IsImage() bool {
+	return g.GalleryType == "IMAGE"
 }
 
 type Database struct {
@@ -110,6 +126,64 @@ func (d *Database) UpdateStoryPhotoUrl(id int, url string) error {
 	log.Printf("Successfully updated photo URL for ID %d, rows affected: %d", id, rowsAffected)
 
 	return nil
+}
+
+// Gallery related methods
+func (d *Database) GetAllGalleries() ([]*Gallery, error) {
+	log.Printf("Fetching all galleries from database")
+	
+	query := `SELECT id, hero_id, url, age_group, type, resized_sizes, created_at, updated_at FROM story_photo ORDER BY id`
+	rows, err := d.db.Query(query)
+	if err != nil {
+		log.Printf("Failed to execute query for all galleries: %v", err)
+		return nil, fmt.Errorf("failed to query galleries: %w", err)
+	}
+	defer rows.Close()
+
+	var galleries []*Gallery
+	for rows.Next() {
+		var gallery Gallery
+		var resizedSizesJSON []byte
+		
+		err := rows.Scan(&gallery.ID, &gallery.HeroID, &gallery.Url, &gallery.AgeGroup, 
+			&gallery.GalleryType, &resizedSizesJSON, &gallery.CreatedAt, &gallery.UpdatedAt)
+		if err != nil {
+			log.Printf("Failed to scan gallery row: %v", err)
+			return nil, fmt.Errorf("failed to scan gallery row: %w", err)
+		}
+
+		if len(resizedSizesJSON) > 0 {
+			if err := json.Unmarshal(resizedSizesJSON, &gallery.ResizedSizes); err != nil {
+				log.Printf("Failed to unmarshal resized sizes for gallery ID %d: %v", gallery.ID, err)
+				return nil, fmt.Errorf("failed to unmarshal resized sizes: %w", err)
+			}
+		}
+
+		galleries = append(galleries, &gallery)
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Printf("Error iterating gallery rows: %v", err)
+		return nil, fmt.Errorf("error iterating gallery rows: %w", err)
+	}
+
+	log.Printf("Successfully retrieved %d galleries", len(galleries))
+	return galleries, nil
+}
+
+func (d *Database) CountGalleries() (int64, error) {
+	log.Printf("Counting total galleries")
+	
+	var count int64
+	query := `SELECT COUNT(*) FROM story_photo`
+	err := d.db.QueryRow(query).Scan(&count)
+	if err != nil {
+		log.Printf("Failed to count galleries: %v", err)
+		return 0, fmt.Errorf("failed to count galleries: %w", err)
+	}
+
+	log.Printf("Total galleries count: %d", count)
+	return count, nil
 }
 
 func (d *Database) Close() error {
