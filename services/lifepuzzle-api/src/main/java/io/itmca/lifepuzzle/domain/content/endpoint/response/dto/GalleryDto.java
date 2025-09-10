@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.response.dto;
 
-import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_LIST_WIDTH;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_GENERAL_WIDTH;
 import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH;
 import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH;
 
@@ -32,7 +32,7 @@ public record GalleryDto(
         gallery.getId(),
         index,
         gallery.getGalleryType(),
-        gallery.getImageUrl(STORY_IMAGE_RESIZING_LIST_WIDTH),
+        gallery.getImageUrl(STORY_IMAGE_RESIZING_GENERAL_WIDTH),
         gallery.getImageUrl(STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH),
         gallery.getImageUrl(STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH),
         storyDTO
