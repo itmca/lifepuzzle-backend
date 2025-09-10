@@ -41,17 +41,21 @@ public class GalleryQueryService {
   }
 
   private List<Gallery> getFilteredGallery(HeroDto heroDTO) {
-    var photos = getGalleryByHeroId(heroDTO.getId());
     var heroAgeGroup = AgeGroup.of(heroDTO.getAge());
+    var allowedAgeGroups = getAgeGroupsUpTo(heroAgeGroup);
+    
+    return galleryRepository.findByHeroIdAndAgeGroupsWithStories(heroDTO.getId(), allowedAgeGroups)
+        .orElseThrow(() -> new GalleryNotFoundException(heroDTO.getId()));
+  }
 
-    return photos.stream()
-        .filter(photo -> photo.getAgeGroup().getRepresentativeAge()
-            <= heroAgeGroup.getRepresentativeAge())
+  private List<AgeGroup> getAgeGroupsUpTo(AgeGroup maxAgeGroup) {
+    return Arrays.stream(AgeGroup.values())
+        .filter(ageGroup -> ageGroup.getRepresentativeAge() <= maxAgeGroup.getRepresentativeAge())
         .toList();
   }
 
   private List<Gallery> getGalleryByHeroId(Long heroId) {
-    return galleryRepository.findByHeroId(heroId)
+    return galleryRepository.findByHeroIdWithStories(heroId)
         .orElseThrow(() -> new GalleryNotFoundException(heroId));
   }
 

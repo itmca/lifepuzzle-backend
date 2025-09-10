@@ -24,7 +24,7 @@ public class FileConstant {
 
   public static final int HERO_IMAGE_RESIZING_LONG_SIDE = 1080;
   public static final int HERO_IMAGE_RESIZING_SHORT_SIDE = 1080;
-  public static final int STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH = 400;
-  public static final int STORY_IMAGE_RESIZING_LIST_WIDTH = 600;
-  public static final int STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH = 1080;
+  public static final int STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH = 240;
+  public static final int STORY_IMAGE_RESIZING_GENERAL_WIDTH = 640;
+  public static final int STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH = 1280;
 }

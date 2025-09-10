@@ -91,6 +91,14 @@ public class Gallery {
         ? url.replace(ORIGINAL_BASE_PATH, String.valueOf(size))
         : url;
 
+    // Convert extension to webp for resized images
+    if (isExistResizedFile) {
+      var lastDotIndex = thumbnailFilePath.lastIndexOf('.');
+      if (lastDotIndex != -1) {
+        thumbnailFilePath = thumbnailFilePath.substring(0, lastDotIndex) + ".webp";
+      }
+    }
+
     return S3_SERVER_HOST + thumbnailFilePath;
   }
 
