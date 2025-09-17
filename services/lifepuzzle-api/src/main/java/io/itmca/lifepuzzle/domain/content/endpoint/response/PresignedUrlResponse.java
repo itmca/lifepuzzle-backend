@@ -1,3 +1,7 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.response;
 
-public record PresignedUrlResponse(String fileKey, String url) {}
+import io.itmca.lifepuzzle.domain.content.endpoint.response.dto.PresignedUrlDto;
+import java.util.List;
+
+public record PresignedUrlResponse(List<PresignedUrlDto> presignedUrls) {
+}

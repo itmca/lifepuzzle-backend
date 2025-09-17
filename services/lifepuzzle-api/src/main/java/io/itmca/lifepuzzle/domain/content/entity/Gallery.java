@@ -4,6 +4,7 @@ import static io.itmca.lifepuzzle.global.constants.FileConstant.ORIGINAL_BASE_PA
 import static io.itmca.lifepuzzle.global.constants.ServerConstant.S3_SERVER_HOST;
 
 import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
+import io.itmca.lifepuzzle.domain.content.type.GalleryStatus;
 import io.itmca.lifepuzzle.domain.content.type.GalleryType;
 import io.itmca.lifepuzzle.global.file.CustomFile;
 import io.itmca.lifepuzzle.global.jpa.converter.JsonListConverter;
@@ -55,12 +56,16 @@ public class Gallery {
   @Convert(converter = JsonListConverter.class)
   @Builder.Default
   private List<Integer> resizedSizes = new ArrayList<>();
+  @Column(name = "status", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private GalleryStatus galleryStatus;
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
   private LocalDateTime createdAt;
   @Column(nullable = false)
   @UpdateTimestamp
   private LocalDateTime updatedAt;
+
 
   @OneToMany(mappedBy = "photo", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<StoryGallery> storyMaps;
