@@ -2,17 +2,14 @@ package io.itmca.lifepuzzle.domain.ai.endpoint.response.dto;
 
 import io.itmca.lifepuzzle.domain.ai.entity.AiDrivingVideo;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
-public class AiDrivingVideoDto {
-  private final Long id;
-  private final String name;
-  private final String url;
-  private final String thumbnailUrl;
-  private final String description;
+public record AiDrivingVideoDto(
+    Long id,
+    String name,
+    String url,
+    String thumbnailUrl,
+    String description
+) {
   
   public static AiDrivingVideoDto from(AiDrivingVideo aiDrivingVideo) {
     return new AiDrivingVideoDto(
