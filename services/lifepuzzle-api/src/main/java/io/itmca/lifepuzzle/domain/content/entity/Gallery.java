@@ -28,6 +28,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.util.StringUtils;
@@ -44,6 +45,7 @@ public class Gallery {
   private Long id;
   @Column(nullable = false)
   private Long heroId;
+  @Setter
   @Column(nullable = false)
   private String url;
   @Column(nullable = false)
