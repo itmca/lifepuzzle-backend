@@ -58,6 +58,7 @@ public class Gallery {
   @Convert(converter = JsonListConverter.class)
   @Builder.Default
   private List<Integer> resizedSizes = new ArrayList<>();
+  @Setter
   @Column(name = "status", nullable = false)
   @Enumerated(EnumType.STRING)
   private GalleryStatus galleryStatus;
