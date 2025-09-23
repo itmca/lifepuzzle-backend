@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GalleryRepository extends JpaRepository<Gallery, Long> {
   Optional<List<Gallery>> findByHeroId(Long heroId);
+  
+  Optional<Gallery> findByUrl(String url);
 
   @Query("SELECT g FROM Gallery g "
          + "LEFT JOIN FETCH g.storyMaps sm "
