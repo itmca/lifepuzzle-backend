@@ -10,6 +10,9 @@ ALTER TABLE `story` DROP COLUMN `video_folder`;
 ALTER TABLE `story` DROP COLUMN `video_files`;
 
 -- Update user table columns
+-- First, set NULL values to FALSE for validated column
+UPDATE `user` SET `validated` = FALSE WHERE `validated` IS NULL;
+-- Then change column name and constraints
 ALTER TABLE `user` CHANGE COLUMN `validated` `email_validated` BOOLEAN NOT NULL DEFAULT FALSE COMMENT '이메일 검증 여부';
 ALTER TABLE `user` DROP COLUMN `email_notice`;
 ALTER TABLE `user` DROP COLUMN `phone_notice`;
