@@ -3,6 +3,14 @@ spring:
     active: prod
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      idle-timeout: 300000 # 5 minutes
+      max-lifetime: 1800000 # 30 minutes
+      connection-timeout: 20000 # 20 seconds
+      leak-detection-threshold: 60000 # 60 seconds
+      connection-test-query: SELECT 1
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
   #    hibernate:
