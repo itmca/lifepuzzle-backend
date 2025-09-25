@@ -15,11 +15,6 @@ MODIFY COLUMN `hashtag` VARCHAR(128) DEFAULT NULL COMMENT '해시태그'
 AFTER `date`;
 
 -- User table: Reorganize to group related columns
--- Move all OAuth/auth related columns together
-ALTER TABLE `user`
-MODIFY COLUMN `kakao_id` VARCHAR(64) DEFAULT NULL COMMENT 'kakao id'
-AFTER `apple_id`;
-
 -- Move image after nick_name (profile related columns together)
 ALTER TABLE `user`
 MODIFY COLUMN `image` VARCHAR(128) DEFAULT NULL COMMENT '프로필 이미지'
@@ -34,10 +29,3 @@ AFTER `birthday`;
 ALTER TABLE `user`
 MODIFY COLUMN `push_opt_in` BOOLEAN NOT NULL DEFAULT FALSE COMMENT '푸시 알림 수신 동의'
 AFTER `image`;
-
--- User_hero_share table: Move expired_at before created_at (logical time order)
-ALTER TABLE `user_hero_share`
-MODIFY COLUMN `expired_at` DATETIME DEFAULT NULL COMMENT '만료일자'
-AFTER `auth`,
-MODIFY COLUMN `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '생성일자'
-AFTER `expired_at`;
