@@ -2,7 +2,6 @@
 -- Consolidated from production database
 
 SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
 
 -- AI 드라이빙 비디오 테이블
 CREATE TABLE `ai_driving_video` (
@@ -140,4 +139,3 @@ CREATE TABLE `user_hero_share` (
   KEY `idx_user_hero_share_expired` (`expired_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='회원-주인공 공유';
 
-SET FOREIGN_KEY_CHECKS = 1;
