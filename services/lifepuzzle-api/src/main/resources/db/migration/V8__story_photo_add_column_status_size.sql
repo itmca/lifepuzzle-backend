@@ -1,2 +1,0 @@
-ALTER TABLE `story_photo`
-ADD COLUMN status VARCHAR(40) NOT NULL DEFAULT 'PENDING' COMMENT '사진 업로드 상태';
