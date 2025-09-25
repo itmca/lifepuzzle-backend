@@ -17,14 +17,14 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
-@Table(name = "gallery_story_map")
+@Table(name = "story_gallery")
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
-@IdClass(StoryGalleryMapId.class)
+@IdClass(StoryGalleryId.class)
 public class StoryGallery {
   @Id
   @Column(name = "story_id", nullable = false)
