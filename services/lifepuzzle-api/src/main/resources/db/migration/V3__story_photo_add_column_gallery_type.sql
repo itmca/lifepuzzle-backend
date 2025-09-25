@@ -1,1 +1,0 @@
-ALTER TABLE story_photo ADD COLUMN type VARCHAR(32) NOT NULL COMMENT '파일 타입';
