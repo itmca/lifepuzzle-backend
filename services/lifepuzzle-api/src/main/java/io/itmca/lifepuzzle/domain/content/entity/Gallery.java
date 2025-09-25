@@ -33,7 +33,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.util.StringUtils;
 
-@Table(name = "story_photo")
+@Table(name = "gallery")
 @Entity
 @Getter
 @Builder
@@ -70,7 +70,7 @@ public class Gallery {
   private LocalDateTime updatedAt;
 
 
-  @OneToMany(mappedBy = "photo", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "gallery", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<StoryGallery> storyMaps;
 
   public static List<Gallery> listFrom(List<? extends CustomFile> galleryFiles, Long heroId,

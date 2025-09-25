@@ -32,10 +32,6 @@ public class Hero {
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long heroNo;
-  @Nullable
-  private Long parentId;
-  @Nullable
-  private Long spouseId;
   @Setter
   private String name;
   @Setter
@@ -59,8 +55,6 @@ public class Hero {
   @UpdateTimestamp
   private LocalDateTime updatedAt;
 
-  @Column(name = "deleted", nullable = false)
-  private boolean isDeleted;
 
   @Column(name = "deleted_at")
   private LocalDateTime deletedAt;
@@ -88,7 +82,6 @@ public class Hero {
   }
 
   public void delete() {
-    this.isDeleted = true;
     this.deletedAt = LocalDateTime.now();
   }
 }

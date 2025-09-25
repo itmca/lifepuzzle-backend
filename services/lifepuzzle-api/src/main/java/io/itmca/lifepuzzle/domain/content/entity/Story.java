@@ -2,7 +2,6 @@ package io.itmca.lifepuzzle.domain.content.entity;
 
 import static io.itmca.lifepuzzle.global.constants.FileConstant.FILE_NAMES_SEPARATOR;
 import static java.util.stream.Collectors.joining;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryGalleryWriteRequest;
 import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryWriteRequest;
@@ -10,7 +9,6 @@ import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.global.constants.ServerConstant;
 import io.itmca.lifepuzzle.global.file.CustomFile;
-import io.itmca.lifepuzzle.global.file.domain.StoryFile;
 import io.itmca.lifepuzzle.global.file.domain.StoryVoiceFile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,12 +47,8 @@ public class Story {
   private boolean isQuestionModified;
   private String title;
   private String content;
-  private String imageFolder;
-  private String imageFiles;
   private String audioFolder;
   private String audioFiles;
-  private String videoFolder;
-  private String videoFiles;
   private String hashtag;
 
   @OneToMany(mappedBy = "story", orphanRemoval = true)
@@ -74,38 +68,6 @@ public class Story {
   private LocalDateTime updatedAt;
 
 
-  @Deprecated
-  public void addStoryFile(StoryFile storyFile) {
-    if (!isEmpty(storyFile.images())) {
-      var storyImages = storyFile.images();
-
-      this.imageFolder = storyImages.get(0).getBase();
-      this.imageFiles = getFiles(storyImages);
-    } else {
-      this.imageFolder = "";
-      this.imageFiles = "";
-    }
-
-    if (!isEmpty(storyFile.voices())) {
-      var storyVoices = storyFile.voices();
-
-      this.audioFolder = storyVoices.get(0).getBase();
-      this.audioFiles = getFiles(storyVoices);
-    } else {
-      this.audioFolder = "";
-      this.audioFiles = "";
-    }
-
-    if (!isEmpty(storyFile.videos())) {
-      var storyVideos = storyFile.videos();
-
-      this.videoFolder = storyVideos.get(0).getBase();
-      this.videoFiles = getFiles(storyVideos);
-    } else {
-      this.videoFolder = "";
-      this.videoFiles = "";
-    }
-  }
 
   public void setVoice(@Nullable MultipartFile voice) {
     if (voice != null) {
@@ -131,23 +93,6 @@ public class Story {
     return AgeGroup.of(age);
   }
 
-  public List<String> getImages() {
-    if (!StringUtils.hasText(imageFiles)) {
-      return Collections.emptyList();
-    }
-
-    return Arrays.stream(this.imageFiles.split("\\|\\|"))
-        .map(file -> ServerConstant.S3_SERVER_HOST + this.imageFolder + file)
-        .toList();
-  }
-
-  public List<String> getImageNames() {
-    if (!StringUtils.hasText(imageFiles)) {
-      return Collections.emptyList();
-    }
-
-    return Arrays.stream(this.imageFiles.split("\\|\\|")).toList();
-  }
 
   public List<String> getAudios() {
     if (!StringUtils.hasText(audioFiles)) {
@@ -167,23 +112,6 @@ public class Story {
     return Arrays.stream(this.audioFiles.split("\\|\\|")).toList();
   }
 
-  public List<String> getVideos() {
-    if (!StringUtils.hasText(videoFiles)) {
-      return Collections.emptyList();
-    }
-
-    return Arrays.stream(this.videoFiles.split("\\|\\|"))
-        .map(file -> ServerConstant.S3_SERVER_HOST + this.videoFolder + file)
-        .toList();
-  }
-
-  public List<String> getVideoNames() {
-    if (!StringUtils.hasText(videoFiles)) {
-      return Collections.emptyList();
-    }
-
-    return Arrays.stream(this.videoFiles.split("\\|\\|")).toList();
-  }
 
   public void updateStoryInfo(StoryWriteRequest storyWriteRequest) {
     this.recQuestionId =
