@@ -82,7 +82,6 @@ public class Hero {
   }
 
   public void delete() {
-    this.isDeleted = true;
     this.deletedAt = LocalDateTime.now();
   }
 }
