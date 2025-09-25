@@ -14,5 +14,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class StoryGalleryMapId implements Serializable {
   private String storyId;
-  private Long photoId;
+  private Long galleryId;
 }

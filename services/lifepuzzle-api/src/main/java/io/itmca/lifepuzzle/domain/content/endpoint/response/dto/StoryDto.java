@@ -4,6 +4,7 @@ import io.itmca.lifepuzzle.domain.content.entity.Story;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -35,8 +36,8 @@ public class StoryDto {
         .title(story.getTitle())
         .content(story.getContent())
         .question(story.getUsedQuestion())
-        .photos(story.getImages())
-        .videos(story.getVideos())
+        .photos(Collections.emptyList()) // TODO: Gallery 시스템으로 이관됨
+        .videos(Collections.emptyList()) // TODO: Gallery 시스템으로 이관됨
         .audios(story.getAudios())
         .tags(List.of(StoryTagDto.from(story.getTag(hero))))
         .likes(likeDTOs)

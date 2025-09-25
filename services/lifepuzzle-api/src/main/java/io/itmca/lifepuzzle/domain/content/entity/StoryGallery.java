@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
-@Table(name = "story_photo_map")
+@Table(name = "gallery_story_map")
 @Entity
 @Getter
 @Builder
@@ -30,16 +30,16 @@ public class StoryGallery {
   @Column(name = "story_id", nullable = false)
   private String storyId;
   @Id
-  @Column(name = "photo_id", nullable = false)
-  private Long photoId;
+  @Column(name = "gallery_id", nullable = false)
+  private Long galleryId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "story_id", referencedColumnName = "id", insertable = false, updatable = false)
   private Story story;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "photo_id", referencedColumnName = "id", insertable = false, updatable = false)
-  private Gallery photo;
+  @JoinColumn(name = "gallery_id", referencedColumnName = "id", insertable = false, updatable = false)
+  private Gallery gallery;
 
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
@@ -48,7 +48,7 @@ public class StoryGallery {
   public static StoryGallery create(Story story, Long galleryId) {
     return StoryGallery.builder()
         .storyId(story.getId())
-        .photoId(galleryId)
+        .galleryId(galleryId)
         .build();
   }
 }

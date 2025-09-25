@@ -66,7 +66,7 @@ public class StoryWriteService {
 
     uploadStoryFile(storyFile);
 
-    story.addStoryFile(storyFile);
+    // TODO: Gallery 시스템으로 이관됨 - 별도 구현 필요
   }
 
   private void saveStoryPhotoMaps(List<StoryGallery> storyGalleries) {
@@ -91,8 +91,7 @@ public class StoryWriteService {
 
   private void deleteStoryFile(Story story, StoryFile storyFile) {
     if (!isEmpty(storyFile.images())) {
-      var imageNames = getFileNamesToDelete(story.getImageNames(), storyFile.images());
-      s3UploadService.delete(story.getImageFolder(), imageNames);
+      // TODO: Gallery 시스템으로 이관됨 - 별도 구현 필요
     }
 
     if (!isEmpty(storyFile.voices())) {
@@ -101,8 +100,7 @@ public class StoryWriteService {
     }
 
     if (!isEmpty(storyFile.videos())) {
-      var videoNames = getFileNamesToDelete(story.getVideoNames(), storyFile.videos());
-      s3UploadService.delete(story.getVideoFolder(), videoNames);
+      // TODO: Gallery 시스템으로 이관됨 - 별도 구현 필요
     }
   }
 

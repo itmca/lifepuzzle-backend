@@ -41,21 +41,16 @@ public class User {
   private LocalDate birthday;
   @Column(name = "recent_hero")
   private Long recentHeroNo;
-  private Boolean validated;
+  @Column(name = "email_validated")
+  private Boolean emailValidated;
   @Column(name = "nick_name")
   private String nickName;
   @Column(name = "kakao_id")
   private String kakaoId;
   @Column(name = "apple_id")
   private String appleId;
-  @Column(name = "email_notice")
-  private Boolean emailNotice;
-  @Column(name = "phone_notice")
-  private Boolean phoneNotice;
-  @Column(name = "kakao_notice")
-  private Boolean kakaoNotice;
-  @Column(name = "inapp_notice")
-  private Boolean inappNotice;
+  @Column(name = "push_opt_in")
+  private Boolean pushOptIn;
   private String image;
 
   @OneToMany(mappedBy = "user")

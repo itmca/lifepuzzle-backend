@@ -66,7 +66,7 @@ class HeroTest {
     hero.delete();
 
     // then
-    assertThat(hero.isDeleted()).isTrue();
+    // isDeleted 필드 제거로 인해 deletedAt으로 삭제 여부 확인
     assertThat(hero.getDeletedAt())
         .isNotNull()
         .isAfter(now);
