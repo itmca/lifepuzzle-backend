@@ -134,7 +134,9 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 
 	// Apply EXIF orientation to fix rotation
 	orientation := imageResizer.GetOrientation(originalImageBytes)
+	log.Printf("Photo ID %d: Original image dimensions %dx%d, EXIF orientation: %d", msg.ID, originalImage.Bounds().Dx(), originalImage.Bounds().Dy(), orientation)
 	originalImage = imageResizer.ApplyOrientation(originalImage, orientation)
+	log.Printf("Photo ID %d: After orientation correction dimensions %dx%d", msg.ID, originalImage.Bounds().Dx(), originalImage.Bounds().Dy())
 
 	newSizes := append([]int{}, gallery.ResizedSizes...)
 
