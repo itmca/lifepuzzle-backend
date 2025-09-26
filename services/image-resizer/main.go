@@ -153,7 +153,7 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 	for _, size := range missingSizes {
 		filename := filepath.Base(gallery.Url)
 		webpFilename := strings.TrimSuffix(filename, filepath.Ext(filename)) + ".webp"
-		resizedPath := fmt.Sprintf("hero/%d/image/%d/%d/%s", heroId, photoId, size, webpFilename)
+		resizedPath := fmt.Sprintf("heroes/%d/images/%d/%d/%s", heroId, photoId, size, webpFilename)
 
 		// Special case for 1280: if original is WebP and smaller than 1280, use processed original (with orientation fix)
 		if size == 1280 && isOriginalWebP && originalWidth <= 1280 && originalHeight <= 1280 {
@@ -475,7 +475,7 @@ func startAdminServer(db *database.Database, cfg *config.Config) {
 
 // organizePhotoStructure moves photo to organized directory structure if not already organized
 func organizePhotoStructure(gallery *database.Gallery, s3Client *storage.S3Client, db *database.Database) error {
-	// Check if photo is already in organized structure (hero/{heroId}/image/{photoId}/original/)
+	// Check if photo is already in organized structure (heroes/{heroId}/images/{photoId}/original/)
 	if isAlreadyOrganized(gallery.Url, int64(gallery.ID)) {
 		log.Printf("Gallery %d is already organized: %s", gallery.ID, gallery.Url)
 		return nil
@@ -483,10 +483,10 @@ func organizePhotoStructure(gallery *database.Gallery, s3Client *storage.S3Clien
 
 	// Use hero ID from database instead of parsing URL
 	heroId := gallery.HeroID
-	
-	// Generate new organized path: hero/{heroId}/image/{photoId}/original/{filename}
+
+	// Generate new organized path: heroes/{heroId}/images/{photoId}/original/{filename}
 	filename := filepath.Base(gallery.Url)
-	newPath := fmt.Sprintf("hero/%d/image/%d/original/%s", heroId, gallery.ID, filename)
+	newPath := fmt.Sprintf("heroes/%d/images/%d/original/%s", heroId, gallery.ID, filename)
 
 	log.Printf("Moving gallery %d from %s to %s", gallery.ID, gallery.Url, newPath)
 
@@ -518,9 +518,14 @@ func organizePhotoStructure(gallery *database.Gallery, s3Client *storage.S3Clien
 
 // isAlreadyOrganized checks if photo URL follows the organized structure
 func isAlreadyOrganized(url string, photoId int64) bool {
-	// Pattern: hero/{heroId}/image/{photoId}/original/{filename} or hero/{heroId}/image/{photoId}/{size}/{filename}
-	pattern := fmt.Sprintf(`hero/\d+/image/%d/(original|\d+)/[^/]+$`, photoId)
-	matched, _ := regexp.MatchString(pattern, url)
-	return matched
+	// Pattern: heroes/{heroId}/images/{photoId}/original/{filename} or heroes/{heroId}/images/{photoId}/{size}/{filename}
+	// Also support legacy pattern: hero/{heroId}/image/{photoId}/(original|{size})/{filename}
+	newPattern := fmt.Sprintf(`heroes/\d+/images/%d/(original|\d+)/[^/]+$`, photoId)
+	legacyPattern := fmt.Sprintf(`hero/\d+/image/%d/(original|\d+)/[^/]+$`, photoId)
+
+	newMatched, _ := regexp.MatchString(newPattern, url)
+	legacyMatched, _ := regexp.MatchString(legacyPattern, url)
+
+	return newMatched || legacyMatched
 }
 
