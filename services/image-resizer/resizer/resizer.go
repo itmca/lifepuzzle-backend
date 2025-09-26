@@ -154,8 +154,8 @@ func (r *ImageResizer) decodeHEIC(data []byte) (image.Image, error) {
 	return img, nil
 }
 
-// getOrientation extracts EXIF orientation from image data
-func (r *ImageResizer) getOrientation(data []byte) int {
+// GetOrientation extracts EXIF orientation from image data
+func (r *ImageResizer) GetOrientation(data []byte) int {
 	reader := bytes.NewReader(data)
 
 	// Try to decode EXIF data
@@ -178,8 +178,8 @@ func (r *ImageResizer) getOrientation(data []byte) int {
 	return orientation
 }
 
-// applyOrientation applies EXIF orientation to fix image rotation
-func (r *ImageResizer) applyOrientation(img image.Image, orientation int) image.Image {
+// ApplyOrientation applies EXIF orientation to fix image rotation
+func (r *ImageResizer) ApplyOrientation(img image.Image, orientation int) image.Image {
 	switch orientation {
 	case 1:
 		// Normal - no transformation needed
@@ -300,8 +300,8 @@ func (r *ImageResizer) ProcessImage(data []byte) ([]byte, error) {
 	}
 
 	// Apply EXIF orientation to fix rotation
-	orientation := r.getOrientation(data)
-	img = r.applyOrientation(img, orientation)
+	orientation := r.GetOrientation(data)
+	img = r.ApplyOrientation(img, orientation)
 
 	// Check if image needs resizing (larger than 1280px)
 	bounds := img.Bounds()
