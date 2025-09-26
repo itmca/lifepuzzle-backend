@@ -462,6 +462,162 @@ func startAdminServer(db *database.Database, cfg *config.Config) {
 		json.NewEncoder(w).Encode(result)
 	})
 
+	// Migration status endpoint
+	adminMux.HandleFunc("/admin/path-migration/status", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		galleries, err := db.GetAllGalleries()
+		if err != nil {
+			log.Printf("Failed to get galleries: %v", err)
+			http.Error(w, "Failed to get galleries", http.StatusInternalServerError)
+			return
+		}
+
+		totalImages := 0
+		pluralImages := 0
+		singularImages := 0
+		unorganizedImages := 0
+
+		for _, gallery := range galleries {
+			if gallery.IsImage() {
+				totalImages++
+				if isInPluralOrganizedStructure(gallery.Url, int64(gallery.ID)) {
+					pluralImages++
+				} else if isInSingularOrganizedStructure(gallery.Url, int64(gallery.ID)) {
+					singularImages++
+				} else {
+					unorganizedImages++
+				}
+			}
+		}
+
+		status := map[string]interface{}{
+			"timestamp":        time.Now(),
+			"totalImages":      totalImages,
+			"pluralImages":     pluralImages,
+			"singularImages":   singularImages,
+			"unorganizedImages": unorganizedImages,
+			"migrationNeeded":  singularImages + unorganizedImages,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(status)
+	})
+
+	// Migrate singular paths to plural paths endpoint
+	adminMux.HandleFunc("/admin/path-migration/migrate-to-plural", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Parse query parameters
+		batchSize := 50
+		delayMs := int64(1000)
+		var startID, endID *int
+
+		if bs := r.URL.Query().Get("batchSize"); bs != "" {
+			if parsed, err := strconv.Atoi(bs); err == nil {
+				batchSize = parsed
+			}
+		}
+
+		if dm := r.URL.Query().Get("delayMs"); dm != "" {
+			if parsed, err := strconv.ParseInt(dm, 10, 64); err == nil {
+				delayMs = parsed
+			}
+		}
+
+		if si := r.URL.Query().Get("startId"); si != "" {
+			if parsed, err := strconv.Atoi(si); err == nil {
+				startID = &parsed
+			}
+		}
+
+		if ei := r.URL.Query().Get("endId"); ei != "" {
+			if parsed, err := strconv.Atoi(ei); err == nil {
+				endID = &parsed
+			}
+		}
+
+		log.Printf("Starting path migration from singular to plural - batchSize: %d, delayMs: %d, startId: %v, endId: %v",
+			batchSize, delayMs, startID, endID)
+
+		galleries, err := db.GetAllGalleries()
+		if err != nil {
+			log.Printf("Failed to get galleries: %v", err)
+			http.Error(w, "Failed to get galleries", http.StatusInternalServerError)
+			return
+		}
+
+		// Filter galleries that need migration (singular paths)
+		var needsMigration []*database.Gallery
+		for _, gallery := range galleries {
+			if gallery.IsImage() && isInSingularOrganizedStructure(gallery.Url, int64(gallery.ID)) {
+				if startID != nil && gallery.ID < *startID {
+					continue
+				}
+				if endID != nil && gallery.ID > *endID {
+					continue
+				}
+				needsMigration = append(needsMigration, gallery)
+			}
+		}
+
+		log.Printf("Found %d galleries with singular paths that need migration", len(needsMigration))
+
+		processedCount := 0
+		successCount := 0
+		errorCount := 0
+
+		// Process in batches
+		for i := 0; i < len(needsMigration); i += batchSize {
+			endIndex := i + batchSize
+			if endIndex > len(needsMigration) {
+				endIndex = len(needsMigration)
+			}
+
+			log.Printf("Processing migration batch %d-%d of %d", i+1, endIndex, len(needsMigration))
+
+			for j := i; j < endIndex; j++ {
+				gallery := needsMigration[j]
+				if err := migrateSingularToPlural(gallery, s3Client, db); err != nil {
+					errorCount++
+					log.Printf("Error migrating gallery ID: %d, error: %v", gallery.ID, err)
+				} else {
+					successCount++
+				}
+				processedCount++
+			}
+
+			// Batch delay
+			if endIndex < len(needsMigration) {
+				time.Sleep(time.Duration(delayMs) * time.Millisecond)
+			}
+		}
+
+		result := map[string]interface{}{
+			"timestamp":  time.Now(),
+			"totalFound": len(needsMigration),
+			"processed":  processedCount,
+			"successful": successCount,
+			"errors":     errorCount,
+			"batchSize":  batchSize,
+			"delayMs":    delayMs,
+			"startId":    startID,
+			"endId":      endID,
+		}
+
+		log.Printf("Path migration completed - processed: %d, successful: %d, errors: %d",
+			processedCount, successCount, errorCount)
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(result)
+	})
+
 	adminPort := os.Getenv("ADMIN_PORT")
 	if adminPort == "" {
 		adminPort = "9001"
@@ -475,20 +631,24 @@ func startAdminServer(db *database.Database, cfg *config.Config) {
 
 // organizePhotoStructure moves photo to organized directory structure if not already organized
 func organizePhotoStructure(gallery *database.Gallery, s3Client *storage.S3Client, db *database.Database) error {
-	// Check if photo is already in organized structure (heroes/{heroId}/images/{photoId}/original/)
-	if isAlreadyOrganized(gallery.Url, int64(gallery.ID)) {
-		log.Printf("Gallery %d is already organized: %s", gallery.ID, gallery.Url)
+	// Check if photo is already in plural form organized structure
+	if isInPluralOrganizedStructure(gallery.Url, int64(gallery.ID)) {
+		log.Printf("Gallery %d is already organized in plural form: %s", gallery.ID, gallery.Url)
 		return nil
 	}
 
-	// Use hero ID from database instead of parsing URL
-	heroId := gallery.HeroID
+	// Check if photo is in legacy singular form that needs migration
+	if isInSingularOrganizedStructure(gallery.Url, int64(gallery.ID)) {
+		log.Printf("Gallery %d is in singular form, migrating to plural: %s", gallery.ID, gallery.Url)
+		return migrateSingularToPlural(gallery, s3Client, db)
+	}
 
-	// Generate new organized path: heroes/{heroId}/images/{photoId}/original/{filename}
+	// For unorganized photos, organize directly to plural form
+	heroId := gallery.HeroID
 	filename := filepath.Base(gallery.Url)
 	newPath := fmt.Sprintf("heroes/%d/images/%d/original/%s", heroId, gallery.ID, filename)
 
-	log.Printf("Moving gallery %d from %s to %s", gallery.ID, gallery.Url, newPath)
+	log.Printf("Organizing unorganized gallery %d from %s to %s", gallery.ID, gallery.Url, newPath)
 
 	// Download the image from old location
 	imageBytes, err := s3Client.DownloadImageBytes(gallery.Url)
@@ -505,27 +665,75 @@ func organizePhotoStructure(gallery *database.Gallery, s3Client *storage.S3Clien
 	if err := db.UpdateGalleryUrl(gallery.ID, newPath); err != nil {
 		return fmt.Errorf("failed to update gallery URL in database: %w", err)
 	}
-	
+
 	// Update local gallery object for consistency
 	gallery.Url = newPath
 
-	// Delete old location (optional, but recommended to avoid duplication)
-	// Note: We're not implementing delete here to be safe, but could be added later
 	log.Printf("Successfully organized gallery %d to new location: %s", gallery.ID, newPath)
-
 	return nil
 }
 
-// isAlreadyOrganized checks if photo URL follows the organized structure
+// isAlreadyOrganized checks if photo URL follows any organized structure (for backward compatibility)
 func isAlreadyOrganized(url string, photoId int64) bool {
+	return isInPluralOrganizedStructure(url, photoId) || isInSingularOrganizedStructure(url, photoId)
+}
+
+// isInPluralOrganizedStructure checks if photo URL follows the plural organized structure
+func isInPluralOrganizedStructure(url string, photoId int64) bool {
 	// Pattern: heroes/{heroId}/images/{photoId}/original/{filename} or heroes/{heroId}/images/{photoId}/{size}/{filename}
-	// Also support legacy pattern: hero/{heroId}/image/{photoId}/(original|{size})/{filename}
-	newPattern := fmt.Sprintf(`heroes/\d+/images/%d/(original|\d+)/[^/]+$`, photoId)
-	legacyPattern := fmt.Sprintf(`hero/\d+/image/%d/(original|\d+)/[^/]+$`, photoId)
+	pattern := fmt.Sprintf(`heroes/\d+/images/%d/(original|\d+)/[^/]+$`, photoId)
+	matched, _ := regexp.MatchString(pattern, url)
+	return matched
+}
 
-	newMatched, _ := regexp.MatchString(newPattern, url)
-	legacyMatched, _ := regexp.MatchString(legacyPattern, url)
+// isInSingularOrganizedStructure checks if photo URL follows the legacy singular organized structure
+func isInSingularOrganizedStructure(url string, photoId int64) bool {
+	// Pattern: hero/{heroId}/image/{photoId}/(original|{size})/{filename}
+	pattern := fmt.Sprintf(`hero/\d+/image/%d/(original|\d+)/[^/]+$`, photoId)
+	matched, _ := regexp.MatchString(pattern, url)
+	return matched
+}
 
-	return newMatched || legacyMatched
+// migrateSingularToPlural migrates photos from singular path structure to plural path structure
+func migrateSingularToPlural(gallery *database.Gallery, s3Client *storage.S3Client, db *database.Database) error {
+	oldPath := gallery.Url
+	heroId := gallery.HeroID
+
+	// Convert singular path to plural path
+	// hero/{heroId}/image/{photoId}/original/{filename} -> heroes/{heroId}/images/{photoId}/original/{filename}
+	// hero/{heroId}/image/{photoId}/{size}/{filename} -> heroes/{heroId}/images/{photoId}/{size}/{filename}
+	newPath := convertSingularPathToPlural(oldPath)
+
+	log.Printf("Migrating gallery %d from singular path %s to plural path %s", gallery.ID, oldPath, newPath)
+
+	// Download the image from old location
+	imageBytes, err := s3Client.DownloadImageBytes(oldPath)
+	if err != nil {
+		return fmt.Errorf("failed to download image from old singular location %s: %w", oldPath, err)
+	}
+
+	// Upload to new plural location
+	if err := s3Client.UploadImageBytes(newPath, imageBytes); err != nil {
+		return fmt.Errorf("failed to upload image to new plural location %s: %w", newPath, err)
+	}
+
+	// Update gallery URL in database
+	if err := db.UpdateGalleryUrl(gallery.ID, newPath); err != nil {
+		return fmt.Errorf("failed to update gallery URL in database: %w", err)
+	}
+
+	// Update local gallery object for consistency
+	gallery.Url = newPath
+
+	log.Printf("Successfully migrated gallery %d from singular to plural: %s -> %s", gallery.ID, oldPath, newPath)
+	return nil
+}
+
+// convertSingularPathToPlural converts singular path format to plural format
+func convertSingularPathToPlural(singularPath string) string {
+	// Replace hero/ with heroes/ and image/ with images/
+	pluralPath := strings.Replace(singularPath, "hero/", "heroes/", 1)
+	pluralPath = strings.Replace(pluralPath, "/image/", "/images/", 1)
+	return pluralPath
 }
 
