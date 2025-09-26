@@ -1,3 +1,6 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.response.dto;
 
-public record PresignedUrlDto(String fileKey, String url) {}
+public record PresignedUrlDto(String fileKey, String url, Headers headers) {
+
+  public record Headers(String contentType, String cacheControl) {}
+}

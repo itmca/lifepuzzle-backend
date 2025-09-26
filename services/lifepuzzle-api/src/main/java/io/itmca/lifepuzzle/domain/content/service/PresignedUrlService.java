@@ -50,7 +50,8 @@ public class PresignedUrlService {
 
       gallery.setUrl(key);
 
-      urls.add(new PresignedUrlDto(key, presignedUrl));
+      var headers = new PresignedUrlDto.Headers(file.contentType(), "public, max-age=31536000, immutable");
+      urls.add(new PresignedUrlDto(key, presignedUrl, headers));
     }
 
     return new PresignedUrlResponse(urls);
