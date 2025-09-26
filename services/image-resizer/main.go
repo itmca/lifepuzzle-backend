@@ -102,12 +102,12 @@ func main() {
 func processMessage(msg messaging.Message, db *database.Database, s3Client *storage.S3Client, imageResizer *resizer.ImageResizer) error {
 	log.Printf("Processing message for photo ID: %d", msg.ID)
 
-	photo, err := db.GetStoryPhoto(msg.ID)
+	gallery, err := db.GetGallery(msg.ID)
 	if err != nil {
 		return err
 	}
 
-	missingSizes := imageResizer.GetMissingSizes(photo.ResizedSizes)
+	missingSizes := imageResizer.GetMissingSizes(gallery.ResizedSizes)
 	if len(missingSizes) == 0 {
 		log.Printf("No missing sizes for photo ID: %d", msg.ID)
 		return nil
@@ -116,12 +116,12 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 	log.Printf("Missing sizes for photo ID %d: %v", msg.ID, missingSizes)
 
 	// Organize photo into proper directory structure if needed
-	if err := organizePhotoStructure(photo, s3Client, db); err != nil {
+	if err := organizePhotoStructure(gallery, s3Client, db); err != nil {
 		return err
 	}
 
 	// Download original image as bytes to support WebP conversion
-	originalImageBytes, err := s3Client.DownloadImageBytes(photo.Url)
+	originalImageBytes, err := s3Client.DownloadImageBytes(gallery.Url)
 	if err != nil {
 		return err
 	}
@@ -132,20 +132,20 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 		return err
 	}
 
-	newSizes := append([]int{}, photo.ResizedSizes...)
+	newSizes := append([]int{}, gallery.ResizedSizes...)
 
 	// Use hero ID and photo ID from database (no need to parse URL)
-	heroId := photo.HeroID  // Assuming this field exists in StoryPhoto
-	photoId := photo.ID
+	heroId := gallery.HeroID
+	photoId := gallery.ID
 
 	// Get original image dimensions
 	originalBounds := originalImage.Bounds()
 	originalWidth := originalBounds.Dx()
 	originalHeight := originalBounds.Dy()
-	isOriginalWebP := strings.HasSuffix(strings.ToLower(photo.Url), ".webp")
+	isOriginalWebP := strings.HasSuffix(strings.ToLower(gallery.Url), ".webp")
 
 	for _, size := range missingSizes {
-		filename := filepath.Base(photo.Url)
+		filename := filepath.Base(gallery.Url)
 		webpFilename := strings.TrimSuffix(filename, filepath.Ext(filename)) + ".webp"
 		resizedPath := fmt.Sprintf("hero/%d/image/%d/%d/%s", heroId, photoId, size, webpFilename)
 
@@ -462,26 +462,26 @@ func startAdminServer(db *database.Database, cfg *config.Config) {
 }
 
 // organizePhotoStructure moves photo to organized directory structure if not already organized
-func organizePhotoStructure(photo *database.StoryPhoto, s3Client *storage.S3Client, db *database.Database) error {
+func organizePhotoStructure(gallery *database.Gallery, s3Client *storage.S3Client, db *database.Database) error {
 	// Check if photo is already in organized structure (hero/{heroId}/image/{photoId}/original/)
-	if isAlreadyOrganized(photo.Url, int64(photo.ID)) {
-		log.Printf("Photo %d is already organized: %s", photo.ID, photo.Url)
+	if isAlreadyOrganized(gallery.Url, int64(gallery.ID)) {
+		log.Printf("Gallery %d is already organized: %s", gallery.ID, gallery.Url)
 		return nil
 	}
 
 	// Use hero ID from database instead of parsing URL
-	heroId := photo.HeroID
+	heroId := gallery.HeroID
 	
 	// Generate new organized path: hero/{heroId}/image/{photoId}/original/{filename}
-	filename := filepath.Base(photo.Url)
-	newPath := fmt.Sprintf("hero/%d/image/%d/original/%s", heroId, photo.ID, filename)
+	filename := filepath.Base(gallery.Url)
+	newPath := fmt.Sprintf("hero/%d/image/%d/original/%s", heroId, gallery.ID, filename)
 
-	log.Printf("Moving photo %d from %s to %s", photo.ID, photo.Url, newPath)
+	log.Printf("Moving gallery %d from %s to %s", gallery.ID, gallery.Url, newPath)
 
 	// Download the image from old location
-	imageBytes, err := s3Client.DownloadImageBytes(photo.Url)
+	imageBytes, err := s3Client.DownloadImageBytes(gallery.Url)
 	if err != nil {
-		return fmt.Errorf("failed to download image from old location %s: %w", photo.Url, err)
+		return fmt.Errorf("failed to download image from old location %s: %w", gallery.Url, err)
 	}
 
 	// Upload to new location
@@ -489,17 +489,17 @@ func organizePhotoStructure(photo *database.StoryPhoto, s3Client *storage.S3Clie
 		return fmt.Errorf("failed to upload image to new location %s: %w", newPath, err)
 	}
 
-	// Update photo URL in database
-	if err := db.UpdateStoryPhotoUrl(photo.ID, newPath); err != nil {
-		return fmt.Errorf("failed to update photo URL in database: %w", err)
+	// Update gallery URL in database
+	if err := db.UpdateGalleryUrl(gallery.ID, newPath); err != nil {
+		return fmt.Errorf("failed to update gallery URL in database: %w", err)
 	}
 	
-	// Update local photo object for consistency
-	photo.Url = newPath
+	// Update local gallery object for consistency
+	gallery.Url = newPath
 
 	// Delete old location (optional, but recommended to avoid duplication)
 	// Note: We're not implementing delete here to be safe, but could be added later
-	log.Printf("Successfully organized photo %d to new location: %s", photo.ID, newPath)
+	log.Printf("Successfully organized gallery %d to new location: %s", gallery.ID, newPath)
 
 	return nil
 }
