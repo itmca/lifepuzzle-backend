@@ -541,7 +541,6 @@ func isInSingularOrganizedStructure(url string, photoId int64) bool {
 // migrateSingularToPlural migrates photos from singular path structure to plural path structure
 func migrateSingularToPlural(gallery *database.Gallery, s3Client *storage.S3Client, db *database.Database) error {
 	oldPath := gallery.Url
-	heroId := gallery.HeroID
 
 	// Convert singular path to plural path
 	// hero/{heroId}/image/{photoId}/original/{filename} -> heroes/{heroId}/images/{photoId}/original/{filename}
