@@ -132,6 +132,10 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 		return err
 	}
 
+	// Apply EXIF orientation to fix rotation
+	orientation := imageResizer.GetOrientation(originalImageBytes)
+	originalImage = imageResizer.ApplyOrientation(originalImage, orientation)
+
 	newSizes := append([]int{}, gallery.ResizedSizes...)
 
 	// Use hero ID and photo ID from database (no need to parse URL)
@@ -149,11 +153,17 @@ func processMessage(msg messaging.Message, db *database.Database, s3Client *stor
 		webpFilename := strings.TrimSuffix(filename, filepath.Ext(filename)) + ".webp"
 		resizedPath := fmt.Sprintf("hero/%d/image/%d/%d/%s", heroId, photoId, size, webpFilename)
 
-		// Special case for 1280: if original is WebP and smaller than 1280, use original
+		// Special case for 1280: if original is WebP and smaller than 1280, use processed original (with orientation fix)
 		if size == 1280 && isOriginalWebP && originalWidth <= 1280 && originalHeight <= 1280 {
-			log.Printf("Using original WebP image for 1280 size (photo ID %d): original size %dx%d", msg.ID, originalWidth, originalHeight)
-			
-			if err := s3Client.UploadImageBytes(resizedPath, originalImageBytes); err != nil {
+			log.Printf("Using orientation-corrected WebP image for 1280 size (photo ID %d): original size %dx%d", msg.ID, originalWidth, originalHeight)
+
+			// Convert the orientation-corrected image to WebP
+			webpBytes, err := imageResizer.ConvertToWebP(originalImage)
+			if err != nil {
+				return err
+			}
+
+			if err := s3Client.UploadImageBytes(resizedPath, webpBytes); err != nil {
 				return err
 			}
 		} else {
