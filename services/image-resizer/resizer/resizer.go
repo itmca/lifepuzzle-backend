@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/jpeg"
 	"image/png"
+	"log"
 	"path/filepath"
 	"strings"
 
@@ -161,25 +162,30 @@ func (r *ImageResizer) GetOrientation(data []byte) int {
 	// Try to decode EXIF data
 	x, err := exif.Decode(reader)
 	if err != nil {
+		log.Printf("No EXIF data found or decode error: %v", err)
 		return 1 // Default orientation (no rotation)
 	}
 
 	// Get orientation tag
 	tag, err := x.Get(exif.Orientation)
 	if err != nil {
+		log.Printf("No orientation tag found in EXIF: %v", err)
 		return 1 // Default orientation
 	}
 
 	orientation, err := tag.Int(0)
 	if err != nil {
+		log.Printf("Error reading orientation value: %v", err)
 		return 1 // Default orientation
 	}
 
+	log.Printf("EXIF orientation found: %d", orientation)
 	return orientation
 }
 
 // ApplyOrientation applies EXIF orientation to fix image rotation
 func (r *ImageResizer) ApplyOrientation(img image.Image, orientation int) image.Image {
+	log.Printf("Applying EXIF orientation transformation: %d", orientation)
 	switch orientation {
 	case 1:
 		// Normal - no transformation needed
