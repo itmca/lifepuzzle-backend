@@ -12,6 +12,7 @@ import (
 	"github.com/adrium/goheif"
 	"github.com/chai2010/webp"
 	"github.com/nfnt/resize"
+	"github.com/rwcarlsen/goexif/exif"
 	xwebp "golang.org/x/image/webp"
 )
 
@@ -153,22 +154,164 @@ func (r *ImageResizer) decodeHEIC(data []byte) (image.Image, error) {
 	return img, nil
 }
 
+// getOrientation extracts EXIF orientation from image data
+func (r *ImageResizer) getOrientation(data []byte) int {
+	reader := bytes.NewReader(data)
+
+	// Try to decode EXIF data
+	x, err := exif.Decode(reader)
+	if err != nil {
+		return 1 // Default orientation (no rotation)
+	}
+
+	// Get orientation tag
+	tag, err := x.Get(exif.Orientation)
+	if err != nil {
+		return 1 // Default orientation
+	}
+
+	orientation, err := tag.Int(0)
+	if err != nil {
+		return 1 // Default orientation
+	}
+
+	return orientation
+}
+
+// applyOrientation applies EXIF orientation to fix image rotation
+func (r *ImageResizer) applyOrientation(img image.Image, orientation int) image.Image {
+	switch orientation {
+	case 1:
+		// Normal - no transformation needed
+		return img
+	case 2:
+		// Flip horizontal
+		return r.flipHorizontal(img)
+	case 3:
+		// Rotate 180°
+		return r.rotate180(img)
+	case 4:
+		// Flip vertical
+		return r.flipVertical(img)
+	case 5:
+		// Rotate 90° CCW + flip horizontal
+		return r.flipHorizontal(r.rotate90CCW(img))
+	case 6:
+		// Rotate 90° CW
+		return r.rotate90CW(img)
+	case 7:
+		// Rotate 90° CW + flip horizontal
+		return r.flipHorizontal(r.rotate90CW(img))
+	case 8:
+		// Rotate 90° CCW
+		return r.rotate90CCW(img)
+	default:
+		return img
+	}
+}
+
+// rotate90CW rotates image 90 degrees clockwise
+func (r *ImageResizer) rotate90CW(img image.Image) image.Image {
+	bounds := img.Bounds()
+	width, height := bounds.Dx(), bounds.Dy()
+
+	// Create new image with swapped dimensions
+	rotated := image.NewRGBA(image.Rect(0, 0, height, width))
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			rotated.Set(height-1-y, x, img.At(x, y))
+		}
+	}
+
+	return rotated
+}
+
+// rotate90CCW rotates image 90 degrees counter-clockwise
+func (r *ImageResizer) rotate90CCW(img image.Image) image.Image {
+	bounds := img.Bounds()
+	width, height := bounds.Dx(), bounds.Dy()
+
+	// Create new image with swapped dimensions
+	rotated := image.NewRGBA(image.Rect(0, 0, height, width))
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			rotated.Set(y, width-1-x, img.At(x, y))
+		}
+	}
+
+	return rotated
+}
+
+// rotate180 rotates image 180 degrees
+func (r *ImageResizer) rotate180(img image.Image) image.Image {
+	bounds := img.Bounds()
+	width, height := bounds.Dx(), bounds.Dy()
+
+	rotated := image.NewRGBA(bounds)
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			rotated.Set(width-1-x, height-1-y, img.At(x, y))
+		}
+	}
+
+	return rotated
+}
+
+// flipHorizontal flips image horizontally
+func (r *ImageResizer) flipHorizontal(img image.Image) image.Image {
+	bounds := img.Bounds()
+	width, height := bounds.Dx(), bounds.Dy()
+
+	flipped := image.NewRGBA(bounds)
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			flipped.Set(width-1-x, y, img.At(x, y))
+		}
+	}
+
+	return flipped
+}
+
+// flipVertical flips image vertically
+func (r *ImageResizer) flipVertical(img image.Image) image.Image {
+	bounds := img.Bounds()
+	width, height := bounds.Dx(), bounds.Dy()
+
+	flipped := image.NewRGBA(bounds)
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			flipped.Set(x, height-1-y, img.At(x, y))
+		}
+	}
+
+	return flipped
+}
+
 // ProcessImage converts image to WebP and resizes if necessary
 func (r *ImageResizer) ProcessImage(data []byte) ([]byte, error) {
 	img, err := r.DecodeImage(data)
 	if err != nil {
 		return nil, err
 	}
-	
+
+	// Apply EXIF orientation to fix rotation
+	orientation := r.getOrientation(data)
+	img = r.applyOrientation(img, orientation)
+
 	// Check if image needs resizing (larger than 1280px)
 	bounds := img.Bounds()
 	width := bounds.Dx()
 	height := bounds.Dy()
-	
+
 	if width > 1280 || height > 1280 {
 		img = r.ResizeImage(img, 1280)
 	}
-	
+
 	// Convert to WebP
 	return r.ConvertToWebP(img)
 }
