@@ -4,7 +4,7 @@ import static io.itmca.lifepuzzle.global.constants.FileConstant.NEW_STORY_IMAGE_
 
 import io.itmca.lifepuzzle.domain.content.endpoint.request.PresignedUrlRequest;
 import io.itmca.lifepuzzle.domain.content.endpoint.response.PresignedUrlResponse;
-import io.itmca.lifepuzzle.domain.content.endpoint.response.dto.PresignedUrlDto;
+import io.itmca.lifepuzzle.domain.content.endpoint.response.PresignedUrlResponse.PresignedUrlDto;
 import io.itmca.lifepuzzle.domain.content.entity.Gallery;
 import io.itmca.lifepuzzle.domain.content.repository.GalleryRepository;
 import io.itmca.lifepuzzle.domain.content.type.GalleryStatus;
@@ -50,7 +50,9 @@ public class PresignedUrlService {
 
       gallery.setUrl(key);
 
-      urls.add(new PresignedUrlDto(key, presignedUrl));
+      String host = String.format("%s.s3.ap-northeast-2.amazonaws.com", bucket);
+      var headers = new PresignedUrlDto.Headers(host, file.contentType(), "public, max-age=31536000, immutable");
+      urls.add(new PresignedUrlDto(key, presignedUrl, headers));
     }
 
     return new PresignedUrlResponse(urls);
