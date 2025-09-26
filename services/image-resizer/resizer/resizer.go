@@ -330,35 +330,111 @@ func (r *ImageResizer) isHEIC(data []byte) bool {
 
 // getHEICOrientation attempts to extract orientation from HEIC metadata
 func (r *ImageResizer) getHEICOrientation(data []byte) int {
-	// Try to extract EXIF from HEIC using a different approach
-	// HEIC files can contain EXIF data, but it's embedded differently
+	// Try multiple approaches to extract EXIF from HEIC
 
-	// Look for EXIF marker within HEIC data
+	// Approach 1: Look for EXIF marker within HEIC data
 	exifMarker := []byte("Exif\x00\x00")
 	exifStart := bytes.Index(data, exifMarker)
 
 	if exifStart != -1 {
 		// Found EXIF marker, try to extract orientation
 		exifData := data[exifStart+len(exifMarker):]
-		if len(exifData) > 0 {
-			log.Printf("Found EXIF data in HEIC file at offset %d", exifStart)
+		if len(exifData) > 8 {
+			log.Printf("Found EXIF data in HEIC file at offset %d, size: %d", exifStart, len(exifData))
 
-			// Try to decode the EXIF data
-			reader := bytes.NewReader(exifData)
-			x, err := exif.Decode(reader)
-			if err == nil {
-				// Get orientation tag
-				if tag, err := x.Get(exif.Orientation); err == nil {
-					if orientation, err := tag.Int(0); err == nil {
-						log.Printf("Successfully extracted HEIC EXIF orientation: %d", orientation)
-						return orientation
-					}
+			// Try different EXIF parsing approaches
+			orientation := r.tryParseExifOrientation(exifData)
+			if orientation != 1 {
+				return orientation
+			}
+		}
+	}
+
+	// Approach 2: Look for TIFF header directly in HEIC
+	tiffHeaders := [][]byte{
+		{0x4D, 0x4D, 0x00, 0x2A}, // Big endian TIFF
+		{0x49, 0x49, 0x2A, 0x00}, // Little endian TIFF
+	}
+
+	for _, header := range tiffHeaders {
+		if tiffStart := bytes.Index(data, header); tiffStart != -1 {
+			log.Printf("Found TIFF header in HEIC at offset %d", tiffStart)
+			tiffData := data[tiffStart:]
+			if len(tiffData) > 8 {
+				orientation := r.tryParseExifOrientation(tiffData)
+				if orientation != 1 {
+					return orientation
 				}
 			}
 		}
 	}
 
 	log.Printf("Could not extract orientation from HEIC file, using default")
+	return 1
+}
+
+// tryParseExifOrientation tries to parse orientation from EXIF data
+func (r *ImageResizer) tryParseExifOrientation(exifData []byte) int {
+	// Try standard EXIF parsing first
+	reader := bytes.NewReader(exifData)
+	x, err := exif.Decode(reader)
+	if err == nil {
+		if tag, err := x.Get(exif.Orientation); err == nil {
+			if orientation, err := tag.Int(0); err == nil {
+				log.Printf("Successfully extracted EXIF orientation: %d", orientation)
+				return orientation
+			}
+		}
+	} else {
+		log.Printf("Standard EXIF decode failed: %v", err)
+	}
+
+	// Try manual orientation extraction as fallback
+	return r.manualOrientationExtraction(exifData)
+}
+
+// manualOrientationExtraction manually searches for orientation tag in EXIF data
+func (r *ImageResizer) manualOrientationExtraction(data []byte) int {
+	// EXIF orientation tag is 0x0112 (274 decimal)
+	// Look for this tag in the EXIF data
+
+	// Search for orientation tag patterns
+	orientationTag := []byte{0x01, 0x12} // Big endian
+	orientationTagLE := []byte{0x12, 0x01} // Little endian
+
+	// Try big endian first
+	if pos := bytes.Index(data, orientationTag); pos != -1 && pos+10 < len(data) {
+		// Check if this looks like a valid orientation tag entry
+		// EXIF IFD entry format: tag(2) + type(2) + count(4) + value(4)
+		if pos+12 < len(data) {
+			// Skip tag(2) + type(2) + count(4) = 8 bytes to get to value
+			valuePos := pos + 8
+			if valuePos+2 < len(data) {
+				// Orientation is typically stored as a 16-bit value
+				orientation := int(data[valuePos+1]) // Big endian, second byte
+				if orientation >= 1 && orientation <= 8 {
+					log.Printf("Manually extracted orientation (BE): %d", orientation)
+					return orientation
+				}
+			}
+		}
+	}
+
+	// Try little endian
+	if pos := bytes.Index(data, orientationTagLE); pos != -1 && pos+10 < len(data) {
+		if pos+12 < len(data) {
+			valuePos := pos + 8
+			if valuePos+2 < len(data) {
+				orientation := int(data[valuePos]) // Little endian, first byte
+				if orientation >= 1 && orientation <= 8 {
+					log.Printf("Manually extracted orientation (LE): %d", orientation)
+					return orientation
+				}
+			}
+		}
+	}
+
+	log.Printf("Manual orientation extraction failed")
 	return 1
 }
 
