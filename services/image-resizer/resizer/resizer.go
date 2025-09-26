@@ -157,6 +157,15 @@ func (r *ImageResizer) decodeHEIC(data []byte) (image.Image, error) {
 
 // GetOrientation extracts EXIF orientation from image data
 func (r *ImageResizer) GetOrientation(data []byte) int {
+	// First try HEIC orientation extraction
+	if r.isHEIC(data) {
+		if orientation := r.getHEICOrientation(data); orientation != 1 {
+			log.Printf("HEIC orientation found: %d", orientation)
+			return orientation
+		}
+	}
+
+	// Fallback to standard EXIF extraction
 	reader := bytes.NewReader(data)
 
 	// Try to decode EXIF data
@@ -296,6 +305,61 @@ func (r *ImageResizer) flipVertical(img image.Image) image.Image {
 	}
 
 	return flipped
+}
+
+// isHEIC checks if data is HEIC format
+func (r *ImageResizer) isHEIC(data []byte) bool {
+	if len(data) < 12 {
+		return false
+	}
+
+	// HEIC files start with specific byte patterns
+	// ftyp box at offset 4, followed by brand (heic, heix, heis, etc.)
+	if !bytes.Equal(data[4:8], []byte("ftyp")) {
+		return false
+	}
+
+	// Check for HEIC brand signatures
+	brand := data[8:12]
+	return bytes.Equal(brand, []byte("heic")) ||
+		   bytes.Equal(brand, []byte("heix")) ||
+		   bytes.Equal(brand, []byte("heis")) ||
+		   bytes.Equal(brand, []byte("hevm")) ||
+		   bytes.Equal(brand, []byte("heim"))
+}
+
+// getHEICOrientation attempts to extract orientation from HEIC metadata
+func (r *ImageResizer) getHEICOrientation(data []byte) int {
+	// Try to extract EXIF from HEIC using a different approach
+	// HEIC files can contain EXIF data, but it's embedded differently
+
+	// Look for EXIF marker within HEIC data
+	exifMarker := []byte("Exif\x00\x00")
+	exifStart := bytes.Index(data, exifMarker)
+
+	if exifStart != -1 {
+		// Found EXIF marker, try to extract orientation
+		exifData := data[exifStart+len(exifMarker):]
+		if len(exifData) > 0 {
+			log.Printf("Found EXIF data in HEIC file at offset %d", exifStart)
+
+			// Try to decode the EXIF data
+			reader := bytes.NewReader(exifData)
+			x, err := exif.Decode(reader)
+			if err == nil {
+				// Get orientation tag
+				if tag, err := x.Get(exif.Orientation); err == nil {
+					if orientation, err := tag.Int(0); err == nil {
+						log.Printf("Successfully extracted HEIC EXIF orientation: %d", orientation)
+						return orientation
+					}
+				}
+			}
+		}
+	}
+
+	log.Printf("Could not extract orientation from HEIC file, using default")
+	return 1
 }
 
 // ProcessImage converts image to WebP and resizes if necessary
