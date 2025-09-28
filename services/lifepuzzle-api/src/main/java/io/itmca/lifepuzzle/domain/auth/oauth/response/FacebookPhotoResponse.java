@@ -1,4 +1,4 @@
-package io.itmca.lifepuzzle.domain.auth.endpoint.response;
+package io.itmca.lifepuzzle.domain.auth.oauth.response;
 
 import io.itmca.lifepuzzle.domain.auth.FacebookPhoto;
 import java.util.List;

@@ -1,6 +1,6 @@
 package io.itmca.lifepuzzle.domain.auth.service;
 
-import io.itmca.lifepuzzle.domain.auth.endpoint.response.FacebookTokenResponse;
+import io.itmca.lifepuzzle.domain.auth.oauth.response.FacebookTokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
