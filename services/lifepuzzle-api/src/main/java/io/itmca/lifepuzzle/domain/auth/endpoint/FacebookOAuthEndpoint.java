@@ -19,7 +19,7 @@ public class FacebookOAuthEndpoint {
   private final FacebookPhotoService facebookPhotoService;
 
   @Operation(summary = "Facebook 사진 목록 조회")
-  @GetMapping("/facebook/photos")
+  @GetMapping("/v1/facebook/photos")
   public ResponseEntity<FacebookPhotoResponse> getFacebookPhotos(@RequestParam String code) {
     var accessToken = facebookOAuthService.getAccessToken(code);
     var response = facebookPhotoService.getUserPhotos(accessToken);

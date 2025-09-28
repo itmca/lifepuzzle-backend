@@ -26,7 +26,7 @@ public class LoginEndpoint {
   private final UserQueryService userQueryService;
   private final HeroUserAuthWriteService heroUserAuthWriteService;
 
-  @PostMapping({"/auth/login/email"})
+  @PostMapping({"/auth/login/email", "/v1/auth/login/email"})
   @Operation(summary = "일반 로그인")
   public LoginResponse login(@RequestBody LoginRequest loginRequest) {
     var username = loginRequest.username();

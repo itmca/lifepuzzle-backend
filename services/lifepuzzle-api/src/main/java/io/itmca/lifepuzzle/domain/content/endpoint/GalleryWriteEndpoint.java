@@ -19,6 +19,7 @@ public class GalleryWriteEndpoint {
 
   private final GalleryWriteService galleryWriteService;
 
+  @Deprecated
   @PostMapping({"/v1/heroes/gallery", // TODO: FE 전환 후 제거
                 "/v1/galleries"})
   public void saveGallery(
