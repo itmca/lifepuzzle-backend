@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RefreshEndpoint {
   private final RefreshService refreshService;
 
-  @PostMapping("/auth/refresh")
+  @PostMapping({"/auth/refresh", "/v1/auth/refresh"})
   @Operation(summary = "토큰 리프레시")
   public Token refresh(HttpServletRequest req) {
     var authorization = req.getHeader("authorization");
