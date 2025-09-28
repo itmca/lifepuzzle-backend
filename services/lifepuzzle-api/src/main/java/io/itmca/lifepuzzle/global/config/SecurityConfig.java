@@ -21,7 +21,7 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             (request) -> request.requestMatchers(
-                    "/", "/hc", "/error-test", "/auth/**",
+                    "/", "/hc", "/error-test", "/auth/**", "/v1/auth/**",
                     "/user", "/user/dupcheck/*", "/users", "/users/dupcheck/*",
                     "/v1/user", "/v1/user/dupcheck/*", "/v1/users", "/v1/users/dupcheck/*",
                     "/v3/**", "/question/*", "/questions/*",
