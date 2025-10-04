@@ -73,7 +73,7 @@ cp .env.example .env
 ```
 
 **Required for Full Stack:**
-- Set your AWS credentials in `.env` file for image-resizer service
+- Set your AWS credentials in .env file for image-resizer service
 - AWS S3 bucket for image storage
 
 ### Default Credentials
