@@ -8,7 +8,6 @@ spring:
     port: 5672
     username: lifepuzzle
     password: lifepuzzlepass
-    virtual-host: lifepuzzle
   cloud:
     stream:
       rabbit:
