@@ -9,7 +9,7 @@ import lombok.Getter;
 /**
  * Request DTO for creating a story with gallery images.
  *
- * @param heroId TODO: FE 전환 후 @HeroNo 주석 제거 @HeroNo
+ * @param heroId hero ID
  * @param title story title
  * @param content story content  
  * @param date story date
@@ -17,19 +17,6 @@ import lombok.Getter;
  */
 public record StoryGalleryWriteRequest(String title, String content, LocalDate date, Long heroId,
                                        List<Long> galleryIds) {
-
-  @Deprecated
-  public Story toStory(Long heroId, Long userId) {
-    return Story.builder()
-        .id(generatedStoryKey(heroId))
-        .heroId(heroId)
-        .userId(userId)
-        .title(title != null ? title : "")
-        .content(content)
-        .date(date)
-        .build();
-  }
-
   public Story toStory(Long userId) {
     return Story.builder()
         .id(generatedStoryKey(heroId))

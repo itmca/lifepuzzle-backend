@@ -37,22 +37,6 @@ public class StoryWriteEndpoint {
   private final UserQueryService userQueryService;
   private final StoryRepository storyRepository;
 
-  @Deprecated
-  @AuthCheck(auths = {WRITER, ADMIN, OWNER})
-  @Operation(summary = "스토리 등록")
-  @PostMapping(value = {"/v2/heroes/{heroId}/stories",
-      "/v1/heroes/{heroId}/stories"})
-  public ResponseEntity<Void> createStory(
-      @HeroNo @PathVariable("heroId") Long heroId,
-      @RequestPart(value = "story") StoryGalleryWriteRequest storyGalleryWriteRequest,
-      @RequestPart(value = "voice", required = false) MultipartFile voice,
-      @AuthenticationPrincipal AuthPayload authPayload) {
-    var story = storyGalleryWriteRequest.toStory(heroId, authPayload.getUserId());
-
-    storyWriteService.create(story, storyGalleryWriteRequest.galleryIds(), voice);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
-  }
-
   //@AuthCheck(auths = {WRITER, ADMIN, OWNER})
   @Operation(summary = "스토리 등록")
   @PostMapping({"/v3/galleries/stories"})
@@ -63,21 +47,6 @@ public class StoryWriteEndpoint {
     var story = storyGalleryWriteRequest.toStory(authPayload.getUserId());
 
     storyWriteService.create(story, storyGalleryWriteRequest.galleryIds(), voice);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
-  }
-
-  @Deprecated
-  @AuthCheck(auths = {WRITER, ADMIN, OWNER})
-  @Operation(summary = "스토리 수정")
-  @PutMapping(value = {"/v2/heroes/{heroId}/stories/{storyId}",
-      "/v1/heroes/{heroId}/stories/{storyId}"})
-  public ResponseEntity<Void> putStory(
-      @HeroNo @PathVariable("heroId") Long heroId,
-      @PathVariable("storyId") String storyId,
-      @RequestPart(value = "story") StoryGalleryWriteRequest storyGalleryWriteRequest,
-      @RequestPart(value = "voice", required = false) MultipartFile voice,
-      @AuthenticationPrincipal AuthPayload authPayload) {
-    storyWriteService.update(storyId, storyGalleryWriteRequest, voice);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
@@ -93,8 +62,7 @@ public class StoryWriteEndpoint {
   }
 
   @Operation(summary = "스토리 삭제")
-  @DeleteMapping({"/v1/stories/{storyKey}", // TODO: FE 전환 후 제거
-                  "/v1/galleries/stories/{storyKey}"})
+  @DeleteMapping("/v1/galleries/stories/{storyKey}")
   public void deleteStory(@PathVariable("storyKey") String storyKey,
                           @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyQueryService.findById(storyKey);

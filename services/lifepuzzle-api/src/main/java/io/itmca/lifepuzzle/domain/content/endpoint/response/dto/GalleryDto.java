@@ -14,7 +14,6 @@ public record GalleryDto(
     Long id,
     int index,
     GalleryType type,
-    @Deprecated
     String url,
     String thumbnailUrl,
     String bigSizeUrl,
