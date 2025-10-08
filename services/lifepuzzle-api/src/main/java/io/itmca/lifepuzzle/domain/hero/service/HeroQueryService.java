@@ -32,15 +32,6 @@ public class HeroQueryService {
         .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
   }
 
-  @Deprecated
-  public List<Hero> findHeroesByUserNo(Long userNo) {
-    var heroUserAuths = this.heroUserAuthRepository.findAllByUser_Id(userNo);
-
-    return heroUserAuths.stream()
-        .map(HeroUserAuth::getHero)
-        .toList();
-  }
-
   public HeroQueryResponse toQueryResponse(Hero hero, Long userNo) {
     int puzzleCnt = storyQueryService.countByHeroNo(hero.getHeroNo());
 
