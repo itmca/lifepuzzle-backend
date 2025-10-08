@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 public interface AiGeneratedVideoRepository extends JpaRepository<AiGeneratedVideo, Long> {
   
   @Query("SELECT a FROM AiGeneratedVideo a WHERE a.heroNo = :heroNo AND a.deletedAt IS NULL ORDER BY a.createdAt DESC")
-  List<AiGeneratedVideo> findByHeroIdAndNotDeleted(@Param("heroNo") Long heroNo);
+  List<AiGeneratedVideo> findByHeroNoAndNotDeleted(@Param("heroNo") Long heroNo);
   
   @Query("SELECT a FROM AiGeneratedVideo a WHERE a.deletedAt IS NULL ORDER BY a.createdAt DESC")
   List<AiGeneratedVideo> findAllActiveOrderByCreatedAtDesc();

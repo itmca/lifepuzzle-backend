@@ -1,5 +1,6 @@
 CREATE TABLE `ai_generated_video` (
   `id` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT 'AI 생성 비디오 ID',
+  `hero_no` BIGINT NOT NULL COMMENT '주인공 식별자',
   `gallery_id` BIGINT NOT NULL COMMENT '갤러리(이미지) ID',
   `driving_video_id` BIGINT NOT NULL COMMENT '드라이빙 비디오 ID',
   `video_url` VARCHAR(500) COMMENT '생성된 비디오 URL',
@@ -10,10 +11,14 @@ CREATE TABLE `ai_generated_video` (
   `deleted_at` TIMESTAMP NULL COMMENT '삭제일시',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
-  
+
   FOREIGN KEY (`gallery_id`) REFERENCES `gallery` (`id`),
   FOREIGN KEY (`driving_video_id`) REFERENCES `ai_driving_video` (`id`)
 ) COMMENT 'AI 생성 비디오 테이블';
 
-CREATE INDEX `idx_ai_generated_video_gallery` ON `ai_generated_video` (`gallery_id`, `deleted_at`);
+-- 주인공별 조회용 인덱스 (deleted_at 조건은 애플리케이션에서 처리)
+CREATE INDEX `idx_ai_generated_video_hero_no` ON `ai_generated_video` (`hero_no`);
+-- 갤러리별 조회용 인덱스 (필요시)
+CREATE INDEX `idx_ai_generated_video_gallery` ON `ai_generated_video` (`gallery_id`);
+-- 상태별 정렬 조회용 인덱스
 CREATE INDEX `idx_ai_generated_video_status_created` ON `ai_generated_video` (`status`, `created_at` DESC);

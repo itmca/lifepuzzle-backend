@@ -37,8 +37,8 @@ public class AiVideoEndpoint {
   
   @Operation(summary = "AI 포토 작업 내역 조회", description = "특정 주인공의 AI 포토(비디오) 생성 작업 내역을 조회합니다")
   @GetMapping("/v1/ai/videos")
-  public ResponseEntity<AiGeneratedVideoResponse> getGeneratedVideosByHero(@RequestParam("heroId") Long heroId) {
-    var generatedVideos = aiGeneratedVideoService.getGeneratedVideosByHeroId(heroId);
+  public ResponseEntity<AiGeneratedVideoResponse> getGeneratedVideosByHero(@RequestParam("heroNo") Long heroNo) {
+    var generatedVideos = aiGeneratedVideoService.getGeneratedVideosByHeroNo(heroNo);
     var generatedVideoDtos = AiGeneratedVideoDto.listFrom(generatedVideos);
     var response = AiGeneratedVideoResponse.from(generatedVideoDtos);
     

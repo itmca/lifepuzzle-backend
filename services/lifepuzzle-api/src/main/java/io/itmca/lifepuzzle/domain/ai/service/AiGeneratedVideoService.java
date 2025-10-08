@@ -14,8 +14,8 @@ public class AiGeneratedVideoService {
   
   private final AiGeneratedVideoRepository aiGeneratedVideoRepository;
   
-  public List<AiGeneratedVideo> getGeneratedVideosByHeroId(Long heroId) {
-    return aiGeneratedVideoRepository.findByHeroIdAndNotDeleted(heroId);
+  public List<AiGeneratedVideo> getGeneratedVideosByHeroNo(Long heroNo) {
+    return aiGeneratedVideoRepository.findByHeroNoAndNotDeleted(heroNo);
   }
   
   public List<AiGeneratedVideo> getAllGeneratedVideos() {
