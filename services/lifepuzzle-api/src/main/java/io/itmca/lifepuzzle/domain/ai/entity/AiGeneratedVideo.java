@@ -35,6 +35,9 @@ public class AiGeneratedVideo {
   private Long id;
   
   @Column(nullable = false)
+  private Long heroNo;
+
+  @Column(nullable = false)
   private Long galleryId;
   
   @Column(nullable = false)
