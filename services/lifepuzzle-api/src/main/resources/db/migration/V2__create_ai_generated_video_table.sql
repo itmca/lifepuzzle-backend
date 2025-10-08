@@ -16,9 +16,7 @@ CREATE TABLE `ai_generated_video` (
   FOREIGN KEY (`driving_video_id`) REFERENCES `ai_driving_video` (`id`)
 ) COMMENT 'AI 생성 비디오 테이블';
 
--- 주인공별 조회용 인덱스 (deleted_at 조건은 애플리케이션에서 처리)
-CREATE INDEX `idx_ai_generated_video_hero_no` ON `ai_generated_video` (`hero_no`);
--- 갤러리별 조회용 인덱스 (필요시)
-CREATE INDEX `idx_ai_generated_video_gallery` ON `ai_generated_video` (`gallery_id`);
+-- 주인공별 조회용 인덱스 (soft delete 필터링 포함)
+CREATE INDEX `idx_ai_generated_video_hero_no` ON `ai_generated_video` (`hero_no`, `deleted_at`);
 -- 상태별 정렬 조회용 인덱스
 CREATE INDEX `idx_ai_generated_video_status_created` ON `ai_generated_video` (`status`, `created_at` DESC);
