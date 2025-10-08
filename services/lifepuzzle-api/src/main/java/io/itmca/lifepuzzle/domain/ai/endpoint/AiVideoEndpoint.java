@@ -35,10 +35,10 @@ public class AiVideoEndpoint {
     return ResponseEntity.ok(response);
   }
   
-  @Operation(summary = "갤러리 이미지로 생성된 AI 비디오 목록 조회", description = "특정 갤러리 이미지를 기반으로 생성된 AI 비디오들을 조회합니다")
+  @Operation(summary = "AI 포토 작업 내역 조회", description = "특정 주인공의 AI 포토(비디오) 생성 작업 내역을 조회합니다")
   @GetMapping("/v1/ai/videos")
-  public ResponseEntity<AiGeneratedVideoResponse> getGeneratedVideosByGallery(@RequestParam("galleryId") Long galleryId) {
-    var generatedVideos = aiGeneratedVideoService.getGeneratedVideosByGalleryId(galleryId);
+  public ResponseEntity<AiGeneratedVideoResponse> getGeneratedVideosByHero(@RequestParam("heroId") Long heroId) {
+    var generatedVideos = aiGeneratedVideoService.getGeneratedVideosByHeroId(heroId);
     var generatedVideoDtos = AiGeneratedVideoDto.listFrom(generatedVideos);
     var response = AiGeneratedVideoResponse.from(generatedVideoDtos);
     
