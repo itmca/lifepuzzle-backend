@@ -72,7 +72,7 @@ spring:
           destination: photo.upload
           content-type: application/json
         aiVideoCreate-out-0:
-          destination: photo.ai.video.create
+          destination: gallery.ai.video.create
           content-type: application/json
 
 springdoc:
