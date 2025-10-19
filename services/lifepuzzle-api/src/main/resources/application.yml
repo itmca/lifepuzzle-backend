@@ -64,9 +64,15 @@ spring:
           photoUpload-out-0:
             producer:
               routing-key-expression: headers.routingKey
+          aiVideoCreate-out-0:
+            producer:
+              routing-key-expression: headers.routingKey
       bindings:
         photoUpload-out-0:
           destination: photo.upload
+          content-type: application/json
+        aiVideoCreate-out-0:
+          destination: gallery.ai.video.create
           content-type: application/json
 
 springdoc:
