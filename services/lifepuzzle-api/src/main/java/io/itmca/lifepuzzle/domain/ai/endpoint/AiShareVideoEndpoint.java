@@ -39,16 +39,10 @@ public class AiShareVideoEndpoint {
   @Operation(summary = "공유용 갤러리 이미지로 생성된 AI 비디오 목록 조회")
   @GetMapping("/v1/share/ai/videos")
   public ResponseEntity<AiGeneratedVideoResponse> getGeneratedVideosByGallery(@RequestParam("galleryId") Long galleryId) {
-    var generatedVideos = aiGeneratedVideoService.getGeneratedVideosByGalleryId(galleryId);
+    var generatedVideos = aiGeneratedVideoService.getGeneratedVideosByHeroNo(galleryId);
     var generatedVideoDtos = AiGeneratedVideoDto.listFrom(generatedVideos);
     var response = AiGeneratedVideoResponse.from(generatedVideoDtos);
     
     return ResponseEntity.ok(response);
-  }
-  
-  @Operation(summary = "공유용 AI 포토 생성")
-  @PostMapping("/v1/share/ai/videos")
-  public void generateAiPhoto(@RequestBody AiPhotoGenerateRequest request) {
-    aiGeneratedVideoService.generateAiVideo(request);
   }
 }

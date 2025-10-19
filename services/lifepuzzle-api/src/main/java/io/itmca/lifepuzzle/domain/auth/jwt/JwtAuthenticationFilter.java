@@ -22,7 +22,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   protected boolean shouldNotFilter(HttpServletRequest request) {
     // 인증 API는 JWT 검증을 건너뜀
     // FE 오류로 잘못된 token으로 로그인 시도시에도 다른 정보가 정확하다면 성공하도록
-    return request.getRequestURI().startsWith("/auth/");
+    return request.getRequestURI().startsWith("/v1/auth/");
   }
 
   @Override

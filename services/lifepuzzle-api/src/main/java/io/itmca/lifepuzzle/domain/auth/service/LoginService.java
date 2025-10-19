@@ -33,9 +33,7 @@ public class LoginService {
 
     var tokenQueryDTO = new TokenQueryDto(
         tokens.getAccessToken(),
-        tokens.getAccessTokenExpireAt(),
         tokens.getRefreshToken(),
-        tokens.getRefreshTokenExpireAt(),
         tokens.getSocialToken()
     );
 
