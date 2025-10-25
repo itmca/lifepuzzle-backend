@@ -19,6 +19,9 @@ public class FileConstant {
   public static final String STORY_VIDEO_BASE_PATH_FORMAT = "heroes/%s/videos/original/";
   public static final String STORY_VOICE_BASE_PATH_FORMAT = "stories/%s/voices/original/";
 
+  public static final String AI_DRIVING_VIDEO_BASE_PATH = "ai-driving/videos/";
+  public static final String AI_DRIVING_THUMBNAIL_BASE_PATH = "ai-driving/thumbnails/";
+
   public static final int VIDEO_RESIZING_WIDTH = 854;
   public static final int VIDEO_RESIZING_HEIGHT = 480;
 
