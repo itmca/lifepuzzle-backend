@@ -27,7 +27,7 @@ public class SecurityConfig {
                     "/v3/**", "/question/*", "/questions/*",
                     "/share/hero", "/swagger-ui/**", "/stories/**",
                     "/.well-know/assetlinks.json", "/.well-known/assetlinks.json",
-                    ".well-known/apple-app-site-association", "/facebook/**")
+                    ".well-known/apple-app-site-association", "/v1/facebook/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
