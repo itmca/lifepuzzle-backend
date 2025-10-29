@@ -26,4 +26,10 @@ public class FacebookOAuthEndpoint {
 
     return ResponseEntity.ok(response);
   }
+
+  @Operation(summary = "Facebook OAuth 콜백", description = "Facebook OAuth 인증 완료 후 호출되는 콜백 엔드포인트입니다. 클라이언트에서 URL의 code 파라미터를 파싱하여 사용합니다.")
+  @GetMapping("/v1/facebook/callback")
+  public ResponseEntity<String> facebookOAuthCallback(@RequestParam String code) {
+    return ResponseEntity.ok("Facebook OAuth 인증이 완료되었습니다.");
+  }
 }
