@@ -29,16 +29,18 @@ spring:
       stack:
         auto: false
     stream:
+      function:
+        definition: aiVideoCreateEventConsumer
       rabbit:
         binder:
           connection-name-prefix: ai-video-generator
           admin-addresses: ${RABBITMQ_HOST:localhost}:${RABBITMQ_ADMIN_PORT:15672}
         bindings:
-          aiVideoCreate-in-0:
+          aiVideoCreateEventConsumer-in-0:
             consumer:
               auto-bind-dlq: true
       bindings:
-        aiVideoCreate-in-0:
+        aiVideoCreateEventConsumer-in-0:
           destination: gallery.ai.video.create
           group: ai-video-generator
           content-type: application/json

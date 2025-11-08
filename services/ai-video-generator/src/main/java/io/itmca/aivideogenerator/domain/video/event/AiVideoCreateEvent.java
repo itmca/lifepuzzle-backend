@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AiVideoCreateEvent {
-    private Long heroId;
-    private Long galleryId;
-    private Long drivingVideoId;
+  private Long heroId;
+  private Long galleryId;
+  private Long drivingVideoId;
 }
