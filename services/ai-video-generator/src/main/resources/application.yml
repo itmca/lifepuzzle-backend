@@ -5,17 +5,12 @@ spring:
     active: local
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-    ignore-migration-patterns: "*:missing"
-    locations: classpath:db/migration
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
