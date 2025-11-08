@@ -2,3 +2,4 @@ rootProject.name = 'lifepuzzle-backend'
 
 include 'shared:java-common'
 include 'services:lifepuzzle-api'
+include 'services:ai-video-generator'

@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: ai-video-generator
+  profiles:
+    active: local
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+  cloud:
+    aws:
+      credentials:
+        accessKey: ${AWS_ACCESS_KEY:}
+        secretKey: ${AWS_SECRET_KEY:}
+      s3:
+        bucket: ${AWS_S3_BUCKET:}
+        dir: /
+      region:
+        static: ${AWS_REGION:ap-northeast-2}
+      stack:
+        auto: false
+    stream:
+      function:
+        definition: aiVideoCreateEventConsumer
+      rabbit:
+        binder:
+          connection-name-prefix: ai-video-generator
+          admin-addresses: ${RABBITMQ_HOST:localhost}:${RABBITMQ_ADMIN_PORT:15672}
+        bindings:
+          aiVideoCreateEventConsumer-in-0:
+            consumer:
+              auto-bind-dlq: true
+      bindings:
+        aiVideoCreateEventConsumer-in-0:
+          destination: gallery.ai.video.create
+          group: ai-video-generator
+          content-type: application/json
+          consumer:
+            max-attempts: 3
+
+server:
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    io.itmca.aivideogenerator: DEBUG
+    org.springframework.cloud.stream: DEBUG
