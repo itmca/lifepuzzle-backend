@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface AiDrivingVideoRepository extends JpaRepository<AiDrivingVideo, Long> {
   
-  @Query("SELECT a FROM AiDrivingVideo a WHERE a.deletedAt IS NULL ORDER BY a.priority DESC, a.createdAt DESC")
+  @Query("SELECT a FROM AiDrivingVideo a WHERE a.deletedAt IS NULL ORDER BY a.priority ASC, a.createdAt DESC")
   List<AiDrivingVideo> findAllActiveOrderByCreatedAtDesc();
 }

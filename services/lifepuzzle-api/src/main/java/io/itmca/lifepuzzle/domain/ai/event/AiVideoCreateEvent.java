@@ -1,7 +1,5 @@
 package io.itmca.lifepuzzle.domain.ai.event;
 
-import lombok.Builder;
-import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
