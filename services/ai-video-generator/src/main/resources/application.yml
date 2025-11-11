@@ -46,6 +46,21 @@ spring:
           content-type: application/json
           consumer:
             max-attempts: 3
+  datasource:
+    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/lifepuzzle}
+    username: ${DATABASE_USERNAME:root}
+    password: ${DATABASE_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+aws:
+  s3:
+    bucket: ${AWS_S3_BUCKET:}
+    region: ${AWS_REGION:ap-northeast-2}
+
+ai:
+  video:
+    output:
+      path: ${AI_VIDEO_OUTPUT_PATH:/var/tmp/ai_video/}
 
 server:
   port: 8081
