@@ -42,7 +42,7 @@ public class User {
   @Column(name = "recent_hero")
   private Long recentHeroNo;
   @Column(name = "email_validated")
-  private Boolean emailValidated;
+  private boolean emailValidated;
   @Column(name = "nick_name")
   private String nickName;
   @Column(name = "kakao_id")
@@ -50,7 +50,7 @@ public class User {
   @Column(name = "apple_id")
   private String appleId;
   @Column(name = "push_opt_in")
-  private Boolean pushOptIn;
+  private boolean pushOptIn;
   private String image;
 
   @OneToMany(mappedBy = "user")

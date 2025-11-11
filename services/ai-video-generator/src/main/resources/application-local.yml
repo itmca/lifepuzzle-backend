@@ -1,15 +1,14 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/lifepuzzle?useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
-    username: root
-    password: rootPassword
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
+    url: ${DB_PROD_URL}
+    username: ${DB_PROD_USERNAME}
+    password: ${DB_PROD_PASSWORD}
   rabbitmq:
     host: localhost
     port: 5672
-    username: admin
-    password: admin
+    username: lifepuzzle
+    password: lifepuzzlepass
+    virtual-host: lifepuzzle
 
   cloud:
     aws:
@@ -26,3 +25,5 @@ logging:
   level:
     org.springframework.web: DEBUG
     io.itmca.aivideogenerator: DEBUG
+server:
+  port: 8085
