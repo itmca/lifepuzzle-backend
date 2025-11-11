@@ -1,0 +1,83 @@
+name: Deploy to Production (ai-video-generator)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    permissions: 
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+        shell: bash
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+        env: ${{ secrets }}
+
+      - name: Get current time
+        uses: josStorer/get-current-time@v2.1.2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+      - name: Set artifact
+        run: echo "artifact=$(ls ./services/ai-video-generator/build/libs/*.jar)" >> $GITHUB_ENV
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./services/ai-video-generator/Dockerfile
+          push: true
+          build-args: |
+            DATABASE_URL=${{ secrets.DB_PROD_URL }}
+            DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}
+            DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}
+            RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}
+            RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
+            RABBITMQ_ADMIN_PORT=${{ secrets.RABBITMQ_ADMIN_PORT }}
+            RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}
+            RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
+            AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+            AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
+            AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AI_VIDEO_OUTPUT_PATH=${{ secrets.AI_VIDEO_OUTPUT_PATH }}
+          tags: ${{ secrets.GHCR_AI_VIDEO_GENERATOR }}:latest
+
+      - name: SSH into Home Server and Restart Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOME_SERVER_HOST }}
+          username: ${{ secrets.HOME_SERVER_USER }}
+          key: ${{ secrets.HOME_SERVER_SSH_KEY }}
+          port: ${{ secrets.HOME_SERVER_PORT }}
+          script: |
+            echo "Restarting ai-video-generator deployment..."
+            /opt/homebrew/bin/kubectl config use-context prod-app
+            /opt/homebrew/bin/kubectl rollout restart deployment/ai-video-generator
+            /opt/homebrew/bin/kubectl rollout status deployment/ai-video-generator
