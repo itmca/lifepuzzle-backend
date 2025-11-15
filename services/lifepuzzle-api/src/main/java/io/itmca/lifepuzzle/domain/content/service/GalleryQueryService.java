@@ -54,11 +54,6 @@ public class GalleryQueryService {
         .toList();
   }
 
-  private List<Gallery> getGalleryByHeroId(Long heroId) {
-    return galleryRepository.findByHeroIdWithStories(heroId)
-        .orElseThrow(() -> new GalleryNotFoundException(heroId));
-  }
-
   private Map<AgeGroup, AgeGroupGalleryDto> getGalleryByAgeGroup(List<Gallery> photos,
                                                                  Hero hero) {
     var groupedByAge = photos.stream()
