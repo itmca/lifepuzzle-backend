@@ -20,7 +20,7 @@ public class UserQueryDto {
   private String userType;
   private String email;
   private LocalDate birthday;
-  private String imageURL;
+  private String imageUrl;
 
   public static UserQueryDto from(User user) {
     return UserQueryDto.builder()
@@ -31,15 +31,15 @@ public class UserQueryDto {
         .email(user.getEmail())
         .birthday(user.getBirthday())
         .userType(user.getUserType())
-        .imageURL(addServerHostInImage(user.getId(), user.getImage()))
+        .imageUrl(addServerHostInImage(user.getId(), user.getImage()))
         .build();
   }
 
-  private static String addServerHostInImage(Long userNo, String imageURL) {
-    if (StringUtils.isBlank(imageURL)) {
+  private static String addServerHostInImage(Long userNo, String imageUrl) {
+    if (StringUtils.isBlank(imageUrl)) {
       return "";
     }
 
-    return S3_SERVER_HOST + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(userNo) + imageURL;
+    return S3_SERVER_HOST + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(userNo) + imageUrl;
   }
 }
