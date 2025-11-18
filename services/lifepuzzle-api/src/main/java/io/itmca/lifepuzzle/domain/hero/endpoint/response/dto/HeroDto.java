@@ -36,13 +36,13 @@ public class HeroDto {
         .build();
   }
 
-  private static String toFullImageUrl(Long heroNo, String imageURL) {
-    if (StringUtils.isBlank(imageURL)) {
+  private static String toFullImageUrl(Long heroNo, String imageUrl) {
+    if (StringUtils.isBlank(imageUrl)) {
       return "";
     }
 
     return S3_SERVER_HOST
         + HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(String.valueOf(heroNo))
-        + imageURL;
+        + imageUrl;
   }
 }

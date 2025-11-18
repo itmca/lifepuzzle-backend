@@ -20,7 +20,7 @@ public class HeroUserAuthQueryDto {
   @Schema(description = "별칭")
   private String nickName;
   @Schema(description = "대표이미지")
-  private String imageURL;
+  private String imageUrl;
   @Schema(description = "권한")
   private HeroAuthStatus auth;
 
@@ -29,16 +29,16 @@ public class HeroUserAuthQueryDto {
     return HeroUserAuthQueryDto.builder()
         .userNo(user.getId())
         .nickName(user.getNickName())
-        .imageURL(addServerHostInImage(user.getId(), user.getImage()))
+        .imageUrl(addServerHostInImage(user.getId(), user.getImage()))
         .auth(heroUserAuth.getAuth())
         .build();
   }
 
-  private static String addServerHostInImage(Long userNo, String imageURL) {
-    if (StringUtils.isBlank(imageURL)) {
+  private static String addServerHostInImage(Long userNo, String imageUrl) {
+    if (StringUtils.isBlank(imageUrl)) {
       return "";
     }
 
-    return S3_SERVER_HOST + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(userNo) + imageURL;
+    return S3_SERVER_HOST + USER_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(userNo) + imageUrl;
   }
 }

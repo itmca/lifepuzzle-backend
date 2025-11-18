@@ -28,7 +28,7 @@ public class HeroQueryDto {
   @Schema(description = "대표제목")
   private String title;
   @Schema(description = "대표이미지")
-  private String imageURL;
+  private String imageUrl;
   @Nullable
   @Schema(description = "권한")
   private HeroAuthStatus auth;
@@ -49,7 +49,7 @@ public class HeroQueryDto {
         .heroNickName(hero.getNickname())
         .birthday(hero.getBirthday())
         .title(hero.getTitle())
-        .imageURL(addServerHostInImage(hero.getHeroNo(), hero.getImage()))
+        .imageUrl(addServerHostInImage(hero.getHeroNo(), hero.getImage()))
         .auth(auth)
         .isLunar(hero.getIsLunar())
         .build();
@@ -59,13 +59,13 @@ public class HeroQueryDto {
     return from(hero, null);
   }
 
-  private static String addServerHostInImage(Long heroNo, String imageURL) {
-    if (StringUtils.isBlank(imageURL)) {
+  private static String addServerHostInImage(Long heroNo, String imageUrl) {
+    if (StringUtils.isBlank(imageUrl)) {
       return "";
     }
 
     return S3_SERVER_HOST
         + HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(String.valueOf(heroNo))
-        + imageURL;
+        + imageUrl;
   }
 }
