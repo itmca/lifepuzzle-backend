@@ -3,10 +3,10 @@ package io.itmca.lifepuzzle.domain.auth.service;
 import io.itmca.lifepuzzle.domain.auth.Login;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.dto.TokenQueryDto;
-import io.itmca.lifepuzzle.domain.auth.endpoint.response.dto.UserQueryDto;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDto;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
+import io.itmca.lifepuzzle.domain.user.endpoint.response.dto.UserQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -37,11 +37,7 @@ public class LoginService {
         tokens.getSocialToken()
     );
 
-    var userQueryDTO = UserQueryDto.builder()
-        .userNo(user.getId())
-        .userNickName(user.getNickName())
-        .userType(user.getUserType())
-        .build();
+    var userQueryDTO = UserQueryDto.from(user);
 
     return new LoginResponse(
         userQueryDTO,
