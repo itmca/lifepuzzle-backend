@@ -26,7 +26,7 @@ public class HeroQueryResponse {
     var otherUserHeroAuthQueryDTOs = hero.getHeroUserAuths().stream()
         .filter(heroUserAuth -> !heroUserAuth.getUser().getId().equals(userNo))
         .map(HeroUserAuthQueryDto::from)
-        .sorted(Comparator.comparing(HeroUserAuthQueryDto::getNickName))
+        .sorted(Comparator.comparing(HeroUserAuthQueryDto::nickName))
         .toList();
 
     var heroAuthQueryDTOs = new ArrayList<HeroUserAuthQueryDto>();

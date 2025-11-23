@@ -5,34 +5,30 @@ import static io.itmca.lifepuzzle.global.constants.ServerConstant.S3_SERVER_HOST
 
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import java.time.LocalDate;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
-@Getter
-@Builder(access = AccessLevel.PRIVATE)
-public class UserQueryDto {
-  private Long userNo;
-  private String userId;
-  private String userNickName;
-  private Long recentHeroNo;
-  private String userType;
-  private String email;
-  private LocalDate birthday;
-  private String imageUrl;
+public record UserQueryDto(
+    Long userNo,
+    String userId,
+    String userNickName,
+    Long recentHeroNo,
+    String userType,
+    String email,
+    LocalDate birthday,
+    String imageUrl
+) {
 
   public static UserQueryDto from(User user) {
-    return UserQueryDto.builder()
-        .userNo(user.getId())
-        .userId(user.getLoginId())
-        .userNickName(user.getNickName())
-        .recentHeroNo(user.getRecentHeroNo())
-        .email(user.getEmail())
-        .birthday(user.getBirthday())
-        .userType(user.getUserType())
-        .imageUrl(addServerHostInImage(user.getId(), user.getImage()))
-        .build();
+    return new UserQueryDto(
+        user.getId(),
+        user.getLoginId(),
+        user.getNickName(),
+        user.getRecentHeroNo(),
+        user.getUserType(),
+        user.getEmail(),
+        user.getBirthday(),
+        addServerHostInImage(user.getId(), user.getImage())
+    );
   }
 
   private static String addServerHostInImage(Long userNo, String imageUrl) {
