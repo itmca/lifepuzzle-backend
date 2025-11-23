@@ -55,7 +55,7 @@ class StoryLikeServiceTest {
     var response = storyLikeService.addLike(storyKey, userId);
 
     // Then
-    assertTrue(response.getIsLiked());
+    assertTrue(response.isLiked());
     verify(storyQueryService).findById(storyKey);
     verify(likeRepository).save(any(Like.class));
   }
@@ -116,7 +116,7 @@ class StoryLikeServiceTest {
     var response = storyLikeService.deleteLike(storyKey, userId);
 
     // Then
-    assertEquals(false, response.getIsLiked());
+    assertEquals(false, response.isLiked());
     verify(likeRepository).delete(existingLike);
   }
 

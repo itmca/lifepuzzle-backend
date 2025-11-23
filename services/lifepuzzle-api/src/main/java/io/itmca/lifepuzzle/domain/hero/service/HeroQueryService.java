@@ -49,8 +49,6 @@ public class HeroQueryService {
         .map(hero -> toQueryResponse(hero, user.getId()))
         .toList();
 
-    return HeroListQueryResponse.builder()
-        .heroes(heroQueryResponses)
-        .build();
+    return new HeroListQueryResponse(heroQueryResponses);
   }
 }
