@@ -1,4 +1,9 @@
 package io.itmca.lifepuzzle.domain.user.endpoint.request;
 
-public record UserRecentHeroRequest(Long heroNo) {
+import com.fasterxml.jackson.annotation.JsonAlias;
+
+public record UserRecentHeroRequest(
+    @JsonAlias("heroNo")
+    Long heroId
+) {
 }
