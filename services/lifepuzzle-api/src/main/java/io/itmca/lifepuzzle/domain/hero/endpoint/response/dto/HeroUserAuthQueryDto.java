@@ -3,6 +3,7 @@ package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 import static io.itmca.lifepuzzle.global.constants.FileConstant.USER_PROFILE_IMAGE_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constants.ServerConstant.S3_SERVER_HOST;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.itmca.lifepuzzle.domain.hero.entity.HeroUserAuth;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @Schema(title = "유저 주인공 권한 조회 DTO")
 public record HeroUserAuthQueryDto(
-    @Schema(description = "유저키") Long userNo,
+    @Schema(description = "유저키") Long id,
     @Schema(description = "별칭") String nickName,
     @Schema(description = "대표이미지") String imageUrl,
     @Schema(description = "권한") HeroAuthStatus auth
@@ -24,6 +25,17 @@ public record HeroUserAuthQueryDto(
         addServerHostInImage(user.getId(), user.getImage()),
         heroUserAuth.getAuth()
     );
+  }
+
+  /**
+   * Returns user ID for backward compatibility.
+   *
+   * @deprecated Use {@link #id()} instead. Will be removed after FE migration.
+   */
+  @Deprecated
+  @JsonProperty("userNo")
+  public Long userNo() {
+    return id;
   }
 
   private static String addServerHostInImage(Long userNo, String imageUrl) {

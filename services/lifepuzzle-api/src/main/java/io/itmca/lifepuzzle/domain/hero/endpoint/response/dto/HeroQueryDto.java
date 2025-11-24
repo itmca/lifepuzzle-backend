@@ -3,6 +3,7 @@ package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constants.ServerConstant.S3_SERVER_HOST;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,9 +13,9 @@ import org.springframework.lang.Nullable;
 
 @Schema(title = "주인공 조회 DTO")
 public record HeroQueryDto(
-    @Schema(description = "주인공키") Long heroNo,
-    @Schema(description = "이름") String heroName,
-    @Schema(description = "별칭") String heroNickName,
+    @Schema(description = "주인공키") Long id,
+    @Schema(description = "이름") String name,
+    @Schema(description = "별칭") String nickName,
     @Schema(description = "생일") LocalDate birthday,
     @Schema(description = "대표제목") String title,
     @Schema(description = "대표이미지") String imageUrl,
@@ -43,6 +44,39 @@ public record HeroQueryDto(
 
   public static HeroQueryDto from(Hero hero) {
     return from(hero, null);
+  }
+
+  /**
+   * Returns hero ID for backward compatibility.
+   *
+   * @deprecated Use {@link #id()} instead. Will be removed after FE migration.
+   */
+  @Deprecated
+  @JsonProperty("heroNo")
+  public Long heroNo() {
+    return id;
+  }
+
+  /**
+   * Returns hero name for backward compatibility.
+   *
+   * @deprecated Use {@link #name()} instead. Will be removed after FE migration.
+   */
+  @Deprecated
+  @JsonProperty("heroName")
+  public String heroName() {
+    return name;
+  }
+
+  /**
+   * Returns hero nickname for backward compatibility.
+   *
+   * @deprecated Use {@link #nickName()} instead. Will be removed after FE migration.
+   */
+  @Deprecated
+  @JsonProperty("heroNickName")
+  public String heroNickName() {
+    return nickName;
   }
 
   private static String addServerHostInImage(Long heroNo, String imageUrl) {
