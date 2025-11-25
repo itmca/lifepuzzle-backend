@@ -46,6 +46,7 @@ public class HeroQueryService {
 
     var heroQueryResponses = heroUserAuths.stream()
         .map(HeroUserAuth::getHero)
+        .filter(Hero::isActive)
         .map(hero -> toQueryResponse(hero, user.getId()))
         .toList();
 

@@ -84,4 +84,8 @@ public class Hero {
   public void delete() {
     this.deletedAt = LocalDateTime.now();
   }
+
+  public boolean isActive() {
+    return this.deletedAt != null;
+  }
 }
