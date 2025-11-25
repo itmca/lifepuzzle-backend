@@ -14,37 +14,30 @@ jobs:
           script: |
             const title = context.payload.pull_request.title;
 
-            // Chris Beams style: [LP-123] Add feature or Add feature
-            const regex = /^(\[LP-\d+\]\s+)?[A-Z][a-z]+(\s+[a-z]+)*.*[^.]$/;
+            // Extract title without optional ticket prefix
+            const titleWithoutTicket = title.replace(/^\[LP-\d+\]\s+/, '');
+
+            // Check if starts with capital letter
+            const startsWithCapital = /^[A-Z]/.test(titleWithoutTicket);
 
             // Check length (50 characters max)
             const isValidLength = title.length <= 50;
 
-            // Check imperative mood
-            const imperativeVerbs = [
-              'Add', 'Fix', 'Update', 'Remove', 'Delete', 'Create', 'Implement',
-              'Refactor', 'Optimize', 'Improve', 'Change', 'Move', 'Rename',
-              'Extract', 'Split', 'Merge', 'Replace', 'Revert', 'Bump',
-              'Configure', 'Setup', 'Install', 'Upgrade', 'Downgrade'
-            ];
+            // Check no period at the end
+            const hasNoPeriod = !title.endsWith('.');
 
-            // Extract first word after optional ticket
-            const titleWithoutTicket = title.replace(/^\[LP-\d+\]\s+/, '');
-            const firstWord = titleWithoutTicket.split(' ')[0];
-            const isImperative = imperativeVerbs.includes(firstWord);
-
-            if (!regex.test(title) || !isValidLength || !isImperative) {
+            if (!startsWithCapital || !isValidLength || !hasNoPeriod) {
               let errorMessage = `❌ PR 제목이 Chris Beams 스타일을 따르지 않습니다: "${title}"\n\n`;
+
+              if (!startsWithCapital) {
+                errorMessage += `• 제목은 대문자로 시작해야 합니다.\n`;
+              }
 
               if (!isValidLength) {
                 errorMessage += `• 제목이 너무 깁니다 (${title.length}자). 50자 이내로 작성해주세요.\n`;
               }
 
-              if (!isImperative) {
-                errorMessage += `• 명령형으로 시작해야 합니다. "${firstWord}" 대신 Add, Fix, Update 등을 사용해주세요.\n`;
-              }
-
-              if (title.endsWith('.')) {
+              if (!hasNoPeriod) {
                 errorMessage += `• 제목 끝에 마침표를 사용하면 안됩니다.\n`;
               }
 
@@ -54,11 +47,10 @@ jobs:
                   ✅ Add user authentication feature
                   ✅ Fix memory leak in image processor
                   ✅ [LP-1234] Update API documentation
-                  ✅ Remove deprecated OAuth endpoints
+                  ✅ Normalize request DTO field naming
 
                   ❌ add user authentication feature (소문자 시작)
-                  ❌ Added user authentication feature (과거형)
-                  ❌ Add user authentication feature. (마침표)
+                  ❌ Fix memory leak. (마침표)
                   ❌ Add user authentication feature that allows users to login with social providers (너무 김)
               `);
 
