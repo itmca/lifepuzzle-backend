@@ -71,8 +71,8 @@ public class HeroWriteService {
         .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
 
     hero.setTitle(heroWriteRequest.getTitle());
-    hero.setName(heroWriteRequest.getHeroName());
-    hero.setNickname(heroWriteRequest.getHeroNickName());
+    hero.setName(heroWriteRequest.getName());
+    hero.setNickname(heroWriteRequest.getNickName());
     hero.setBirthday(heroWriteRequest.getBirthday());
     hero.setIsLunar(heroWriteRequest.getIsLunar());
 

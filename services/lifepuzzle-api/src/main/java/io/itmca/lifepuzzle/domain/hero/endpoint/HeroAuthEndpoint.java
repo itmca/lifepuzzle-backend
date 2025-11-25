@@ -47,7 +47,7 @@ public class HeroAuthEndpoint {
       @AuthenticationPrincipal AuthPayload authPayload
   ) {
     heroValidationService.validateUserCanAccessHero(authPayload.getUserId(),
-        heroChangeAuthRequest.heroNo());
+        heroChangeAuthRequest.heroId());
 
     heroUserAuthWriteService.update(heroChangeAuthRequest);
   }

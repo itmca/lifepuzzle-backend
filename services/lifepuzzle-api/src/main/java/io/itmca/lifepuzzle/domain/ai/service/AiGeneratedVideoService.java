@@ -27,7 +27,7 @@ public class AiGeneratedVideoService {
 
   public void generateAiVideo(AiPhotoGenerateRequest aiPhotoGenerateRequest) {
     aiVideoCreateEventPublisher.publishPhotoUploadEvent(
-        aiPhotoGenerateRequest.heroNo(),
+        aiPhotoGenerateRequest.heroId(),
         aiPhotoGenerateRequest.galleryId(),
         aiPhotoGenerateRequest.drivingVideoId()
     );

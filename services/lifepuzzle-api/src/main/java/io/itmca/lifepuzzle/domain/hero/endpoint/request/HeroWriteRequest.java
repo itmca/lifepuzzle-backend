@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import java.time.LocalDate;
@@ -16,8 +17,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class HeroWriteRequest {
-  private String heroName;
-  private String heroNickName;
+  @JsonAlias("heroName")
+  private String name;
+  @JsonAlias("heroNickName")
+  private String nickName;
   private LocalDate birthday;
   private String title;
   @Builder.Default
@@ -27,8 +30,8 @@ public class HeroWriteRequest {
 
   public Hero toHero() {
     return Hero.builder()
-        .name(heroName)
-        .nickname(heroNickName)
+        .name(name)
+        .nickname(nickName)
         .birthday(birthday)
         .isLunar(isLunar)
         .title(title)
