@@ -86,6 +86,6 @@ public class Hero {
   }
 
   public boolean isActive() {
-    return this.deletedAt != null;
+    return this.deletedAt == null;
   }
 }
