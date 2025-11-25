@@ -8,7 +8,7 @@ jobs:
   check-pr-title:
     runs-on: ubuntu-latest
     steps:
-      - name: Validate PR title
+      - name: Validate PR title (Chris Beams Style)
         uses: actions/github-script@v7
         with:
           script: |
@@ -27,7 +27,7 @@ jobs:
             const hasNoPeriod = !title.endsWith('.');
 
             if (!startsWithCapital || !isValidLength || !hasNoPeriod) {
-              let errorMessage = `❌ PR 제목이 규칙을 따르지 않습니다: "${title}"\n\n`;
+              let errorMessage = `❌ PR 제목이 Chris Beams 스타일을 따르지 않습니다: "${title}"\n\n`;
 
               if (!startsWithCapital) {
                 errorMessage += `• 제목은 대문자로 시작해야 합니다.\n`;
@@ -43,7 +43,7 @@ jobs:
 
               console.log(errorMessage);
               console.log(`
-                PR 제목 작성 규칙:
+                Chris Beams 스타일 예시:
                   ✅ Add user authentication feature
                   ✅ Fix memory leak in image processor
                   ✅ [LP-1234] Update API documentation
@@ -56,5 +56,5 @@ jobs:
 
               core.setFailed(errorMessage);
             } else {
-              console.log("✅ PR 제목이 규칙을 따릅니다");
+              console.log("✅ PR 제목이 Chris Beams 스타일을 따릅니다");
             }
