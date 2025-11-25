@@ -168,32 +168,62 @@ chore: 기타 작업
 
 Chris Beams 스타일을 따르며, GitHub Actions에서 자동 검증됩니다:
 
+**올바른 예시:**
 ```bash
 ✅ Add user authentication feature
 ✅ Fix memory leak in image processor
-✅ [LP-1234] Update API documentation
+✅ Update API documentation
 ✅ Remove deprecated OAuth endpoints
-
-❌ add user authentication feature (소문자 시작)
-❌ Added user authentication feature (과거형)
-❌ Add user authentication feature. (마침표)
-❌ Add user authentication feature that allows users to login with social providers (50자 초과)
+✅ Normalize request DTO field naming
+✅ Refactor hero service layer (타입 접두사 없이)
 ```
+
+**잘못된 예시 (자주 하는 실수):**
+```bash
+❌ add user authentication feature (소문자 시작)
+❌ Added user authentication feature (과거형 사용)
+❌ Add user authentication feature. (마침표 포함)
+❌ Add user authentication feature that allows users to login (50자 초과)
+❌ Refactor: Request DTO 필드명 통일 (타입 접두사 사용 금지!)
+❌ Fix: 메모리 누수 수정 (타입 접두사 + 한글 혼용)
+```
+
+**중요 포인트:**
+- 타입 접두사 (`Refactor:`, `Fix:`, `Feat:`) 사용 금지
+- 명령형 동사로 시작 (Add, Fix, Update, Remove, Refactor 등)
+- 50자 이내 (한글의 경우 25자 이내 권장)
+- 첫 글자 대문자, 마침표 금지
 
 ### PR 설명
 
 `.github/PULL_REQUEST_TEMPLATE.md` 템플릿을 따라 작성합니다.
 
-### 자동 PR 생성
+### 자동 PR 생성 (Claude Code)
 
 ```bash
-claude pr
+/create-pr
 ```
 
 이 명령어는 다음을 자동으로 수행합니다:
 - 현재 브랜치의 변경사항 분석
-- PR 템플릿을 기반으로 제목과 설명 자동 생성
+- **Chris Beams 스타일을 준수하는** PR 제목 생성
+- PR 템플릿을 기반으로 구조화된 설명 자동 생성
 - GitHub PR 생성
+
+**Claude가 생성하는 PR 제목 예시:**
+```bash
+# 변경사항: Request DTO 필드명 정규화 작업
+# Claude 생성 제목: "Normalize request DTO field naming"
+# (O) 명령형, 50자 이내, 타입 접두사 없음
+
+# 잘못된 예: "Refactor: Request DTO 필드명 통일 및 하위 호환성 지원"
+# (X) 타입 접두사 사용, 50자 초과
+```
+
+**주의사항:**
+- Claude가 생성한 PR 제목이 Chris Beams 스타일을 따르는지 확인
+- 필요시 직접 수정 가능
+- PR 본문은 .github/PULL_REQUEST_TEMPLATE.md 형식을 따름
 
 ## 도구 및 검증
 
