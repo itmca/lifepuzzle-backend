@@ -70,13 +70,13 @@ public class HeroWriteService {
     var hero = heroRepository.findById(heroNo)
         .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
 
-    hero.setTitle(heroWriteRequest.getTitle());
-    hero.setName(heroWriteRequest.getName());
-    hero.setNickname(heroWriteRequest.getNickName());
-    hero.setBirthday(heroWriteRequest.getBirthday());
-    hero.setIsLunar(heroWriteRequest.getIsLunar());
+    hero.setTitle(heroWriteRequest.title());
+    hero.setName(heroWriteRequest.name());
+    hero.setNickname(heroWriteRequest.nickName());
+    hero.setBirthday(heroWriteRequest.birthday());
+    hero.setIsLunar(heroWriteRequest.isLunar());
 
-    var isProfileImageUpdate = heroWriteRequest.isProfileImageUpdate();
+    var isProfileImageUpdate = heroWriteRequest.profileImageUpdate();
 
     if (isProfileImageUpdate) {
       if (profile == null) {
