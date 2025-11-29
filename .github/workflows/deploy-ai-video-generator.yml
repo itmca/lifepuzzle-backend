@@ -66,15 +66,9 @@ jobs:
             sudo mkdir -p /var/tmp/ai_video
             
             # Set ownership to current user for deployment
-            sudo chown -R $USER:$USER /opt/lifepuzzle/ai-video-generator
-            sudo chown -R $USER:$USER /var/log/lifepuzzle
-            sudo chown -R $USER:$USER /var/tmp/ai_video
-            
-            # Stop existing service if running
-            sudo systemctl stop ai-video-generator || true
-            
-            # Wait for service to stop
-            sleep 5
+            sudo chown -R $USER:$(id -gn) /opt/lifepuzzle/ai-video-generator
+            sudo chown -R $USER:$(id -gn) /var/log/lifepuzzle
+            sudo chown -R $USER:$(id -gn) /var/tmp/ai_video
             
             # Set up JAR file
             cd /opt/lifepuzzle/ai-video-generator
@@ -82,40 +76,8 @@ jobs:
             mv services/ai-video-generator/build/libs/*.jar ai-video-generator.jar
             chmod +x ai-video-generator.jar
             
-            # Set proper ownership for the service user
-            sudo chown -R ubuntu:ubuntu /opt/lifepuzzle/ai-video-generator
-            sudo chown -R ubuntu:ubuntu /var/log/lifepuzzle  
-            sudo chown -R ubuntu:ubuntu /var/tmp/ai_video
-            
-            # Create systemd service file
-            sudo tee /etc/systemd/system/ai-video-generator.service > /dev/null <<'SERVICE_EOF'
-            [Unit]
-            Description=AI Video Generator Service
-            After=network.target
-            
-            [Service]
-            Type=simple
-            User=ubuntu
-            Group=ubuntu
-            WorkingDirectory=/opt/lifepuzzle/ai-video-generator
-            ExecStart=/usr/bin/java -jar -Xmx2g -Dspring.profiles.active=prod ai-video-generator.jar
-            Restart=always
-            RestartSec=10
-            StandardOutput=append:/var/log/lifepuzzle/ai-video-generator.log
-            StandardError=append:/var/log/lifepuzzle/ai-video-generator-error.log
-            SyslogIdentifier=ai-video-generator
-            
-            # Security settings
-            NoNewPrivileges=true
-            PrivateTmp=true
-            ProtectSystem=strict
-            ReadWritePaths=/opt/lifepuzzle/ai-video-generator /var/log/lifepuzzle /var/tmp/ai_video
-            
-            # Environment variables (will be set via EnvironmentFile)
-            SERVICE_EOF
-            
-            # Create environment file for secrets
-            sudo tee /opt/lifepuzzle/ai-video-generator/app.env > /dev/null <<ENV_EOF
+            # Create environment file for application startup
+            cat > /opt/lifepuzzle/ai-video-generator/app.env <<ENV_EOF
             DATABASE_URL=${{ secrets.DB_PROD_URL }}
             DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}
             DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}
@@ -131,41 +93,61 @@ jobs:
             SERVER_PORT=9001
             ENV_EOF
             
-            # Add EnvironmentFile to systemd service
-            sudo sed -i '/SyslogIdentifier=ai-video-generator/a EnvironmentFile=/opt/lifepuzzle/ai-video-generator/app.env' /etc/systemd/system/ai-video-generator.service
-            
             # Set secure permissions for environment file
-            sudo chown ubuntu:ubuntu /opt/lifepuzzle/ai-video-generator/app.env
-            sudo chmod 600 /opt/lifepuzzle/ai-video-generator/app.env
+            chmod 600 /opt/lifepuzzle/ai-video-generator/app.env
             
-            # Create log files with proper permissions
-            sudo touch /var/log/lifepuzzle/ai-video-generator.log
-            sudo touch /var/log/lifepuzzle/ai-video-generator-error.log
-            sudo chown ubuntu:ubuntu /var/log/lifepuzzle/ai-video-generator*.log
-            sudo chmod 644 /var/log/lifepuzzle/ai-video-generator*.log
+            # Create simple startup script
+            cat > /opt/lifepuzzle/ai-video-generator/start.sh <<SCRIPT_EOF
+            #!/bin/bash
+            cd /opt/lifepuzzle/ai-video-generator
+            source ./app.env
+            nohup java -jar -Xmx2g -Dspring.profiles.active=prod ai-video-generator.jar > /var/log/lifepuzzle/ai-video-generator.log 2>&1 &
+            echo \$! > ai-video-generator.pid
+            echo "AI Video Generator started with PID \$(cat ai-video-generator.pid)"
+            SCRIPT_EOF
             
-            # Reload systemd and start service
-            sudo systemctl daemon-reload
-            sudo systemctl enable ai-video-generator
-            sudo systemctl start ai-video-generator
+            chmod +x /opt/lifepuzzle/ai-video-generator/start.sh
             
-            # Wait for service to start
-            sleep 15
+            # Stop existing process if running
+            if [ -f "/opt/lifepuzzle/ai-video-generator/ai-video-generator.pid" ]; then
+              OLD_PID=$(cat /opt/lifepuzzle/ai-video-generator/ai-video-generator.pid)
+              if ps -p $OLD_PID > /dev/null 2>&1; then
+                echo "Stopping existing process (PID: $OLD_PID)"
+                kill $OLD_PID
+                sleep 5
+              fi
+              rm -f /opt/lifepuzzle/ai-video-generator/ai-video-generator.pid
+            fi
             
-            # Check service status and logs for debugging
-            echo "=== Service Status ==="
-            sudo systemctl status ai-video-generator --no-pager -l
-            echo ""
-            echo "=== Recent Logs ==="
-            sudo journalctl -u ai-video-generator --no-pager -n 20
-            echo ""
-            echo "=== Application Logs ==="
-            tail -n 10 /var/log/lifepuzzle/ai-video-generator.log 2>/dev/null || echo "No application logs yet"
-            echo ""
+            # Start the application
+            echo "Starting AI Video Generator..."
+            /opt/lifepuzzle/ai-video-generator/start.sh
+            
+            # Wait for application to start
+            sleep 10
+            
+            # Check deployment status
+            echo "=== Deployment Status ==="
+            if [ -f "/opt/lifepuzzle/ai-video-generator/ai-video-generator.pid" ]; then
+              PID=$(cat /opt/lifepuzzle/ai-video-generator/ai-video-generator.pid)
+              if ps -p $PID > /dev/null 2>&1; then
+                echo "✅ Application is running (PID: $PID)"
+              else
+                echo "❌ Application failed to start"
+              fi
+            else
+              echo "❌ PID file not found"
+            fi
+            
             echo "=== Port Check ==="
-            sudo netstat -tlnp | grep :9001 || echo "Port 9001 not yet bound"
-            echo ""
-            echo "=== Deployment Summary ==="
-            echo "JAR file: $(ls -la /opt/lifepuzzle/ai-video-generator/*.jar 2>/dev/null || echo 'JAR file not found')"
-            echo "Environment file: $(ls -la /opt/lifepuzzle/ai-video-generator/app.env 2>/dev/null || echo 'Environment file not found')"
-            echo "Deployment completed successfully!"
+            lsof -i :9001 || echo "Port 9001 not yet bound"
+            
+            echo "=== Recent Logs ==="
+            tail -n 10 /var/log/lifepuzzle/ai-video-generator.log 2>/dev/null || echo "No logs yet"
+            
+            echo "=== Files Summary ==="
+            echo "JAR: $(ls -la /opt/lifepuzzle/ai-video-generator/*.jar 2>/dev/null || echo 'Not found')"
+            echo "ENV: $(ls -la /opt/lifepuzzle/ai-video-generator/app.env 2>/dev/null || echo 'Not found')"
+            echo "PID: $(ls -la /opt/lifepuzzle/ai-video-generator/*.pid 2>/dev/null || echo 'Not found')"
+            
+            echo "Deployment completed!"
