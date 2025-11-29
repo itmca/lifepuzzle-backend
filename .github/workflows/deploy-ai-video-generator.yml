@@ -60,10 +60,15 @@ jobs:
           script: |
             echo "Deploying ai-video-generator..."
             
-            # Create application directory
-            mkdir -p /opt/lifepuzzle/ai-video-generator
-            mkdir -p /var/log/lifepuzzle
-            mkdir -p /var/tmp/ai_video
+            # Create application directories with proper permissions
+            sudo mkdir -p /opt/lifepuzzle/ai-video-generator
+            sudo mkdir -p /var/log/lifepuzzle
+            sudo mkdir -p /var/tmp/ai_video
+            
+            # Set ownership to current user for deployment
+            sudo chown -R $USER:$USER /opt/lifepuzzle/ai-video-generator
+            sudo chown -R $USER:$USER /var/log/lifepuzzle
+            sudo chown -R $USER:$USER /var/tmp/ai_video
             
             # Stop existing service if running
             sudo systemctl stop ai-video-generator || true
@@ -77,8 +82,13 @@ jobs:
             mv services/ai-video-generator/build/libs/*.jar ai-video-generator.jar
             chmod +x ai-video-generator.jar
             
+            # Set proper ownership for the service user
+            sudo chown -R ubuntu:ubuntu /opt/lifepuzzle/ai-video-generator
+            sudo chown -R ubuntu:ubuntu /var/log/lifepuzzle  
+            sudo chown -R ubuntu:ubuntu /var/tmp/ai_video
+            
             # Create systemd service file
-            sudo tee /etc/systemd/system/ai-video-generator.service > /dev/null <<EOF
+            sudo tee /etc/systemd/system/ai-video-generator.service > /dev/null <<'SERVICE_EOF'
             [Unit]
             Description=AI Video Generator Service
             After=network.target
@@ -86,31 +96,53 @@ jobs:
             [Service]
             Type=simple
             User=ubuntu
+            Group=ubuntu
             WorkingDirectory=/opt/lifepuzzle/ai-video-generator
             ExecStart=/usr/bin/java -jar -Xmx2g -Dspring.profiles.active=prod ai-video-generator.jar
             Restart=always
             RestartSec=10
-            StandardOutput=journal
-            StandardError=journal
+            StandardOutput=append:/var/log/lifepuzzle/ai-video-generator.log
+            StandardError=append:/var/log/lifepuzzle/ai-video-generator-error.log
             SyslogIdentifier=ai-video-generator
             
-            Environment="DATABASE_URL=${{ secrets.DB_PROD_URL }}"
-            Environment="DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}"
-            Environment="DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}"
-            Environment="RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}"
-            Environment="RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}"
-            Environment="RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}"
-            Environment="RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}"
-            Environment="AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}"
-            Environment="AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}"
-            Environment="AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}"
-            Environment="AWS_REGION=${{ secrets.AWS_REGION }}"
-            Environment="AI_VIDEO_OUTPUT_PATH=${{ secrets.AI_VIDEO_OUTPUT_PATH }}"
-            Environment="SERVER_PORT=9001"
+            # Security settings
+            NoNewPrivileges=true
+            PrivateTmp=true
+            ProtectSystem=strict
+            ReadWritePaths=/opt/lifepuzzle/ai-video-generator /var/log/lifepuzzle /var/tmp/ai_video
             
-            [Install]
-            WantedBy=multi-user.target
-            EOF
+            # Environment variables (will be set via EnvironmentFile)
+            SERVICE_EOF
+            
+            # Create environment file for secrets
+            sudo tee /opt/lifepuzzle/ai-video-generator/app.env > /dev/null <<ENV_EOF
+            DATABASE_URL=${{ secrets.DB_PROD_URL }}
+            DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}
+            DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}
+            RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}
+            RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
+            RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}
+            RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
+            AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+            AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
+            AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AI_VIDEO_OUTPUT_PATH=${{ secrets.AI_VIDEO_OUTPUT_PATH }}
+            SERVER_PORT=9001
+            ENV_EOF
+            
+            # Add EnvironmentFile to systemd service
+            sudo sed -i '/SyslogIdentifier=ai-video-generator/a EnvironmentFile=/opt/lifepuzzle/ai-video-generator/app.env' /etc/systemd/system/ai-video-generator.service
+            
+            # Set secure permissions for environment file
+            sudo chown ubuntu:ubuntu /opt/lifepuzzle/ai-video-generator/app.env
+            sudo chmod 600 /opt/lifepuzzle/ai-video-generator/app.env
+            
+            # Create log files with proper permissions
+            sudo touch /var/log/lifepuzzle/ai-video-generator.log
+            sudo touch /var/log/lifepuzzle/ai-video-generator-error.log
+            sudo chown ubuntu:ubuntu /var/log/lifepuzzle/ai-video-generator*.log
+            sudo chmod 644 /var/log/lifepuzzle/ai-video-generator*.log
             
             # Reload systemd and start service
             sudo systemctl daemon-reload
@@ -118,8 +150,15 @@ jobs:
             sudo systemctl start ai-video-generator
             
             # Wait for service to start
-            sleep 10
+            sleep 15
             
             # Check service status
-            sudo systemctl status ai-video-generator
+            echo "=== Service Status ==="
+            sudo systemctl status ai-video-generator --no-pager -l
+            echo ""
+            echo "=== Recent Logs ==="
+            sudo journalctl -u ai-video-generator --no-pager -n 20
+            echo ""
+            echo "=== Port Check ==="
+            sudo netstat -tlnp | grep :9001 || echo "Port 9001 not yet bound"
             echo "Deployment completed successfully!"
