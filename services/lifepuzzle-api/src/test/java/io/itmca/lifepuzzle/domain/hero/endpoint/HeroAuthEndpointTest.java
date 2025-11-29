@@ -126,8 +126,8 @@ class HeroAuthEndpointTest extends IntegrationTestBase {
           .contentType("application/json")
           .content("""
               {
-                "heroNo": %d,
-                "userNo": %d,
+                "heroId": %d,
+                "userId": %d,
                 "heroAuthStatus": "%s"
               }
               """.formatted(DEFAULT_HERO_ID1, OTHER_USER_ID, NEW_AUTH_STATUS))
@@ -169,8 +169,8 @@ class HeroAuthEndpointTest extends IntegrationTestBase {
           .contentType("application/json")
           .content("""
               {
-                "heroNo": %d,
-                "userNo": %d,
+                "heroId": %d,
+                "userId": %d,
                 "heroAuthStatus": "%s"
               }
               """.formatted(DEFAULT_HERO_ID1, OTHER_USER_ID, NEW_AUTH_STATUS))
@@ -207,8 +207,8 @@ class HeroAuthEndpointTest extends IntegrationTestBase {
       var accessToken = login();
       var response = mockMvc.perform(delete("/v1/heroes/auth")
           .contentType("application/json")
-          .param("heroNo", String.valueOf(DEFAULT_HERO_ID1))
-          .param("userNo", String.valueOf(OTHER_USER_ID))
+          .param("heroId", String.valueOf(DEFAULT_HERO_ID1))
+          .param("userId", String.valueOf(OTHER_USER_ID))
           .header("Authorization", "Bearer " + accessToken));
 
       response.andExpect(status().isOk());
@@ -243,8 +243,8 @@ class HeroAuthEndpointTest extends IntegrationTestBase {
       var accessToken = login();
       var response = mockMvc.perform(delete("/v1/heroes/auth")
           .contentType("application/json")
-          .param("heroNo", String.valueOf(DEFAULT_HERO_ID1))
-          .param("userNo", String.valueOf(OTHER_USER_ID))
+          .param("heroId", String.valueOf(DEFAULT_HERO_ID1))
+          .param("userId", String.valueOf(OTHER_USER_ID))
           .header("Authorization", "Bearer " + accessToken));
 
       response.andExpect(status().is(HttpStatus.FORBIDDEN.value()));
@@ -271,8 +271,8 @@ class HeroAuthEndpointTest extends IntegrationTestBase {
       var accessToken = login();
       var response = mockMvc.perform(delete("/v1/heroes/auth")
           .contentType("application/json")
-          .param("heroNo", String.valueOf(DEFAULT_HERO_ID1))
-          .param("userNo", String.valueOf(OTHER_USER_ID))
+          .param("heroId", String.valueOf(DEFAULT_HERO_ID1))
+          .param("userId", String.valueOf(OTHER_USER_ID))
           .header("Authorization", "Bearer " + accessToken));
 
       response.andExpect(status().isOk());
@@ -307,8 +307,8 @@ class HeroAuthEndpointTest extends IntegrationTestBase {
       var accessToken = login();
       var response = mockMvc.perform(delete("/v1/heroes/auth")
           .contentType("application/json")
-          .param("heroNo", String.valueOf(DEFAULT_HERO_ID1))
-          .param("userNo", String.valueOf(OTHER_USER_ID))
+          .param("heroId", String.valueOf(DEFAULT_HERO_ID1))
+          .param("userId", String.valueOf(OTHER_USER_ID))
           .header("Authorization", "Bearer " + accessToken));
 
       response.andExpect(status().is(HttpStatus.FORBIDDEN.value()));

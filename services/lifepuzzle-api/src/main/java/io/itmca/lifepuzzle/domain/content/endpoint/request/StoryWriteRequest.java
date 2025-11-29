@@ -1,6 +1,5 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.request;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import io.itmca.lifepuzzle.domain.content.entity.Story;
 import io.itmca.lifepuzzle.global.aop.HeroNo;
 import jakarta.validation.constraints.NotBlank;
@@ -10,15 +9,11 @@ import java.time.LocalDateTime;
 
 public record StoryWriteRequest(
     @HeroNo
-    @JsonAlias("heroNo")
     @NotNull(message = "Hero number is required")
     Long heroId,
 
-    @JsonAlias("recQuestionNo")
     Long questionId,
-    @JsonAlias("recQuestionModified")
     Boolean questionModified,
-    @JsonAlias("helpQuestionText")
     String questionText,
 
     @NotNull(message = "Date is required")
@@ -27,7 +22,6 @@ public record StoryWriteRequest(
     @NotBlank(message = "Title is required")
     String title,
 
-    @JsonAlias("storyText")
     @NotBlank(message = "Story text is required")
     String content
 ) {

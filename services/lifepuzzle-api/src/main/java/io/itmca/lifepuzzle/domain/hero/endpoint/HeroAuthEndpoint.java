@@ -56,12 +56,12 @@ public class HeroAuthEndpoint {
   @Operation(summary = "주인공에 대한 다른 유저의 권한 삭제")
   @DeleteMapping({"/v1/heroes/auth"})
   public void deleteOtherUserHeroAuth(
-      @RequestParam Long userNo,
-      @HeroNo @RequestParam Long heroNo,
+      @RequestParam Long userId,
+      @HeroNo @RequestParam Long heroId,
       @AuthenticationPrincipal AuthPayload authPayload
   ) {
-    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroNo);
+    heroValidationService.validateUserCanAccessHero(authPayload.getUserId(), heroId);
 
-    heroUserAuthWriteService.removeByUserAndHero(userNo, heroNo);
+    heroUserAuthWriteService.removeByUserAndHero(userId, heroId);
   }
 }
