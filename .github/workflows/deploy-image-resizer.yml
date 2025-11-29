@@ -46,7 +46,7 @@ jobs:
             ${{ secrets.GHCR_IMAGE_RESIZER }}:${{ steps.current-time.outputs.formattedTime }}
 
       - name: SSH into Home Server and Deploy with Helm
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.4
         with:
           host: ${{ secrets.HOME_SERVER_HOST }}
           username: ${{ secrets.HOME_SERVER_USER }}
