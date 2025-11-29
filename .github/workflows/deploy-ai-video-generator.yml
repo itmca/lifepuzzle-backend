@@ -60,16 +60,15 @@ jobs:
           script: |
             echo "Deploying ai-video-generator..."
             
-            # Create application directory
-            mkdir -p /opt/lifepuzzle/ai-video-generator
-            mkdir -p /var/log/lifepuzzle
-            mkdir -p /var/tmp/ai_video
+            # Create application directories with proper permissions
+            sudo mkdir -p /opt/lifepuzzle/ai-video-generator
+            sudo mkdir -p /var/log/lifepuzzle
+            sudo mkdir -p /var/tmp/ai_video
             
-            # Stop existing service if running
-            sudo systemctl stop ai-video-generator || true
-            
-            # Wait for service to stop
-            sleep 5
+            # Set ownership to current user for deployment
+            sudo chown -R $USER:$(id -gn) /opt/lifepuzzle/ai-video-generator
+            sudo chown -R $USER:$(id -gn) /var/log/lifepuzzle
+            sudo chown -R $USER:$(id -gn) /var/tmp/ai_video
             
             # Set up JAR file
             cd /opt/lifepuzzle/ai-video-generator
@@ -77,49 +76,78 @@ jobs:
             mv services/ai-video-generator/build/libs/*.jar ai-video-generator.jar
             chmod +x ai-video-generator.jar
             
-            # Create systemd service file
-            sudo tee /etc/systemd/system/ai-video-generator.service > /dev/null <<EOF
-            [Unit]
-            Description=AI Video Generator Service
-            After=network.target
+            # Create environment file for application startup
+            cat > /opt/lifepuzzle/ai-video-generator/app.env <<ENV_EOF
+            DATABASE_URL=${{ secrets.DB_PROD_URL }}
+            DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}
+            DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}
+            RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}
+            RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
+            RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}
+            RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
+            AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+            AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
+            AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AI_VIDEO_OUTPUT_PATH=${{ secrets.AI_VIDEO_OUTPUT_PATH }}
+            SERVER_PORT=9001
+            ENV_EOF
             
-            [Service]
-            Type=simple
-            User=ubuntu
-            WorkingDirectory=/opt/lifepuzzle/ai-video-generator
-            ExecStart=/usr/bin/java -jar -Xmx2g -Dspring.profiles.active=prod ai-video-generator.jar
-            Restart=always
-            RestartSec=10
-            StandardOutput=journal
-            StandardError=journal
-            SyslogIdentifier=ai-video-generator
+            # Set secure permissions for environment file
+            chmod 600 /opt/lifepuzzle/ai-video-generator/app.env
             
-            Environment="DATABASE_URL=${{ secrets.DB_PROD_URL }}"
-            Environment="DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}"
-            Environment="DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}"
-            Environment="RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}"
-            Environment="RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}"
-            Environment="RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}"
-            Environment="RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}"
-            Environment="AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}"
-            Environment="AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}"
-            Environment="AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}"
-            Environment="AWS_REGION=${{ secrets.AWS_REGION }}"
-            Environment="AI_VIDEO_OUTPUT_PATH=${{ secrets.AI_VIDEO_OUTPUT_PATH }}"
-            Environment="SERVER_PORT=9001"
+            # Create simple startup script
+            cat > /opt/lifepuzzle/ai-video-generator/start.sh <<SCRIPT_EOF
+            #!/bin/bash
+            cd /opt/lifepuzzle/ai-video-generator
+            source ./app.env
+            nohup java -jar -Xmx2g -Dspring.profiles.active=prod ai-video-generator.jar > /var/log/lifepuzzle/ai-video-generator.log 2>&1 &
+            echo \$! > ai-video-generator.pid
+            echo "AI Video Generator started with PID \$(cat ai-video-generator.pid)"
+            SCRIPT_EOF
             
-            [Install]
-            WantedBy=multi-user.target
-            EOF
+            chmod +x /opt/lifepuzzle/ai-video-generator/start.sh
             
-            # Reload systemd and start service
-            sudo systemctl daemon-reload
-            sudo systemctl enable ai-video-generator
-            sudo systemctl start ai-video-generator
+            # Stop existing process if running
+            if [ -f "/opt/lifepuzzle/ai-video-generator/ai-video-generator.pid" ]; then
+              OLD_PID=$(cat /opt/lifepuzzle/ai-video-generator/ai-video-generator.pid)
+              if ps -p $OLD_PID > /dev/null 2>&1; then
+                echo "Stopping existing process (PID: $OLD_PID)"
+                kill $OLD_PID
+                sleep 5
+              fi
+              rm -f /opt/lifepuzzle/ai-video-generator/ai-video-generator.pid
+            fi
             
-            # Wait for service to start
+            # Start the application
+            echo "Starting AI Video Generator..."
+            /opt/lifepuzzle/ai-video-generator/start.sh
+            
+            # Wait for application to start
             sleep 10
             
-            # Check service status
-            sudo systemctl status ai-video-generator
-            echo "Deployment completed successfully!"
+            # Check deployment status
+            echo "=== Deployment Status ==="
+            if [ -f "/opt/lifepuzzle/ai-video-generator/ai-video-generator.pid" ]; then
+              PID=$(cat /opt/lifepuzzle/ai-video-generator/ai-video-generator.pid)
+              if ps -p $PID > /dev/null 2>&1; then
+                echo "✅ Application is running (PID: $PID)"
+              else
+                echo "❌ Application failed to start"
+              fi
+            else
+              echo "❌ PID file not found"
+            fi
+            
+            echo "=== Port Check ==="
+            lsof -i :9001 || echo "Port 9001 not yet bound"
+            
+            echo "=== Recent Logs ==="
+            tail -n 10 /var/log/lifepuzzle/ai-video-generator.log 2>/dev/null || echo "No logs yet"
+            
+            echo "=== Files Summary ==="
+            echo "JAR: $(ls -la /opt/lifepuzzle/ai-video-generator/*.jar 2>/dev/null || echo 'Not found')"
+            echo "ENV: $(ls -la /opt/lifepuzzle/ai-video-generator/app.env 2>/dev/null || echo 'Not found')"
+            echo "PID: $(ls -la /opt/lifepuzzle/ai-video-generator/*.pid 2>/dev/null || echo 'Not found')"
+            
+            echo "Deployment completed!"
