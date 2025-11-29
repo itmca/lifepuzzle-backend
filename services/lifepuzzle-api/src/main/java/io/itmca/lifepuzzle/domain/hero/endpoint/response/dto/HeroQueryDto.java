@@ -3,7 +3,6 @@ package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constants.ServerConstant.S3_SERVER_HOST;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,39 +43,6 @@ public record HeroQueryDto(
 
   public static HeroQueryDto from(Hero hero) {
     return from(hero, null);
-  }
-
-  /**
-   * Returns hero ID for backward compatibility.
-   *
-   * @deprecated Use {@link #id()} instead. Will be removed after FE migration.
-   */
-  @Deprecated
-  @JsonProperty("heroNo")
-  public Long heroNo() {
-    return id;
-  }
-
-  /**
-   * Returns hero name for backward compatibility.
-   *
-   * @deprecated Use {@link #name()} instead. Will be removed after FE migration.
-   */
-  @Deprecated
-  @JsonProperty("heroName")
-  public String heroName() {
-    return name;
-  }
-
-  /**
-   * Returns hero nickname for backward compatibility.
-   *
-   * @deprecated Use {@link #nickName()} instead. Will be removed after FE migration.
-   */
-  @Deprecated
-  @JsonProperty("heroNickName")
-  public String heroNickName() {
-    return nickName;
   }
 
   private static String addServerHostInImage(Long heroNo, String imageUrl) {
