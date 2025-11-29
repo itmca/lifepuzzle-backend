@@ -40,36 +40,17 @@ jobs:
       - name: Set artifact
         run: echo "artifact=$(ls ./services/ai-video-generator/build/libs/*.jar)" >> $GITHUB_ENV
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
+      - name: Copy JAR to Server
+        uses: appleboy/scp-action@v0.1.7
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-  
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./services/ai-video-generator/Dockerfile
-          push: true
-          build-args: |
-            DATABASE_URL=${{ secrets.DB_PROD_URL }}
-            DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}
-            DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}
-            RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}
-            RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
-            RABBITMQ_ADMIN_PORT=${{ secrets.RABBITMQ_ADMIN_PORT }}
-            RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}
-            RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
-            AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
-            AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
-            AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
-            AWS_REGION=${{ secrets.AWS_REGION }}
-            AI_VIDEO_OUTPUT_PATH=${{ secrets.AI_VIDEO_OUTPUT_PATH }}
-          tags: ${{ secrets.GHCR_AI_VIDEO_GENERATOR }}:latest
+          host: ${{ secrets.HOME_SERVER_HOST }}
+          username: ${{ secrets.HOME_SERVER_USER }}
+          key: ${{ secrets.HOME_SERVER_SSH_KEY }}
+          port: ${{ secrets.HOME_SERVER_PORT }}
+          source: ${{ env.artifact }}
+          target: "/opt/lifepuzzle/ai-video-generator/"
 
-      - name: SSH into Home Server and Restart Deployment
+      - name: SSH into Home Server and Deploy Application
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOME_SERVER_HOST }}
@@ -77,7 +58,68 @@ jobs:
           key: ${{ secrets.HOME_SERVER_SSH_KEY }}
           port: ${{ secrets.HOME_SERVER_PORT }}
           script: |
-            echo "Restarting ai-video-generator deployment..."
-            /opt/homebrew/bin/kubectl config use-context prod-app
-            /opt/homebrew/bin/kubectl rollout restart deployment/ai-video-generator
-            /opt/homebrew/bin/kubectl rollout status deployment/ai-video-generator
+            echo "Deploying ai-video-generator..."
+            
+            # Create application directory
+            mkdir -p /opt/lifepuzzle/ai-video-generator
+            mkdir -p /var/log/lifepuzzle
+            mkdir -p /var/tmp/ai_video
+            
+            # Stop existing service if running
+            sudo systemctl stop ai-video-generator || true
+            
+            # Wait for service to stop
+            sleep 5
+            
+            # Set up JAR file
+            cd /opt/lifepuzzle/ai-video-generator
+            rm -f ai-video-generator.jar
+            mv services/ai-video-generator/build/libs/*.jar ai-video-generator.jar
+            chmod +x ai-video-generator.jar
+            
+            # Create systemd service file
+            sudo tee /etc/systemd/system/ai-video-generator.service > /dev/null <<EOF
+            [Unit]
+            Description=AI Video Generator Service
+            After=network.target
+            
+            [Service]
+            Type=simple
+            User=ubuntu
+            WorkingDirectory=/opt/lifepuzzle/ai-video-generator
+            ExecStart=/usr/bin/java -jar -Xmx2g -Dspring.profiles.active=prod ai-video-generator.jar
+            Restart=always
+            RestartSec=10
+            StandardOutput=journal
+            StandardError=journal
+            SyslogIdentifier=ai-video-generator
+            
+            Environment="DATABASE_URL=${{ secrets.DB_PROD_URL }}"
+            Environment="DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}"
+            Environment="DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}"
+            Environment="RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}"
+            Environment="RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}"
+            Environment="RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}"
+            Environment="RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}"
+            Environment="AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}"
+            Environment="AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}"
+            Environment="AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}"
+            Environment="AWS_REGION=${{ secrets.AWS_REGION }}"
+            Environment="AI_VIDEO_OUTPUT_PATH=${{ secrets.AI_VIDEO_OUTPUT_PATH }}"
+            Environment="SERVER_PORT=9001"
+            
+            [Install]
+            WantedBy=multi-user.target
+            EOF
+            
+            # Reload systemd and start service
+            sudo systemctl daemon-reload
+            sudo systemctl enable ai-video-generator
+            sudo systemctl start ai-video-generator
+            
+            # Wait for service to start
+            sleep 10
+            
+            # Check service status
+            sudo systemctl status ai-video-generator
+            echo "Deployment completed successfully!"
