@@ -105,48 +105,119 @@ jobs:
             chmod +x ai-video-generator.jar
             echo "JAR file deployed: $(ls -la ai-video-generator.jar)"
             
-            # Create environment file for application startup
-            cat > "$DEPLOY_DIR/app.env" <<ENV_EOF
+            # Create environment file for production runtime configuration
+            cat > "$DEPLOY_DIR/app.env" <<'ENV_EOF'
+            # Production Environment Configuration
+            # Database
             DATABASE_URL=${{ secrets.DB_PROD_URL }}
             DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}
             DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}
+            
+            # Message Queue
             RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}
             RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
+            RABBITMQ_ADMIN_PORT=${{ secrets.RABBITMQ_ADMIN_PORT }}
             RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}
             RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
+            
+            # AWS S3
             AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
             AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
             AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
             AWS_REGION=${{ secrets.AWS_REGION }}
+            
+            # AI Video Processing
             AI_VIDEO_OUTPUT_PATH=${{ secrets.AI_VIDEO_OUTPUT_PATH }}
+            
+            # Server Configuration
             SERVER_PORT=9001
+            SPRING_PROFILES_ACTIVE=prod
+            
+            # JVM Options (can be overridden in start script)
+            JAVA_OPTS=-Xmx2g -Dspring.profiles.active=prod
             ENV_EOF
             
             # Set secure permissions for environment file
             chmod 600 "$DEPLOY_DIR/app.env"
             
-            # Create simple startup script
-            cat > "$DEPLOY_DIR/start.sh" <<SCRIPT_EOF
+            # Create startup script that uses environment variables
+            cat > "$DEPLOY_DIR/start.sh" <<'SCRIPT_EOF'
             #!/bin/bash
-            cd "$DEPLOY_DIR"
-            source ./app.env
-            nohup java -jar -Xmx2g -Dspring.profiles.active=prod ai-video-generator.jar > "$LOG_DIR/ai-video-generator.log" 2>&1 &
-            echo \$! > ai-video-generator.pid
-            echo "AI Video Generator started with PID \$(cat ai-video-generator.pid)"
+            SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+            cd "$SCRIPT_DIR"
+            
+            # Load environment configuration
+            if [ -f "./app.env" ]; then
+                echo "Loading environment configuration..."
+                source ./app.env
+            else
+                echo "Warning: app.env not found, using default configuration"
+                export JAVA_OPTS="${JAVA_OPTS:--Xmx2g}"
+                export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-prod}"
+            fi
+            
+            # Set log directory
+            LOG_DIR="${LOG_DIR:-$HOME/lifepuzzle/logs}"
+            mkdir -p "$LOG_DIR"
+            
+            echo "Starting AI Video Generator..."
+            echo "Deploy Dir: $SCRIPT_DIR"
+            echo "Log Dir: $LOG_DIR"
+            echo "Java Options: $JAVA_OPTS"
+            echo "Spring Profile: $SPRING_PROFILES_ACTIVE"
+            
+            # Start application with environment variables
+            nohup java $JAVA_OPTS -jar ai-video-generator.jar > "$LOG_DIR/ai-video-generator.log" 2>&1 &
+            
+            # Save PID
+            echo $! > ai-video-generator.pid
+            
+            echo "AI Video Generator started with PID $(cat ai-video-generator.pid)"
+            echo "Log file: $LOG_DIR/ai-video-generator.log"
             SCRIPT_EOF
             
             chmod +x "$DEPLOY_DIR/start.sh"
             
-            # Stop existing process if running
-            if [ -f "$DEPLOY_DIR/ai-video-generator.pid" ]; then
-              OLD_PID=$(cat "$DEPLOY_DIR/ai-video-generator.pid")
-              if ps -p $OLD_PID > /dev/null 2>&1; then
-                echo "Stopping existing process (PID: $OLD_PID)"
-                kill $OLD_PID
-                sleep 5
-              fi
-              rm -f "$DEPLOY_DIR/ai-video-generator.pid"
+            # Create stop script
+            cat > "$DEPLOY_DIR/stop.sh" <<'STOP_EOF'
+            #!/bin/bash
+            SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+            cd "$SCRIPT_DIR"
+            
+            if [ -f "ai-video-generator.pid" ]; then
+                PID=$(cat ai-video-generator.pid)
+                if ps -p $PID > /dev/null 2>&1; then
+                    echo "Stopping AI Video Generator (PID: $PID)..."
+                    kill $PID
+                    
+                    # Wait for graceful shutdown
+                    for i in {1..30}; do
+                        if ! ps -p $PID > /dev/null 2>&1; then
+                            echo "AI Video Generator stopped successfully"
+                            break
+                        fi
+                        sleep 1
+                    done
+                    
+                    # Force kill if still running
+                    if ps -p $PID > /dev/null 2>&1; then
+                        echo "Force stopping AI Video Generator..."
+                        kill -9 $PID
+                    fi
+                else
+                    echo "Process $PID is not running"
+                fi
+                rm -f ai-video-generator.pid
+            else
+                echo "PID file not found. AI Video Generator may not be running."
             fi
+            STOP_EOF
+            
+            chmod +x "$DEPLOY_DIR/stop.sh"
+            
+            # Stop existing process if running
+            echo "Checking for existing AI Video Generator process..."
+            "$DEPLOY_DIR/stop.sh"
             
             # Start the application
             echo "Starting AI Video Generator..."
