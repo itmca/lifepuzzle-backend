@@ -68,25 +68,45 @@ jobs:
           script: |
             echo "Deploying ai-video-generator..."
             
-            # Create application directories with proper permissions
-            sudo mkdir -p /opt/lifepuzzle/ai-video-generator
-            sudo mkdir -p /var/log/lifepuzzle
-            sudo mkdir -p /var/tmp/ai_video
+            # Create application directories in user space
+            mkdir -p $HOME/lifepuzzle/ai-video-generator
+            mkdir -p $HOME/lifepuzzle/logs
+            mkdir -p $HOME/lifepuzzle/tmp/ai_video
             
-            # Set ownership to current user for deployment
-            sudo chown -R $USER:$(id -gn) /opt/lifepuzzle/ai-video-generator
-            sudo chown -R $USER:$(id -gn) /var/log/lifepuzzle
-            sudo chown -R $USER:$(id -gn) /var/tmp/ai_video
+            # Create symlinks for compatibility if needed
+            if [ ! -d "/opt/lifepuzzle" ] && [ -w "/opt" ]; then
+              mkdir -p /opt/lifepuzzle/ai-video-generator
+              mkdir -p /var/log/lifepuzzle
+              mkdir -p /var/tmp/ai_video
+            elif [ ! -w "/opt" ]; then
+              echo "Warning: /opt not writable, using home directory"
+              # Use home directory paths
+              export LIFEPUZZLE_HOME="$HOME/lifepuzzle"
+              export LOG_PATH="$HOME/lifepuzzle/logs"
+              export TMP_PATH="$HOME/lifepuzzle/tmp/ai_video"
+            fi
+            
+            # Determine deployment directory
+            if [ -w "/opt/lifepuzzle/ai-video-generator" ]; then
+              DEPLOY_DIR="/opt/lifepuzzle/ai-video-generator"
+              LOG_DIR="/var/log/lifepuzzle"
+            else
+              DEPLOY_DIR="$HOME/lifepuzzle/ai-video-generator"
+              LOG_DIR="$HOME/lifepuzzle/logs"
+            fi
+            
+            echo "Using deployment directory: $DEPLOY_DIR"
+            echo "Using log directory: $LOG_DIR"
             
             # Set up JAR file from uploaded location
-            cd /opt/lifepuzzle/ai-video-generator
+            cd "$DEPLOY_DIR"
             rm -f ai-video-generator.jar
             mv /tmp/ai-video-generator.jar ai-video-generator.jar
             chmod +x ai-video-generator.jar
             echo "JAR file deployed: $(ls -la ai-video-generator.jar)"
             
             # Create environment file for application startup
-            cat > /opt/lifepuzzle/ai-video-generator/app.env <<ENV_EOF
+            cat > "$DEPLOY_DIR/app.env" <<ENV_EOF
             DATABASE_URL=${{ secrets.DB_PROD_URL }}
             DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}
             DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}
@@ -103,42 +123,42 @@ jobs:
             ENV_EOF
             
             # Set secure permissions for environment file
-            chmod 600 /opt/lifepuzzle/ai-video-generator/app.env
+            chmod 600 "$DEPLOY_DIR/app.env"
             
             # Create simple startup script
-            cat > /opt/lifepuzzle/ai-video-generator/start.sh <<SCRIPT_EOF
+            cat > "$DEPLOY_DIR/start.sh" <<SCRIPT_EOF
             #!/bin/bash
-            cd /opt/lifepuzzle/ai-video-generator
+            cd "$DEPLOY_DIR"
             source ./app.env
-            nohup java -jar -Xmx2g -Dspring.profiles.active=prod ai-video-generator.jar > /var/log/lifepuzzle/ai-video-generator.log 2>&1 &
+            nohup java -jar -Xmx2g -Dspring.profiles.active=prod ai-video-generator.jar > "$LOG_DIR/ai-video-generator.log" 2>&1 &
             echo \$! > ai-video-generator.pid
             echo "AI Video Generator started with PID \$(cat ai-video-generator.pid)"
             SCRIPT_EOF
             
-            chmod +x /opt/lifepuzzle/ai-video-generator/start.sh
+            chmod +x "$DEPLOY_DIR/start.sh"
             
             # Stop existing process if running
-            if [ -f "/opt/lifepuzzle/ai-video-generator/ai-video-generator.pid" ]; then
-              OLD_PID=$(cat /opt/lifepuzzle/ai-video-generator/ai-video-generator.pid)
+            if [ -f "$DEPLOY_DIR/ai-video-generator.pid" ]; then
+              OLD_PID=$(cat "$DEPLOY_DIR/ai-video-generator.pid")
               if ps -p $OLD_PID > /dev/null 2>&1; then
                 echo "Stopping existing process (PID: $OLD_PID)"
                 kill $OLD_PID
                 sleep 5
               fi
-              rm -f /opt/lifepuzzle/ai-video-generator/ai-video-generator.pid
+              rm -f "$DEPLOY_DIR/ai-video-generator.pid"
             fi
             
             # Start the application
             echo "Starting AI Video Generator..."
-            /opt/lifepuzzle/ai-video-generator/start.sh
+            "$DEPLOY_DIR/start.sh"
             
             # Wait for application to start
             sleep 10
             
             # Check deployment status
             echo "=== Deployment Status ==="
-            if [ -f "/opt/lifepuzzle/ai-video-generator/ai-video-generator.pid" ]; then
-              PID=$(cat /opt/lifepuzzle/ai-video-generator/ai-video-generator.pid)
+            if [ -f "$DEPLOY_DIR/ai-video-generator.pid" ]; then
+              PID=$(cat "$DEPLOY_DIR/ai-video-generator.pid")
               if ps -p $PID > /dev/null 2>&1; then
                 echo "✅ Application is running (PID: $PID)"
               else
@@ -152,11 +172,13 @@ jobs:
             lsof -i :9001 || echo "Port 9001 not yet bound"
             
             echo "=== Recent Logs ==="
-            tail -n 10 /var/log/lifepuzzle/ai-video-generator.log 2>/dev/null || echo "No logs yet"
+            tail -n 10 "$LOG_DIR/ai-video-generator.log" 2>/dev/null || echo "No logs yet"
             
             echo "=== Files Summary ==="
-            echo "JAR: $(ls -la /opt/lifepuzzle/ai-video-generator/*.jar 2>/dev/null || echo 'Not found')"
-            echo "ENV: $(ls -la /opt/lifepuzzle/ai-video-generator/app.env 2>/dev/null || echo 'Not found')"
-            echo "PID: $(ls -la /opt/lifepuzzle/ai-video-generator/*.pid 2>/dev/null || echo 'Not found')"
+            echo "JAR: $(ls -la $DEPLOY_DIR/*.jar 2>/dev/null || echo 'Not found')"
+            echo "ENV: $(ls -la $DEPLOY_DIR/app.env 2>/dev/null || echo 'Not found')"
+            echo "PID: $(ls -la $DEPLOY_DIR/*.pid 2>/dev/null || echo 'Not found')"
+            echo "Deploy Dir: $DEPLOY_DIR"
+            echo "Log Dir: $LOG_DIR"
             
             echo "Deployment completed!"
