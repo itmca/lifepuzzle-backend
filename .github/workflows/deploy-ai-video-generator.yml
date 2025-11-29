@@ -40,15 +40,23 @@ jobs:
       - name: Set artifact
         run: echo "artifact=$(ls ./services/ai-video-generator/build/libs/*.jar)" >> $GITHUB_ENV
 
-      - name: Copy JAR to Server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.HOME_SERVER_HOST }}
-          username: ${{ secrets.HOME_SERVER_USER }}
-          key: ${{ secrets.HOME_SERVER_SSH_KEY }}
-          port: ${{ secrets.HOME_SERVER_PORT }}
-          source: ${{ env.artifact }}
-          target: "/opt/lifepuzzle/ai-video-generator/"
+      - name: Upload and Deploy JAR file
+        run: |
+          # Setup SSH key
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HOME_SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Add host to known_hosts
+          ssh-keyscan -p ${{ secrets.HOME_SERVER_PORT }} -H ${{ secrets.HOME_SERVER_HOST }} >> ~/.ssh/known_hosts
+          
+          # Upload JAR file
+          echo "Uploading JAR file..."
+          scp -i ~/.ssh/deploy_key -P ${{ secrets.HOME_SERVER_PORT }} \
+            ${{ env.artifact }} \
+            ${{ secrets.HOME_SERVER_USER }}@${{ secrets.HOME_SERVER_HOST }}:/tmp/ai-video-generator.jar
+          
+          echo "JAR file uploaded successfully"
 
       - name: SSH into Home Server and Deploy Application
         uses: appleboy/ssh-action@v1.0.3
@@ -70,11 +78,12 @@ jobs:
             sudo chown -R $USER:$(id -gn) /var/log/lifepuzzle
             sudo chown -R $USER:$(id -gn) /var/tmp/ai_video
             
-            # Set up JAR file
+            # Set up JAR file from uploaded location
             cd /opt/lifepuzzle/ai-video-generator
             rm -f ai-video-generator.jar
-            mv services/ai-video-generator/build/libs/*.jar ai-video-generator.jar
+            mv /tmp/ai-video-generator.jar ai-video-generator.jar
             chmod +x ai-video-generator.jar
+            echo "JAR file deployed: $(ls -la ai-video-generator.jar)"
             
             # Create environment file for application startup
             cat > /opt/lifepuzzle/ai-video-generator/app.env <<ENV_EOF
