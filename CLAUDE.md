@@ -83,7 +83,7 @@ go fmt ./... && go test ./...
 
 ### Claude Code 명령어
 ```bash
-/create-pr          # PR 자동 생성
+/create-pr          # PR 자동 생성 (Chris Beams 스타일 준수)
 /new-feature 설명    # 새 브랜치 생성 후 작업
 ```
 
@@ -91,8 +91,38 @@ go fmt ./... && go test ./...
 ```bash
 # 커밋 형식: [LP-123] Add feature description
 # 브랜치: feat/LP-123-description
+# PR 제목: Add user authentication feature (명령형, 50자 이내)
 
 # 상세 가이드: docs/GIT_WORKFLOW.md 참조
+```
+
+### PR 제목 작성 가이드 (중요!)
+
+Claude가 PR을 자동 생성할 때 다음 규칙을 준수합니다:
+
+**Chris Beams 7가지 규칙:**
+1. ✅ **명령형 사용**: Add, Fix, Update, Remove, Refactor
+2. ✅ **첫 글자 대문자**
+3. ✅ **50자 이내** (한글 25자 이내)
+4. ✅ **마침표 금지**
+5. ✅ **과거형 금지**: Added(❌) → Add(✅)
+6. ✅ **타입 접두사 금지**: "Refactor:"(❌) → "Refactor"(✅)
+
+**올바른 PR 제목 예시:**
+```
+✅ Add user authentication feature
+✅ Fix memory leak in image processor
+✅ Update API documentation
+✅ Normalize request DTO field naming
+✅ Remove deprecated endpoints
+```
+
+**잘못된 PR 제목 예시:**
+```
+❌ Refactor: Request DTO 필드명 통일 (타입 접두사 사용)
+❌ Added user authentication (과거형)
+❌ fix memory leak (소문자 시작)
+❌ Update documentation. (마침표 포함)
 ```
 
 ### 서비스 관리

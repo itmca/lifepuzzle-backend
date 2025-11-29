@@ -17,12 +17,6 @@ public interface GalleryRepository extends JpaRepository<Gallery, Long> {
   @Query("SELECT g FROM Gallery g "
          + "LEFT JOIN FETCH g.storyMaps sm "
          + "LEFT JOIN FETCH sm.story "
-         + "WHERE g.heroId = :heroId")
-  Optional<List<Gallery>> findByHeroIdWithStories(@Param("heroId") Long heroId);
-
-  @Query("SELECT g FROM Gallery g "
-         + "LEFT JOIN FETCH g.storyMaps sm "
-         + "LEFT JOIN FETCH sm.story "
          + "WHERE g.heroId = :heroId "
          + "AND g.ageGroup IN :ageGroups")
   Optional<List<Gallery>> findByHeroIdAndAgeGroupsWithStories(@Param("heroId") Long heroId, 

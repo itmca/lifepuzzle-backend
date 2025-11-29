@@ -2,17 +2,15 @@ package io.itmca.lifepuzzle.domain.user.endpoint.request;
 
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import java.time.LocalDate;
-import lombok.Getter;
 
-@Getter
-public class UserRegisterRequest {
-  private String id;
-  private String nickName;
-  private String email;
-  private String password;
-  private LocalDate birthday;
-  private String shareKey;
-
+public record UserRegisterRequest(
+    String id,
+    String nickName,
+    String email,
+    String password,
+    LocalDate birthday,
+    String shareKey
+) {
   public User toUser() {
     return User.builder()
         .loginId(id)

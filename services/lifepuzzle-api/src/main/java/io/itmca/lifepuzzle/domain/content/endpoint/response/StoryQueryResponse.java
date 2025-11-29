@@ -35,11 +35,10 @@ public class StoryQueryResponse {
   public static StoryQueryResponse from(List<Story> stories, Hero hero, List<AgeGroup> ageGroups) {
     var storyDTOs = stories.stream().map(story -> StoryDto.from(story, hero)).toList();
     var storyTags = ageGroups.stream()
-        .map(ageGroup -> StoryTagDto.builder()
-            .key(ageGroup.getRepresentativeAge().toString())
-            .displayName(ageGroup.getDisplayName())
-            .priority(ageGroup.getRepresentativeAge())
-            .build())
+        .map(ageGroup -> new StoryTagDto(
+            ageGroup.getRepresentativeAge().toString(),
+            ageGroup.getDisplayName(),
+            ageGroup.getRepresentativeAge()))
         .sorted()
         .toList();
 

@@ -54,11 +54,6 @@ public class GalleryQueryService {
         .toList();
   }
 
-  private List<Gallery> getGalleryByHeroId(Long heroId) {
-    return galleryRepository.findByHeroIdWithStories(heroId)
-        .orElseThrow(() -> new GalleryNotFoundException(heroId));
-  }
-
   private Map<AgeGroup, AgeGroupGalleryDto> getGalleryByAgeGroup(List<Gallery> photos,
                                                                  Hero hero) {
     var groupedByAge = photos.stream()
@@ -76,10 +71,7 @@ public class GalleryQueryService {
     return Arrays.stream(AgeGroup.values())
         .filter(ageGroup -> ageGroup.getRepresentativeAge() <= heroAgeGroup.getRepresentativeAge())
         .sorted(Comparator.comparingInt(AgeGroup::getRepresentativeAge))
-        .map(ageGroup -> TagDto.builder()
-            .key(ageGroup)
-            .label(ageGroup.getDisplayName())
-            .build())
+        .map(ageGroup -> new TagDto(ageGroup, ageGroup.getDisplayName()))
         .toList();
   }
 }

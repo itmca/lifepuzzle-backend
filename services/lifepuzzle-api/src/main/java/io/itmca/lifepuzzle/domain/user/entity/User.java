@@ -94,7 +94,7 @@ public class User {
   }
 
   public void updateUserInfo(UserUpdateRequest userUpdateRequest) {
-    setNickname(userUpdateRequest.userNickName());
+    setNickname(userUpdateRequest.nickName());
   }
 
   public void setProfileImage(UserProfileImage userProfileImage) {

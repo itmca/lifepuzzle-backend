@@ -3,38 +3,25 @@ package io.itmca.lifepuzzle.domain.hero.endpoint.response.dto;
 import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
 import static io.itmca.lifepuzzle.global.constants.ServerConstant.S3_SERVER_HOST;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 
-@Getter
-@Builder(access = AccessLevel.PRIVATE)
 @Schema(title = "주인공 조회 DTO")
-public class HeroQueryDto {
-  @Schema(description = "주인공키")
-  private Long heroNo;
-  @Schema(description = "이름")
-  private String heroName;
-  @Schema(description = "별칭")
-  private String heroNickName;
-  @Schema(description = "생일")
-  private LocalDate birthday;
-  @Schema(description = "대표제목")
-  private String title;
-  @Schema(description = "대표이미지")
-  private String imageURL;
-  @Nullable
-  @Schema(description = "권한")
-  private HeroAuthStatus auth;
-
-  @Schema(description = "양음력여부")
-  private Boolean isLunar;
+public record HeroQueryDto(
+    @Schema(description = "주인공키") Long id,
+    @Schema(description = "이름") String name,
+    @Schema(description = "별칭") String nickName,
+    @Schema(description = "생일") LocalDate birthday,
+    @Schema(description = "대표제목") String title,
+    @Schema(description = "대표이미지") String imageUrl,
+    @Nullable @Schema(description = "권한") HeroAuthStatus auth,
+    @Schema(description = "양음력여부") Boolean isLunar
+) {
 
   public static HeroQueryDto from(Hero hero, @Nullable Long userNo) {
     var heroAuth = hero.getHeroUserAuths().stream().filter(
@@ -43,29 +30,62 @@ public class HeroQueryDto {
 
     var auth = heroAuth != null ? heroAuth.getAuth() : null;
 
-    return HeroQueryDto.builder()
-        .heroNo(hero.getHeroNo())
-        .heroName(hero.getName())
-        .heroNickName(hero.getNickname())
-        .birthday(hero.getBirthday())
-        .title(hero.getTitle())
-        .imageURL(addServerHostInImage(hero.getHeroNo(), hero.getImage()))
-        .auth(auth)
-        .isLunar(hero.getIsLunar())
-        .build();
+    return new HeroQueryDto(
+        hero.getHeroNo(),
+        hero.getName(),
+        hero.getNickname(),
+        hero.getBirthday(),
+        hero.getTitle(),
+        addServerHostInImage(hero.getHeroNo(), hero.getImage()),
+        auth,
+        hero.getIsLunar()
+    );
   }
 
   public static HeroQueryDto from(Hero hero) {
     return from(hero, null);
   }
 
-  private static String addServerHostInImage(Long heroNo, String imageURL) {
-    if (StringUtils.isBlank(imageURL)) {
+  /**
+   * Returns hero ID for backward compatibility.
+   *
+   * @deprecated Use {@link #id()} instead. Will be removed after FE migration.
+   */
+  @Deprecated
+  @JsonProperty("heroNo")
+  public Long heroNo() {
+    return id;
+  }
+
+  /**
+   * Returns hero name for backward compatibility.
+   *
+   * @deprecated Use {@link #name()} instead. Will be removed after FE migration.
+   */
+  @Deprecated
+  @JsonProperty("heroName")
+  public String heroName() {
+    return name;
+  }
+
+  /**
+   * Returns hero nickname for backward compatibility.
+   *
+   * @deprecated Use {@link #nickName()} instead. Will be removed after FE migration.
+   */
+  @Deprecated
+  @JsonProperty("heroNickName")
+  public String heroNickName() {
+    return nickName;
+  }
+
+  private static String addServerHostInImage(Long heroNo, String imageUrl) {
+    if (StringUtils.isBlank(imageUrl)) {
       return "";
     }
 
     return S3_SERVER_HOST
         + HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(String.valueOf(heroNo))
-        + imageURL;
+        + imageUrl;
   }
 }

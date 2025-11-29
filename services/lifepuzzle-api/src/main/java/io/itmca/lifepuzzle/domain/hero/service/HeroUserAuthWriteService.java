@@ -73,7 +73,7 @@ public class HeroUserAuthWriteService {
 
   public void update(HeroChangeAuthRequest heroChangeAuthRequest) {
     HeroUserAuth heroUserAuth = heroUserAuthRepository
-        .findByUserNoAndHeroNo(heroChangeAuthRequest.userNo(), heroChangeAuthRequest.heroNo())
+        .findByUserNoAndHeroNo(heroChangeAuthRequest.userId(), heroChangeAuthRequest.heroId())
         .orElseThrow(UserNotAccessibleToHeroException::new);
 
     heroUserAuth.changeAuth(heroChangeAuthRequest.heroAuthStatus());

@@ -1,5 +1,6 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.request;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import io.itmca.lifepuzzle.domain.content.entity.Story;
 import io.itmca.lifepuzzle.global.aop.HeroNo;
 import jakarta.validation.constraints.NotBlank;
@@ -9,39 +10,44 @@ import java.time.LocalDateTime;
 
 public record StoryWriteRequest(
     @HeroNo
+    @JsonAlias("heroNo")
     @NotNull(message = "Hero number is required")
-    Long heroNo,
-    
-    Long recQuestionNo,
-    Boolean recQuestionModified,
-    String helpQuestionText,
-    
+    Long heroId,
+
+    @JsonAlias("recQuestionNo")
+    Long questionId,
+    @JsonAlias("recQuestionModified")
+    Boolean questionModified,
+    @JsonAlias("helpQuestionText")
+    String questionText,
+
     @NotNull(message = "Date is required")
     LocalDate date,
-    
+
     @NotBlank(message = "Title is required")
     String title,
-    
+
+    @JsonAlias("storyText")
     @NotBlank(message = "Story text is required")
-    String storyText
+    String content
 ) {
   public Story toStory(Long userNo) {
     var storyKey = generatedStoryKey();
     return Story.builder()
         .id(storyKey)
-        .heroId(heroNo)
+        .heroId(heroId)
         .userId(userNo)
-        .recQuestionId(recQuestionNo == null ? -1 : recQuestionNo)
-        .isQuestionModified(recQuestionModified == null ? false : recQuestionModified)
-        .usedQuestion(helpQuestionText)
+        .recQuestionId(questionId == null ? -1 : questionId)
+        .isQuestionModified(questionModified == null ? false : questionModified)
+        .usedQuestion(questionText)
         .title(title)
-        .content(storyText)
+        .content(content)
         .date(date)
         .build();
   }
 
   public String generatedStoryKey() {
     var now = LocalDateTime.now();
-    return heroNo.toString() + "-" + now.getHour() + now.getMinute() + now.getSecond();
+    return heroId.toString() + "-" + now.getHour() + now.getMinute() + now.getSecond();
   }
 }
