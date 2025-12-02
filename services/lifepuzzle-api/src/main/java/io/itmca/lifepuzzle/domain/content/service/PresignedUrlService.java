@@ -40,7 +40,7 @@ public class PresignedUrlService {
               .heroId(request.heroId())
               .url("")
               .ageGroup(request.ageGroup())
-              .galleryType(GalleryType.IMAGE)
+              .galleryType(determineGalleryType(file.contentType()))
               .galleryStatus(GalleryStatus.PENDING)
               .build()
       );
@@ -56,6 +56,13 @@ public class PresignedUrlService {
     }
 
     return new PresignedUrlResponse(urls);
+  }
+
+  private GalleryType determineGalleryType(String contentType) {
+    if (contentType != null && contentType.startsWith("video/")) {
+      return GalleryType.VIDEO;
+    }
+    return GalleryType.IMAGE;
   }
 
   private String buildS3Key(Long heroId, Long galleryId, String fileName) {
