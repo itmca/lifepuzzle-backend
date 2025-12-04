@@ -3,7 +3,7 @@ package io.itmca.lifepuzzle.domain.auth.service;
 import io.itmca.lifepuzzle.domain.auth.Login;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.dto.TokenQueryDto;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDto;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.user.endpoint.response.dto.UserQueryDto;
@@ -42,7 +42,7 @@ public class LoginService {
     return new LoginResponse(
         userQueryDTO,
         tokenQueryDTO,
-        HeroQueryDto.from(hero, user.getId()),
+        HeroQueryResponse.from(hero, user.getId()),
         isNewUser
     );
   }

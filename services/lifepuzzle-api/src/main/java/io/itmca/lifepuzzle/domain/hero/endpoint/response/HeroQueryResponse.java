@@ -1,42 +1,58 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint.response;
 
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDto;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroUserAuthQueryDto;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.HERO_PROFILE_IMAGE_BASE_PATH_FORMAT;
+import static io.itmca.lifepuzzle.global.constants.ServerConstant.S3_SERVER_HOST;
+
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
+import io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import lombok.Builder;
-import lombok.Getter;
+import java.time.LocalDate;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.Nullable;
 
-@Getter
-@Builder
-public class HeroQueryResponse {
-  private HeroQueryDto hero;
-  private List<HeroUserAuthQueryDto> users;
-  @Schema(description = "맞춘 퍼즐 개수")
-  private int puzzleCnt;
+@Schema(title = "주인공 조회 응답")
+public record HeroQueryResponse(
+    @Schema(description = "주인공키") Long id,
+    @Schema(description = "이름") String name,
+    @Schema(description = "별칭") String nickName,
+    @Schema(description = "생일") LocalDate birthday,
+    @Schema(description = "대표제목") String title,
+    @Schema(description = "대표이미지") String imageUrl,
+    @Nullable @Schema(description = "권한") HeroAuthStatus auth,
+    @Schema(description = "양음력여부") Boolean isLunar
+) {
 
-  public static HeroQueryResponse from(Hero hero, Long userNo, int puzzleCnt) {
-    var mainUserHeroAuthQueryDTO = hero.getHeroUserAuths().stream()
-        .filter(heroUserAuth -> heroUserAuth.getUser().getId().equals(userNo))
-        .map(HeroUserAuthQueryDto::from)
-        .toList();
-    var otherUserHeroAuthQueryDTOs = hero.getHeroUserAuths().stream()
-        .filter(heroUserAuth -> !heroUserAuth.getUser().getId().equals(userNo))
-        .map(HeroUserAuthQueryDto::from)
-        .sorted(Comparator.comparing(HeroUserAuthQueryDto::nickName))
-        .toList();
+  public static HeroQueryResponse from(Hero hero, @Nullable Long userNo) {
+    var heroAuth = hero.getHeroUserAuths().stream()
+        .filter(heroUserAuth -> heroUserAuth.isUserExist(userNo))
+        .findFirst()
+        .orElse(null);
 
-    var heroAuthQueryDTOs = new ArrayList<HeroUserAuthQueryDto>();
-    heroAuthQueryDTOs.addAll(mainUserHeroAuthQueryDTO);
-    heroAuthQueryDTOs.addAll(otherUserHeroAuthQueryDTOs);
+    var auth = heroAuth != null ? heroAuth.getAuth() : null;
 
-    return HeroQueryResponse.builder()
-        .hero(HeroQueryDto.from(hero, userNo))
-        .users(heroAuthQueryDTOs)
-        .puzzleCnt(puzzleCnt)
-        .build();
+    return new HeroQueryResponse(
+        hero.getHeroNo(),
+        hero.getName(),
+        hero.getNickname(),
+        hero.getBirthday(),
+        hero.getTitle(),
+        addServerHostInImage(hero.getHeroNo(), hero.getImage()),
+        auth,
+        hero.getIsLunar()
+    );
+  }
+
+  public static HeroQueryResponse from(Hero hero) {
+    return from(hero, null);
+  }
+
+  private static String addServerHostInImage(Long heroNo, String imageUrl) {
+    if (StringUtils.isBlank(imageUrl)) {
+      return "";
+    }
+
+    return S3_SERVER_HOST
+        + HERO_PROFILE_IMAGE_BASE_PATH_FORMAT.formatted(String.valueOf(heroNo))
+        + imageUrl;
   }
 }
