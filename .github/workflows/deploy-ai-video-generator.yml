@@ -28,7 +28,6 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew clean build
-        env: ${{ secrets }}
 
       - name: Get current time
         uses: josStorer/get-current-time@v2.1.2
@@ -110,7 +109,7 @@ jobs:
             DATABASE_URL=${{ secrets.DB_PROD_URL }}
             DATABASE_USERNAME=${{ secrets.DB_PROD_USERNAME }}
             DATABASE_PASSWORD=${{ secrets.DB_PROD_PASSWORD }}
-            RABBITMQ_HOST=${{ secrets.RABBITMQ_HOST }}
+            RABBITMQ_HOST=${{ secrets.RABBITMQ_EXTERNAL_HOST }}
             RABBITMQ_PORT=${{ secrets.RABBITMQ_PORT }}
             RABBITMQ_USERNAME=${{ secrets.RABBITMQ_USERNAME }}
             RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}
@@ -119,6 +118,9 @@ jobs:
             AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
             AWS_REGION=${{ secrets.AWS_REGION }}
             AI_VIDEO_OUTPUT_PATH=${{ secrets.AI_VIDEO_OUTPUT_PATH }}
+            AI_VIDEO_DOWNLOAD_PATH=${{ secrets.AI_VIDEO_DOWNLOAD_PATH }}
+            AI_VIDEO_CONDA_ENV=${{ secrets.AI_VIDEO_CONDA_ENV }}
+            AI_VIDEO_PROJECT_PATH=${{ secrets.AI_VIDEO_PROJECT_PATH }}
             SERVER_PORT=9001
             ENV_EOF
             
@@ -129,7 +131,12 @@ jobs:
             cat > "$DEPLOY_DIR/start.sh" <<SCRIPT_EOF
             #!/bin/bash
             cd "$DEPLOY_DIR"
+            
+            # Load environment variables and export them
+            set -a  # automatically export all variables
             source ./app.env
+            set +a  # stop automatically exporting
+            
             nohup java -jar -Xmx2g -Dspring.profiles.active=prod ai-video-generator.jar > "$LOG_DIR/ai-video-generator.log" 2>&1 &
             echo \$! > ai-video-generator.pid
             echo "AI Video Generator started with PID \$(cat ai-video-generator.pid)"

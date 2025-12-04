@@ -61,6 +61,12 @@ ai:
   video:
     output:
       path: ${AI_VIDEO_OUTPUT_PATH:/var/tmp/ai_video/}
+    download:
+      path: ${AI_VIDEO_DOWNLOAD_PATH:/var/tmp/ai_video_download/}
+    conda:
+      env: ${AI_VIDEO_CONDA_ENV:LivePortrait}
+    project:
+      path: ${AI_VIDEO_PROJECT_PATH}
 
 server:
   port: 8081
