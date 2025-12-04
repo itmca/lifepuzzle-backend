@@ -6,7 +6,11 @@ import io.itmca.aivideogenerator.domain.video.entity.AiGeneratedVideo;
 import io.itmca.aivideogenerator.domain.video.repository.AiGeneratedVideoRepository;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,6 +32,15 @@ public class PythonExecutorService {
   
   @Value("${ai.video.output.path:/var/tmp/ai_video/}")
   private String outputPath;
+  
+  @Value("${ai.video.conda.env:LivePortrait}")
+  private String condaEnv;
+  
+  @Value("${ai.video.download.path:/var/tmp/ai_video_download/}")
+  private String downloadPath;
+  
+  @Value("${ai.video.project.path:/Users/jeong/lifepuzzle/external/LivePortrait}")
+  private String projectPath;
 
   public void prepareVideoGeneration(AiGeneratedVideo video) {
     log.info("Preparing Python command execution for video generation: {}", video.getId());
@@ -41,14 +54,18 @@ public class PythonExecutorService {
       var drivingVideo = aiDrivingVideoRepository.findActiveById(video.getDrivingVideoId())
           .orElseThrow(() -> new RuntimeException("Driving video not found: " + video.getDrivingVideoId()));
       
-      // 3. Python 명령어 실행
-      String command = buildPythonCommand(gallery.getUrl(), drivingVideo.getUrl());
-      log.info("Executing Python command: {}", command);
+      // 3. 파일 다운로드 및 로컬 경로 획득
+      String galleryFilePath = downloadFileFromUrl(gallery.getUrl(), "gallery_" + video.getGalleryId());
+      String drivingVideoFilePath = getDrivingVideoFilePath(drivingVideo.getUrl(), video.getDrivingVideoId());
       
       // 4. Python 명령어 실행
+      String command = buildPythonCommand(galleryFilePath, drivingVideoFilePath);
+      log.info("Executing Python command: {}", command);
+      
+      // 5. Python 명령어 실행
       executePythonCommand(command, video);
       
-      // 5. 생성된 비디오 파일 처리
+      // 6. 생성된 비디오 파일 처리
       processGeneratedVideo(video);
       
     } catch (Exception e) {
@@ -61,9 +78,72 @@ public class PythonExecutorService {
     log.info("Python command execution preparation completed for video: {}", video.getId());
   }
 
-  private String buildPythonCommand(String galleryUrl, String drivingVideoUrl) {
-    return String.format("PYTORCH_ENABLE_MPS_FALLBACK=1 python inference.py -d %s -s %s -o %s", 
-        drivingVideoUrl, galleryUrl, outputPath);
+  private String downloadFileFromUrl(String url, String fileName) throws IOException {
+    // 다운로드 디렉토리 생성
+    Path downloadDir = Paths.get(downloadPath);
+    Files.createDirectories(downloadDir);
+    
+    // 파일 확장자 추출
+    String extension = getFileExtensionFromUrl(url);
+    String fullFileName = fileName + extension;
+    Path filePath = downloadDir.resolve(fullFileName);
+    
+    // 파일이 이미 존재하면 경로만 반환
+    if (Files.exists(filePath)) {
+      log.info("File already exists, skipping download: {}", filePath);
+      return filePath.toString();
+    }
+    
+    log.info("Downloading file from URL: {} to {}", url, filePath);
+    
+    try (InputStream in = URI.create(url).toURL().openStream();
+         FileOutputStream out = new FileOutputStream(filePath.toFile())) {
+      
+      byte[] buffer = new byte[8192];
+      int bytesRead;
+      while ((bytesRead = in.read(buffer)) != -1) {
+        out.write(buffer, 0, bytesRead);
+      }
+    }
+    
+    log.info("File downloaded successfully: {}", filePath);
+    return filePath.toString();
+  }
+  
+  private String getDrivingVideoFilePath(String url, Long drivingVideoId) throws IOException {
+    String fileName = "driving_video_" + drivingVideoId;
+    
+    // 파일 확장자 추출
+    String extension = getFileExtensionFromUrl(url);
+    String fullFileName = fileName + extension;
+    Path filePath = Paths.get(downloadPath, fullFileName);
+    
+    // 드라이빙 비디오는 이미 존재하면 다운로드 안 함
+    if (Files.exists(filePath)) {
+      log.info("Driving video file already exists, skipping download: {}", filePath);
+      return filePath.toString();
+    }
+    
+    // 존재하지 않으면 다운로드
+    return downloadFileFromUrl(url, fileName);
+  }
+  
+  private String getFileExtensionFromUrl(String url) {
+    String fileName = url.substring(url.lastIndexOf('/') + 1);
+    int dotIndex = fileName.lastIndexOf('.');
+    if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+      return fileName.substring(dotIndex);
+    }
+    // 확장자가 없으면 기본값 설정 (컨텐츠 타입에 따라)
+    if (url.contains("video") || url.contains(".mp4") || url.contains(".avi")) {
+      return ".mp4";
+    }
+    return ".jpg"; // 기본 이미지 확장자
+  }
+
+  private String buildPythonCommand(String galleryFilePath, String drivingVideoFilePath) {
+    return String.format("cd %s && source ~/.bashrc && conda activate %s && PYTORCH_ENABLE_MPS_FALLBACK=1 python inference.py -d %s -s %s -o %s", 
+        projectPath, condaEnv, drivingVideoFilePath, galleryFilePath, outputPath);
   }
 
   private void executePythonCommand(String command, AiGeneratedVideo video) {
