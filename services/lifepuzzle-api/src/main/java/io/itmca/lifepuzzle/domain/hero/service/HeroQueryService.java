@@ -3,6 +3,8 @@ package io.itmca.lifepuzzle.domain.hero.service;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.content.service.StoryQueryService;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroLegacyListQueryResponse;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroLegacyQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroListQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
@@ -32,13 +34,13 @@ public class HeroQueryService {
         .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
   }
 
-  public HeroQueryResponse toQueryResponse(Hero hero, Long userNo) {
+  public HeroLegacyQueryResponse toLegacyQueryResponse(Hero hero, Long userNo) {
     int puzzleCnt = storyQueryService.countByHeroNo(hero.getHeroNo());
 
-    return HeroQueryResponse.from(hero, userNo, puzzleCnt);
+    return HeroLegacyQueryResponse.from(hero, userNo, puzzleCnt);
   }
 
-  public HeroListQueryResponse toQueryResponses(User user) {
+  public HeroLegacyListQueryResponse toLegacyQueryResponses(User user) {
     var heroUserAuths = user.getHeroUserAuths();
     if (isEmpty(heroUserAuths)) {
       throw HeroNotFoundException.byUserNo(user.getId());
@@ -47,9 +49,28 @@ public class HeroQueryService {
     var heroQueryResponses = heroUserAuths.stream()
         .map(HeroUserAuth::getHero)
         .filter(Hero::isActive)
+        .map(hero -> toLegacyQueryResponse(hero, user.getId()))
+        .toList();
+
+    return new HeroLegacyListQueryResponse(heroQueryResponses);
+  }
+
+  public HeroQueryResponse toQueryResponse(Hero hero, Long userNo) {
+    return HeroQueryResponse.from(hero, userNo);
+  }
+
+  public HeroListQueryResponse toQueryResponses(User user) {
+    var heroUserAuths = user.getHeroUserAuths();
+    if (isEmpty(heroUserAuths)) {
+      throw HeroNotFoundException.byUserNo(user.getId());
+    }
+
+    var heroQueryDtos = heroUserAuths.stream()
+        .map(HeroUserAuth::getHero)
+        .filter(Hero::isActive)
         .map(hero -> toQueryResponse(hero, user.getId()))
         .toList();
 
-    return new HeroListQueryResponse(heroQueryResponses);
+    return new HeroListQueryResponse(heroQueryDtos);
   }
 }

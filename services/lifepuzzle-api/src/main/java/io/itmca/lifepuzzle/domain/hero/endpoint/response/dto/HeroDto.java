@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
  * Gallery API 응답용 Hero DTO.
  *
  * @deprecated Gallery API 응답에서 사용되던 Hero DTO입니다.
- *             향후 제거될 예정이며, {@link HeroQueryDto}를 사용하세요.
+ *             향후 제거될 예정이며, {@link io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse}를 사용하세요.
  */
 @Deprecated(since = "2024.11", forRemoval = true)
 @Getter
