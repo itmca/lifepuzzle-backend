@@ -8,6 +8,7 @@ import lombok.Getter;
 
 @Getter
 public enum AgeGroup {
+  UNCATEGORIZED("미분류", -1),
   UNDER_TEENAGER("10대 미만", 0),
   TEENAGER("10대", 10),
   TWENTIES("20대", 20),
@@ -36,15 +37,29 @@ public enum AgeGroup {
   }
 
   public static AgeGroup of(Integer age) {
+    if (age == null) {
+      return UNCATEGORIZED;
+    }
+
     var representativeAge = (age / 10) * 10;
     return representAgeMap.getOrDefault(representativeAge, UPPER_NINETY);
   }
 
+  public static AgeGroup orUncategorized(AgeGroup ageGroup) {
+    return ageGroup == null ? UNCATEGORIZED : ageGroup;
+  }
+
   public int getStartYear(LocalDate birthdate) {
+    if (this == UNCATEGORIZED) {
+      return 0;
+    }
     return birthdate.getYear() + this.representativeAge;
   }
 
   public int getEndYear(LocalDate birthdate) {
+    if (this == UNCATEGORIZED) {
+      return 0;
+    }
     return getStartYear(birthdate) + 9;
   }
 }
