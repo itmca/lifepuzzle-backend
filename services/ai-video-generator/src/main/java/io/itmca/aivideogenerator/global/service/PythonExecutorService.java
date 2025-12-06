@@ -41,6 +41,12 @@ public class PythonExecutorService {
   
   @Value("${ai.video.project.path:/Users/jeong/lifepuzzle/external/LivePortrait}")
   private String projectPath;
+  
+  @Value("${aws.s3.bucket}")
+  private String s3Bucket;
+  
+  @Value("${aws.s3.region:ap-northeast-2}")
+  private String s3Region;
 
   public void prepareVideoGeneration(AiGeneratedVideo video) {
     log.info("Preparing Python command execution for video generation: {}", video.getId());
@@ -54,18 +60,22 @@ public class PythonExecutorService {
       var drivingVideo = aiDrivingVideoRepository.findActiveById(video.getDrivingVideoId())
           .orElseThrow(() -> new RuntimeException("Driving video not found: " + video.getDrivingVideoId()));
       
-      // 3. 파일 다운로드 및 로컬 경로 획득
-      String galleryFilePath = downloadFileFromUrl(gallery.getUrl(), "gallery_" + video.getGalleryId());
-      String drivingVideoFilePath = getDrivingVideoFilePath(drivingVideo.getUrl(), video.getDrivingVideoId());
+      // 3. S3 URL 구성 및 파일 다운로드
+      String galleryUrl = buildS3Url(gallery.getUrl());
+      String drivingVideoUrl = buildS3Url(drivingVideo.getUrl());
       
-      // 4. Python 명령어 실행
+      // 4. 파일 다운로드 및 로컬 경로 획득
+      String galleryFilePath = downloadFileFromUrl(galleryUrl, "gallery_" + video.getGalleryId());
+      String drivingVideoFilePath = getDrivingVideoFilePath(drivingVideoUrl, video.getDrivingVideoId());
+      
+      // 5. Python 명령어 실행
       String command = buildPythonCommand(galleryFilePath, drivingVideoFilePath);
       log.info("Executing Python command: {}", command);
       
-      // 5. Python 명령어 실행
+      // 6. Python 명령어 실행
       executePythonCommand(command, video);
       
-      // 6. 생성된 비디오 파일 처리
+      // 7. 생성된 비디오 파일 처리
       processGeneratedVideo(video);
       
     } catch (Exception e) {
@@ -139,6 +149,19 @@ public class PythonExecutorService {
       return ".mp4";
     }
     return ".jpg"; // 기본 이미지 확장자
+  }
+  
+  private String buildS3Url(String path) {
+    // path가 이미 완전한 URL이면 그대로 반환
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      return path;
+    }
+    
+    // path가 슬래시로 시작하면 제거
+    String cleanPath = path.startsWith("/") ? path.substring(1) : path;
+    
+    // S3 URL 구성: https://bucket.s3.region.amazonaws.com/path
+    return String.format("https://%s.s3.%s.amazonaws.com/%s", s3Bucket, s3Region, cleanPath);
   }
 
   private String buildPythonCommand(String galleryFilePath, String drivingVideoFilePath) {
