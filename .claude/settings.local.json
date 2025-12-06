@@ -9,7 +9,10 @@
       "Bash(git pull:*)",
       "Bash(go:*)",
       "Read(//Users/border-line/workspace/lifepuzzle-rn/**)",
-      "Bash(gh pr view:*)"
+      "Bash(gh pr view:*)",
+      "Bash(git fetch:*)",
+      "Bash(git rebase:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []
