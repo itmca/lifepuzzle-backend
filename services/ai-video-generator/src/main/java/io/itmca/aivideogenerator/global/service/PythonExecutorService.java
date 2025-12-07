@@ -165,7 +165,7 @@ public class PythonExecutorService {
   }
 
   private String buildPythonCommand(String galleryFilePath, String drivingVideoFilePath) {
-    return String.format("cd %s && source ~/.bashrc && conda activate %s && PYTORCH_ENABLE_MPS_FALLBACK=1 python inference.py -d %s -s %s -o %s", 
+    return String.format("cd %s && conda activate %s && PYTORCH_ENABLE_MPS_FALLBACK=1 python inference.py -d %s -s %s -o %s",
         projectPath, condaEnv, drivingVideoFilePath, galleryFilePath, outputPath);
   }
 
@@ -223,6 +223,7 @@ public class PythonExecutorService {
       long lastModified = 0;
       for (File file : videoFiles) {
         if (file.lastModified() > lastModified) {
+          if(!file.getName().contains("_concat.mp4"));
           lastModified = file.lastModified();
           latestVideoFile = file;
         }
