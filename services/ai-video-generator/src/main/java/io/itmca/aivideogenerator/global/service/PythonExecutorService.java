@@ -223,9 +223,10 @@ public class PythonExecutorService {
       long lastModified = 0;
       for (File file : videoFiles) {
         if (file.lastModified() > lastModified) {
-          if(!file.getName().contains("_concat.mp4"));
-          lastModified = file.lastModified();
-          latestVideoFile = file;
+          if (!file.getName().contains("_concat.mp4")) {
+            lastModified = file.lastModified();
+            latestVideoFile = file;
+          }
         }
       }
       
