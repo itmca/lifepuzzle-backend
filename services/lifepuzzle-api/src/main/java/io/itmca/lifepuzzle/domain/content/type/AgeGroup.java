@@ -8,7 +8,6 @@ import lombok.Getter;
 
 @Getter
 public enum AgeGroup {
-  UNCATEGORIZED("미분류", -1),
   UNDER_TEENAGER("10대 미만", 0),
   TEENAGER("10대", 10),
   TWENTIES("20대", 20),
@@ -19,7 +18,8 @@ public enum AgeGroup {
   SEVENTY("70대", 70),
   EIGHTY("80대", 80),
   NINETY("90대", 90),
-  UPPER_NINETY("90대 이상", 100);
+  UPPER_NINETY("90대 이상", 100),
+  UNCATEGORIZED("미분류", Integer.MAX_VALUE);
 
   private final String displayName;
   private final Integer representativeAge;
