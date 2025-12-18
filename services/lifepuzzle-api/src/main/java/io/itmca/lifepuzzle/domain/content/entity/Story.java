@@ -44,7 +44,6 @@ public class Story {
   private String usedQuestion;
   @Column(columnDefinition = "tinyint(1) default 0")
   private boolean isQuestionModified;
-  private String title;
   private String content;
   private String audioFolder;
   private String audioFiles;
@@ -85,8 +84,6 @@ public class Story {
         .collect(joining(FILE_NAMES_SEPARATOR));
   }
 
-
-
   public List<String> getAudios() {
     if (!StringUtils.hasText(audioFiles)) {
       return Collections.emptyList();
@@ -105,20 +102,7 @@ public class Story {
     return Arrays.stream(this.audioFiles.split("\\|\\|")).toList();
   }
 
-
-  public void updateStoryInfo(StoryWriteRequest storyWriteRequest) {
-    this.recQuestionId =
-        storyWriteRequest.questionId() == null ? -1L : storyWriteRequest.questionId();
-    this.isQuestionModified =
-        storyWriteRequest.questionModified() == null ? false :
-            storyWriteRequest.questionModified();
-    this.usedQuestion = storyWriteRequest.questionText();
-    this.title = storyWriteRequest.title();
-    this.content = storyWriteRequest.content();
-  }
-
   public void update(StoryGalleryWriteRequest request) {
-    this.title = request.title();
     this.content = request.content();
   }
 }

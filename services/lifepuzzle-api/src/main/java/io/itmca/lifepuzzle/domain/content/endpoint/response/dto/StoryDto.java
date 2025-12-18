@@ -9,7 +9,6 @@ import java.util.List;
 public record StoryDto(
     String id,
     Long heroNo,
-    String title,
     String content,
     String question,
     List<String> photos,
@@ -26,7 +25,6 @@ public record StoryDto(
     return new StoryDto(
         story.getId(),
         story.getHeroId(),
-        story.getTitle(),
         story.getContent(),
         story.getUsedQuestion(),
         Collections.emptyList(), // TODO: Gallery 시스템으로 이관됨

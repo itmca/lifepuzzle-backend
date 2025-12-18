@@ -14,14 +14,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StoryGalleryDto {
   private String id;
-  private String title;
   private String content;
   private List<String> audios;
 
   public static StoryGalleryDto from(Story story) {
     return StoryGalleryDto.builder()
         .id(story.getId())
-        .title(story.getTitle())
         .content(story.getContent())
         .audios(story.getAudios())
         .build();
