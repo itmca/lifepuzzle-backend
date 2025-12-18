@@ -1,7 +1,6 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.response.dto;
 
 import io.itmca.lifepuzzle.domain.content.entity.Story;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,7 +17,6 @@ public class StoryGalleryDto {
   private String title;
   private String content;
   private List<String> audios;
-  private LocalDate date;
 
   public static StoryGalleryDto from(Story story) {
     return StoryGalleryDto.builder()
@@ -26,7 +24,6 @@ public class StoryGalleryDto {
         .title(story.getTitle())
         .content(story.getContent())
         .audios(story.getAudios())
-        .date(story.getDate())
         .build();
   }
 }

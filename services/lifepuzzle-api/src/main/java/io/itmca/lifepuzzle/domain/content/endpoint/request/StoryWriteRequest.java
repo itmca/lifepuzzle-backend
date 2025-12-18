@@ -4,7 +4,6 @@ import io.itmca.lifepuzzle.domain.content.entity.Story;
 import io.itmca.lifepuzzle.global.aop.HeroNo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record StoryWriteRequest(
@@ -15,9 +14,6 @@ public record StoryWriteRequest(
     Long questionId,
     Boolean questionModified,
     String questionText,
-
-    @NotNull(message = "Date is required")
-    LocalDate date,
 
     @NotBlank(message = "Title is required")
     String title,
@@ -36,7 +32,6 @@ public record StoryWriteRequest(
         .usedQuestion(questionText)
         .title(title)
         .content(content)
-        .date(date)
         .build();
   }
 

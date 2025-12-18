@@ -20,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,9 +49,12 @@ public class Gallery {
   @Setter
   @Column(nullable = false)
   private String url;
+  @Setter
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private AgeGroup ageGroup;
+  @Setter
+  private LocalDate date;
   @Column(name = "type", nullable = false)
   @Enumerated(EnumType.STRING)
   private GalleryType galleryType;

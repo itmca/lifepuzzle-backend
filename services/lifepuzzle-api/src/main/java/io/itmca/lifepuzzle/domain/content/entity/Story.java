@@ -14,7 +14,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,8 +56,6 @@ public class Story {
   @OneToMany(mappedBy = "story", orphanRemoval = true)
   private List<StoryGallery> photoMaps;
 
-  private LocalDate date;
-
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
   private LocalDateTime createdAt;
@@ -88,10 +85,6 @@ public class Story {
         .collect(joining(FILE_NAMES_SEPARATOR));
   }
 
-  public AgeGroup getTag(Hero hero) {
-    var age = Integer.valueOf(date.getYear() - hero.getBirthday().getYear() + 1);
-    return AgeGroup.of(age);
-  }
 
 
   public List<String> getAudios() {
@@ -120,13 +113,11 @@ public class Story {
         storyWriteRequest.questionModified() == null ? false :
             storyWriteRequest.questionModified();
     this.usedQuestion = storyWriteRequest.questionText();
-    this.date = storyWriteRequest.date();
     this.title = storyWriteRequest.title();
     this.content = storyWriteRequest.content();
   }
 
   public void update(StoryGalleryWriteRequest request) {
-    this.date = request.date();
     this.title = request.title();
     this.content = request.content();
   }

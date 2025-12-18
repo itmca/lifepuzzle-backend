@@ -60,6 +60,17 @@ public class GalleryWriteService {
     galleryRepository.delete(gallery);
   }
 
+  @Transactional
+  public Gallery updateGalleryMetadata(Long galleryId, AgeGroup ageGroup, java.time.LocalDate date) {
+    Gallery gallery = galleryRepository.findById(galleryId)
+        .orElseThrow(() -> GalleryItemNotFoundException.of(galleryId));
+
+    gallery.setAgeGroup(ageGroup);
+    gallery.setDate(date);
+
+    return galleryRepository.save(gallery);
+  }
+
   private void publishPhotoUploadEvents(List<Gallery> galleries, Long heroId) {
     galleries.stream()
         .filter(Gallery::isImage) // Only publish events for images, not videos
