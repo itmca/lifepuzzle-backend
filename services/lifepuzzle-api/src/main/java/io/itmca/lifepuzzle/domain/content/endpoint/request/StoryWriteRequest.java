@@ -15,9 +15,6 @@ public record StoryWriteRequest(
     Boolean questionModified,
     String questionText,
 
-    @NotBlank(message = "Title is required")
-    String title,
-
     @NotBlank(message = "Story text is required")
     String content
 ) {
@@ -30,7 +27,6 @@ public record StoryWriteRequest(
         .recQuestionId(questionId == null ? -1 : questionId)
         .isQuestionModified(questionModified == null ? false : questionModified)
         .usedQuestion(questionText)
-        .title(title)
         .content(content)
         .build();
   }
