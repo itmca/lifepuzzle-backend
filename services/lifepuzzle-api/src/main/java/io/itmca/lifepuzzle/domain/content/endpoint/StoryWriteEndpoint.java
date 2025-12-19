@@ -5,7 +5,9 @@ import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.WRITER;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
+import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryContentUploadRequest;
 import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryGalleryWriteRequest;
+import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryVoiceUploadRequest;
 import io.itmca.lifepuzzle.domain.content.repository.StoryRepository;
 import io.itmca.lifepuzzle.domain.content.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.content.service.StoryWriteService;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,5 +80,26 @@ public class StoryWriteEndpoint {
     }
 
     storyRepository.delete(story);
+  }
+
+  @Operation(summary = "스토리 본문 업로드/수정")
+  @PostMapping("/v3/stories/content")
+  public ResponseEntity<Void> upsertStoryContent(
+      @RequestBody StoryContentUploadRequest request,
+      @AuthenticationPrincipal AuthPayload authPayload
+  ) {
+    storyWriteService.upsertContent(request, authPayload.getUserId());
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @Operation(summary = "스토리 음성 업로드/수정")
+  @PostMapping("/v3/stories/voice")
+  public ResponseEntity<Void> upsertStoryVoice(
+      @RequestPart("voice") MultipartFile voice,
+      @RequestPart("meta") StoryVoiceUploadRequest request,
+      @AuthenticationPrincipal AuthPayload authPayload
+  ) {
+    storyWriteService.upsertVoice(request, voice, authPayload.getUserId());
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 }

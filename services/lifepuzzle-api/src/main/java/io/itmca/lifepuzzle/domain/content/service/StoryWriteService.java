@@ -4,16 +4,21 @@ import static io.itmca.lifepuzzle.global.constants.FileConstant.STORY_BASE_PATH;
 import static java.io.File.separator;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
+import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryContentUploadRequest;
 import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryGalleryWriteRequest;
+import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryVoiceUploadRequest;
 import io.itmca.lifepuzzle.domain.content.entity.Story;
 import io.itmca.lifepuzzle.domain.content.entity.StoryGallery;
+import io.itmca.lifepuzzle.domain.content.repository.GalleryRepository;
 import io.itmca.lifepuzzle.domain.content.repository.StoryGalleryRepository;
 import io.itmca.lifepuzzle.domain.content.repository.StoryRepository;
+import io.itmca.lifepuzzle.global.exception.GalleryNotFoundException;
 import io.itmca.lifepuzzle.global.exception.StoryNotFoundException;
 import io.itmca.lifepuzzle.global.file.CustomFile;
 import io.itmca.lifepuzzle.global.file.domain.StoryFile;
 import io.itmca.lifepuzzle.global.file.domain.StoryVoiceFile;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
@@ -25,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class StoryWriteService {
   private final StoryRepository storyRepository;
+  private final GalleryRepository galleryRepository;
   private final S3UploadService s3UploadService;
   private final StoryGalleryRepository storyGalleryRepository;
 
@@ -119,5 +125,48 @@ public class StoryWriteService {
     s3UploadService.delete(String.join(separator, STORY_BASE_PATH, storyKey));
 
     storyRepository.deleteById(storyKey);
+  }
+
+  @Transactional
+  public String upsertContent(StoryContentUploadRequest request, Long userId) {
+    var story = findOrCreateStory(request.heroId(), request.galleryId(), userId);
+    story.updateContent(request.content());
+    return story.getId();
+  }
+
+  @Transactional
+  public String upsertVoice(StoryVoiceUploadRequest request, MultipartFile voice, Long userId) {
+    var story = findOrCreateStory(request.heroId(), request.galleryId(), userId);
+
+    s3UploadService.upload(new StoryVoiceFile(story, voice));
+    story.setVoice(voice);
+
+    return story.getId();
+  }
+
+  private Story findOrCreateStory(Long heroId, Long galleryId, Long userId) {
+    return storyRepository.findByHeroIdAndGalleryId(heroId, galleryId)
+        .orElseGet(() -> createStory(heroId, galleryId, userId));
+  }
+
+  private Story createStory(Long heroId, Long galleryId, Long userId) {
+    galleryRepository.findByIdAndHeroId(galleryId, heroId)
+        .orElseThrow(() -> GalleryNotFoundException.byGalleryId(galleryId));
+
+    var story = Story.builder()
+        .id(generateStoryKey(heroId))
+        .heroId(heroId)
+        .userId(userId)
+        .build();
+
+    var savedStory = storyRepository.save(story);
+    storyGalleryRepository.save(StoryGallery.create(savedStory, galleryId));
+
+    return savedStory;
+  }
+
+  private String generateStoryKey(Long heroId) {
+    var now = LocalDateTime.now();
+    return heroId.toString() + "-" + now.getHour() + now.getMinute() + now.getSecond();
   }
 }
