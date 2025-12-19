@@ -69,7 +69,9 @@ public class GalleryQueryService {
     var heroAgeGroup = AgeGroup.of(age);
 
     return Arrays.stream(AgeGroup.values())
-        .filter(ageGroup -> ageGroup.getRepresentativeAge() <= heroAgeGroup.getRepresentativeAge())
+        .filter(ageGroup ->
+            ageGroup == AgeGroup.UNCATEGORIZED
+                || ageGroup.getRepresentativeAge() <= heroAgeGroup.getRepresentativeAge())
         .sorted(Comparator.comparingInt(AgeGroup::getRepresentativeAge))
         .map(ageGroup -> new TagDto(ageGroup, ageGroup.getDisplayName()))
         .toList();
