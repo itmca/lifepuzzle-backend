@@ -105,4 +105,8 @@ public class Story {
   public void update(StoryGalleryWriteRequest request) {
     this.content = request.content();
   }
+
+  public void updateContent(String content) {
+    this.content = content;
+  }
 }
