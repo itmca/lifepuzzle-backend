@@ -102,4 +102,14 @@ public class StoryWriteEndpoint {
     storyWriteService.upsertVoice(request, voice, authPayload.getUserId());
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
+
+  @Operation(summary = "스토리 음성 삭제")
+  @DeleteMapping("/v3/stories/voice")
+  public ResponseEntity<Void> deleteStoryVoice(
+      @RequestBody StoryVoiceUploadRequest request,
+      @AuthenticationPrincipal AuthPayload authPayload
+  ) {
+    storyWriteService.deleteVoice(request, authPayload.getUserId());
+    return ResponseEntity.noContent().build();
+  }
 }

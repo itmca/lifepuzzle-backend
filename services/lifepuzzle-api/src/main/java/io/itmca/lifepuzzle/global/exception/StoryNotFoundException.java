@@ -15,4 +15,8 @@ public class StoryNotFoundException extends NotFoundException {
   public static StoryNotFoundException byHeroNo(Long heroNo) {
     return new StoryNotFoundException(String.format("Story is not found - heroNo: %d", heroNo));
   }
+
+  public static StoryNotFoundException byHeroIdAndGalleryId(Long heroId, Long galleryId) {
+    return new StoryNotFoundException(String.format("Story is not found - heroId: %d, galleryId: %d", heroId, galleryId));
+  }
 }
