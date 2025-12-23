@@ -8,12 +8,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.itmca.lifepuzzle.domain.content.entity.Gallery;
 import io.itmca.lifepuzzle.domain.content.entity.StoryGallery;
 import io.itmca.lifepuzzle.domain.content.type.GalleryType;
+import java.time.LocalDate;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record GalleryDto(
     Long id,
     int index,
     GalleryType type,
+    LocalDate date,
     String url,
     String thumbnailUrl,
     String bigSizeUrl,
@@ -31,6 +33,7 @@ public record GalleryDto(
         gallery.getId(),
         index,
         gallery.getGalleryType(),
+        gallery.getDate(),
         gallery.getImageUrl(STORY_IMAGE_RESIZING_GENERAL_WIDTH),
         gallery.getImageUrl(STORY_IMAGE_RESIZING_THUMBNAIL_WIDTH),
         gallery.getImageUrl(STORY_IMAGE_RESIZING_PINCH_ZOOM_WIDTH),
