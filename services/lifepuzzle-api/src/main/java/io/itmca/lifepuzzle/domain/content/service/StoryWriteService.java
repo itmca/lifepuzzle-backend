@@ -144,6 +144,18 @@ public class StoryWriteService {
     return story.getId();
   }
 
+  @Transactional
+  public void deleteVoice(StoryVoiceUploadRequest request, Long userId) {
+    var story = storyRepository.findByHeroIdAndGalleryId(request.heroId(), request.galleryId())
+        .orElseThrow(() -> StoryNotFoundException.byHeroIdAndGalleryId(request.heroId(), request.galleryId()));
+
+    if (!isEmpty(story.getAudioNames())) {
+      s3UploadService.delete(story.getAudioFolder(), story.getAudioNames());
+    }
+
+    story.setVoice(null);
+  }
+
   private Story findOrCreateStory(Long heroId, Long galleryId, Long userId) {
     return storyRepository.findByHeroIdAndGalleryId(heroId, galleryId)
         .orElseGet(() -> createStory(heroId, galleryId, userId));
