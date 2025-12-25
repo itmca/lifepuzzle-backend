@@ -47,6 +47,8 @@ public class Story {
   private String content;
   private String audioFolder;
   private String audioFiles;
+  @Column(name = "audio_duration")
+  private Integer audioDurationSeconds;
   private String hashtag;
 
   @OneToMany(mappedBy = "story", orphanRemoval = true)
@@ -66,14 +68,20 @@ public class Story {
 
 
   public void setVoice(@Nullable MultipartFile voice) {
+    setVoice(voice, null);
+  }
+
+  public void setVoice(@Nullable MultipartFile voice, @Nullable Integer durationSeconds) {
     if (voice != null) {
       var storyVoice = new StoryVoiceFile(this, voice);
 
       this.audioFolder = storyVoice.getBase();
       this.audioFiles = storyVoice.getFileName();
+      this.audioDurationSeconds = durationSeconds;
     } else {
       this.audioFolder = "";
       this.audioFiles = "";
+      this.audioDurationSeconds = null;
     }
   }
 
@@ -82,6 +90,15 @@ public class Story {
         .stream()
         .map(customFile -> customFile.getFileName())
         .collect(joining(FILE_NAMES_SEPARATOR));
+  }
+
+  public String getAudioUrl() {
+    if (!StringUtils.hasText(audioFiles)) {
+      return null;
+    }
+
+    String firstAudioFile = this.audioFiles.split("\\|\\|")[0];
+    return ServerConstant.S3_SERVER_HOST + this.audioFolder + firstAudioFile;
   }
 
   public List<String> getAudios() {

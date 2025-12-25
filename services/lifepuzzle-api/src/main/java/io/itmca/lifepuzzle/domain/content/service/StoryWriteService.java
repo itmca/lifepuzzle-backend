@@ -18,6 +18,7 @@ import io.itmca.lifepuzzle.global.file.CustomFile;
 import io.itmca.lifepuzzle.global.file.domain.StoryFile;
 import io.itmca.lifepuzzle.global.file.domain.StoryVoiceFile;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
+import io.itmca.lifepuzzle.global.util.AudioUtil;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +37,12 @@ public class StoryWriteService {
 
   @Transactional
   public String create(Story story, List<Long> galleryIds, @Nullable MultipartFile voice) {
+    Integer durationSeconds = null;
     if (voice != null) {
       s3UploadService.upload(new StoryVoiceFile(story, voice));
+      durationSeconds = AudioUtil.extractDuration(voice);
     }
-    story.setVoice(voice);
+    story.setVoice(voice, durationSeconds);
 
     var savedStory = storyRepository.save(story);
 
@@ -59,10 +62,12 @@ public class StoryWriteService {
 
     story.update(storyGalleryWriteRequest);
 
+    Integer durationSeconds = null;
     if (voice != null) {
       s3UploadService.upload(new StoryVoiceFile(story, voice));
+      durationSeconds = AudioUtil.extractDuration(voice);
     }
-    story.setVoice(voice);
+    story.setVoice(voice, durationSeconds);
   }
 
   @Transactional
@@ -139,7 +144,8 @@ public class StoryWriteService {
     var story = findOrCreateStory(request.heroId(), request.galleryId(), userId);
 
     s3UploadService.upload(new StoryVoiceFile(story, voice));
-    story.setVoice(voice);
+    Integer durationSeconds = AudioUtil.extractDuration(voice);
+    story.setVoice(voice, durationSeconds);
 
     return story.getId();
   }

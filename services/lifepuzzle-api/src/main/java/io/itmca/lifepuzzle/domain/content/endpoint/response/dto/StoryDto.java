@@ -13,7 +13,10 @@ public record StoryDto(
     String question,
     List<String> photos,
     List<String> videos,
+    @Deprecated
     List<String> audios,
+    String audioUrl,
+    Integer audioDurationSeconds,
     List<LikeDto> likes,
     int likeCount,
     LocalDateTime createdAt
@@ -30,6 +33,8 @@ public record StoryDto(
         Collections.emptyList(), // TODO: Gallery 시스템으로 이관됨
         Collections.emptyList(), // TODO: Gallery 시스템으로 이관됨
         story.getAudios(),
+        story.getAudioUrl(),
+        story.getAudioDurationSeconds(),
         likeDTOs,
         likeDTOs.size(),
         story.getCreatedAt()

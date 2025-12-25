@@ -20,6 +20,7 @@ import io.itmca.lifepuzzle.domain.content.type.GalleryStatus;
 import io.itmca.lifepuzzle.domain.content.type.GalleryType;
 import io.itmca.lifepuzzle.global.file.domain.StoryVoiceFile;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
+import java.io.ByteArrayInputStream;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -108,6 +109,8 @@ class StoryWriteServiceTest {
     when(voiceFile.getOriginalFilename()).thenReturn("voice.mp3");
     when(voiceFile.getBytes()).thenReturn("voice".getBytes());
     when(voiceFile.getContentType()).thenReturn("audio/mpeg");
+    when(voiceFile.getInputStream()).thenReturn(new ByteArrayInputStream("voice".getBytes()));
+    when(voiceFile.isEmpty()).thenReturn(false);
 
     var storyId = storyWriteService.upsertVoice(request, voiceFile, userId);
 
