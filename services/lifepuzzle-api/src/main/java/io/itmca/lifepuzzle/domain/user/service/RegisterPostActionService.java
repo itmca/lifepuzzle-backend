@@ -26,6 +26,6 @@ public class RegisterPostActionService {
       hero = newHeroUserAuth.getHero();
     }
 
-    userWriteService.changeRecentHeroNo(user, hero.getHeroNo());
+    userWriteService.changeRecentHero(user, hero.getHeroNo());
   }
 }

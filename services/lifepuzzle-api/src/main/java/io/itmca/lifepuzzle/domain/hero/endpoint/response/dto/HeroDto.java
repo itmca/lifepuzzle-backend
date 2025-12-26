@@ -37,8 +37,8 @@ public class HeroDto {
         .id(hero.getHeroNo())
         .name(hero.getName())
         .nickname(hero.getNickname())
-        .birthdate(hero.getBirthday())
-        .age((int) ChronoUnit.YEARS.between(hero.getBirthday(), LocalDate.now()))
+        .birthdate(hero.getBirthdate())
+        .age((int) ChronoUnit.YEARS.between(hero.getBirthdate(), LocalDate.now()))
         .image(toFullImageUrl(hero.getHeroNo(), hero.getImage()))
         .build();
   }

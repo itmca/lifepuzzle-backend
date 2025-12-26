@@ -32,7 +32,7 @@ public class StoryLikeService {
                   Like.builder()
                       .userId(userId)
                       .type(STORY)
-                      .targetId(storyKey)
+                      .contentId(storyKey)
                       .build()
               );
             }

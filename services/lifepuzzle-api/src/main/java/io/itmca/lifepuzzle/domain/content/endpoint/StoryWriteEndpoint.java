@@ -70,13 +70,13 @@ public class StoryWriteEndpoint {
                           @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyQueryService.findById(storyKey);
 
-    if (!story.getUserId().equals(authPayload.getUserId())) {
+    if (!story.getWriterId().equals(authPayload.getUserId())) {
       throw new UserNotAccessibleToStoryException(authPayload.getUserId(), storyKey);
     }
 
     var user = userQueryService.findByUserNo(authPayload.getUserId());
-    if (!story.getHeroId().equals(user.getRecentHeroNo())) {
-      throw new HeroNotAccessibleToStoryException(user.getRecentHeroNo(), storyKey);
+    if (!story.getHeroId().equals(user.getRecentHero())) {
+      throw new HeroNotAccessibleToStoryException(user.getRecentHero(), storyKey);
     }
 
     storyRepository.delete(story);

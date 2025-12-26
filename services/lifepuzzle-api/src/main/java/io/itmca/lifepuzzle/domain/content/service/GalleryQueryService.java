@@ -62,7 +62,7 @@ public class GalleryQueryService {
             toList()
         ));
 
-    return AgeGroupGalleryDto.fromGroupedGallery(groupedByAge, hero.getBirthday());
+    return AgeGroupGalleryDto.fromGroupedGallery(groupedByAge, hero.getBirthdate());
   }
 
   private List<TagDto> getTags(int age) {

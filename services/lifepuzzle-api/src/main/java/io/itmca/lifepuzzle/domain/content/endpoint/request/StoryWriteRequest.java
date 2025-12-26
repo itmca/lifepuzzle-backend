@@ -11,10 +11,6 @@ public record StoryWriteRequest(
     @NotNull(message = "Hero number is required")
     Long heroId,
 
-    Long questionId,
-    Boolean questionModified,
-    String questionText,
-
     @NotBlank(message = "Story text is required")
     String content
 ) {
@@ -23,10 +19,7 @@ public record StoryWriteRequest(
     return Story.builder()
         .id(storyKey)
         .heroId(heroId)
-        .userId(userNo)
-        .recQuestionId(questionId == null ? -1 : questionId)
-        .isQuestionModified(questionModified == null ? false : questionModified)
-        .usedQuestion(questionText)
+        .writerId(userNo)
         .content(content)
         .build();
   }

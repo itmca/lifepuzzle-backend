@@ -23,7 +23,7 @@ public record UserQueryDto(
         user.getId(),
         user.getLoginId(),
         user.getNickName(),
-        user.getRecentHeroNo(),
+        user.getRecentHero(),
         user.getUserType(),
         user.getEmail(),
         user.getBirthday(),

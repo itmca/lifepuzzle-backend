@@ -5,12 +5,12 @@ import io.itmca.lifepuzzle.domain.user.endpoint.request.UserUpdateRequest;
 import io.itmca.lifepuzzle.domain.user.type.UserType;
 import io.itmca.lifepuzzle.global.file.domain.UserProfileImage;
 import io.itmca.lifepuzzle.global.util.PasswordUtil;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +24,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.util.StringUtils;
 
 @Entity
+@Table(name = "user")
 @Getter
 @Builder
 @ToString
@@ -31,7 +32,6 @@ import org.springframework.util.StringUtils;
 @AllArgsConstructor
 public class User {
   @Id
-  @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String loginId;
@@ -39,28 +39,20 @@ public class User {
   private String salt;
   private String password;
   private LocalDate birthday;
-  @Column(name = "recent_hero")
-  private Long recentHeroNo;
-  @Column(name = "email_validated")
+  private Long recentHero;
   private boolean emailValidated;
-  @Column(name = "nick_name")
   private String nickName;
-  @Column(name = "kakao_id")
   private String kakaoId;
-  @Column(name = "apple_id")
   private String appleId;
-  @Column(name = "push_opt_in")
   private boolean pushOptIn;
   private String image;
 
   @OneToMany(mappedBy = "user")
   private List<HeroUserAuth> heroUserAuths;
 
-  @Column(name = "created_at")
   @CreationTimestamp
   private LocalDateTime createdAt;
 
-  @Column(name = "updated_at")
   @UpdateTimestamp
   private LocalDateTime updatedAt;
 
@@ -73,8 +65,8 @@ public class User {
     return UserType.GENERAL.frontEndKey();
   }
 
-  public void changeRecentHeroNo(Long heroNo) {
-    this.recentHeroNo = heroNo;
+  public void changeRecentHero(Long heroNo) {
+    this.recentHero = heroNo;
   }
 
   public void changePassword(String password) {

@@ -174,7 +174,7 @@ public class StoryWriteService {
     var story = Story.builder()
         .id(generateStoryKey(heroId))
         .heroId(heroId)
-        .userId(userId)
+        .writerId(userId)
         .build();
 
     var savedStory = storyRepository.save(story);

@@ -71,7 +71,7 @@ class StoryLikeServiceTest {
     var existingLike = Like.builder()
         .userId(userId)
         .type(STORY)
-        .targetId(storyKey)
+        .contentId(storyKey)
         .build();
     when(likeRepository.findLike(userId, storyKey, STORY)).thenReturn(Optional.of(existingLike));
 
@@ -108,7 +108,7 @@ class StoryLikeServiceTest {
     var existingLike = Like.builder()
         .userId(userId)
         .type(STORY)
-        .targetId(storyKey)
+        .contentId(storyKey)
         .build();
     when(likeRepository.findLike(userId, storyKey, STORY)).thenReturn(Optional.of(existingLike));
 

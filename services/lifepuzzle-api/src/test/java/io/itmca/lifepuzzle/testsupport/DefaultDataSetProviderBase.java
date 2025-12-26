@@ -89,9 +89,9 @@ public abstract class DefaultDataSetProviderBase implements DataSetProvider {
         .defaultValue("id", "1")
         .defaultValue("name", "test_name")
         .defaultValue("nickname", "test_nickname")
-        .defaultValue("birthday", "1993-12-08")
-        .defaultValue("title", "")
+        .defaultValue("birthdate", "1993-12-08")
         .defaultValue("image", "")
+        .defaultValue("is_lunar", false)
         .defaultValue("created_at", "[DAY,NOW]")
         .defaultValue("updated_at", "[DAY,NOW]");
 
