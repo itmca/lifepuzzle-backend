@@ -1,7 +1,6 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.request;
 
 import io.itmca.lifepuzzle.domain.content.entity.Story;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,7 +17,7 @@ public record StoryGalleryWriteRequest(String title, String content, Long heroId
     return Story.builder()
         .id(generatedStoryKey(heroId))
         .heroId(heroId)
-        .userId(userId)
+        .writerId(userId)
         .content(content)
         .build();
   }

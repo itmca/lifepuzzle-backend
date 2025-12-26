@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
+@Table(name = "user_hero_share")
 @Getter
 @Builder
 @AllArgsConstructor
@@ -37,6 +39,6 @@ public class UserHeroShare {
   @Column(nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
-  @Column(nullable = false, updatable = false)
+  @Column
   private LocalDateTime expiredAt;
 }

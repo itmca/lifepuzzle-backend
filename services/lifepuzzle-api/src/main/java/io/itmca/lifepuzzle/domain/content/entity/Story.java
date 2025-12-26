@@ -4,15 +4,13 @@ import static io.itmca.lifepuzzle.global.constants.FileConstant.FILE_NAMES_SEPAR
 import static java.util.stream.Collectors.joining;
 
 import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryGalleryWriteRequest;
-import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryWriteRequest;
-import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
-import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.global.constants.ServerConstant;
 import io.itmca.lifepuzzle.global.file.CustomFile;
 import io.itmca.lifepuzzle.global.file.domain.StoryVoiceFile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -38,20 +36,16 @@ public class Story {
 
   @Id
   private String id;
-  private Long userId;
+  private Long writerId;
   private Long heroId;
-  private Long recQuestionId;
-  private String usedQuestion;
-  @Column(columnDefinition = "tinyint(1) default 0")
-  private boolean isQuestionModified;
   private String content;
   private String audioFolder;
   private String audioFiles;
-  @Column(name = "audio_duration")
-  private Integer audioDurationSeconds;
+  private Integer audioDuration;
   private String hashtag;
 
-  @OneToMany(mappedBy = "story", orphanRemoval = true)
+  @OneToMany(orphanRemoval = true)
+  @JoinColumn(name = "content_id", referencedColumnName = "id", insertable = false, updatable = false)
   private List<Like> likes;
 
   @OneToMany(mappedBy = "story", orphanRemoval = true)
@@ -77,11 +71,11 @@ public class Story {
 
       this.audioFolder = storyVoice.getBase();
       this.audioFiles = storyVoice.getFileName();
-      this.audioDurationSeconds = durationSeconds;
+      this.audioDuration = durationSeconds;
     } else {
       this.audioFolder = "";
       this.audioFiles = "";
-      this.audioDurationSeconds = null;
+      this.audioDuration = null;
     }
   }
 

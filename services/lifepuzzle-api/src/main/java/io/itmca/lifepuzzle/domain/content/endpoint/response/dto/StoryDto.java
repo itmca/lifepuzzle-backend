@@ -10,7 +10,6 @@ public record StoryDto(
     String id,
     Long heroNo,
     String content,
-    String question,
     List<String> photos,
     List<String> videos,
     @Deprecated
@@ -29,12 +28,11 @@ public record StoryDto(
         story.getId(),
         story.getHeroId(),
         story.getContent(),
-        story.getUsedQuestion(),
         Collections.emptyList(), // TODO: Gallery 시스템으로 이관됨
         Collections.emptyList(), // TODO: Gallery 시스템으로 이관됨
         story.getAudios(),
         story.getAudioUrl(),
-        story.getAudioDurationSeconds(),
+        story.getAudioDuration(),
         likeDTOs,
         likeDTOs.size(),
         story.getCreatedAt()

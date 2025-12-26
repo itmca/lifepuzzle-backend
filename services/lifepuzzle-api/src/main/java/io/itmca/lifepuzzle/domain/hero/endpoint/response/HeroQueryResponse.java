@@ -16,7 +16,6 @@ public record HeroQueryResponse(
     @Schema(description = "이름") String name,
     @Schema(description = "별칭") String nickName,
     @Schema(description = "생일") LocalDate birthday,
-    @Schema(description = "대표제목") String title,
     @Schema(description = "대표이미지") String imageUrl,
     @Nullable @Schema(description = "권한") HeroAuthStatus auth,
     @Schema(description = "양음력여부") Boolean isLunar
@@ -34,8 +33,7 @@ public record HeroQueryResponse(
         hero.getHeroNo(),
         hero.getName(),
         hero.getNickname(),
-        hero.getBirthday(),
-        hero.getTitle(),
+        hero.getBirthdate(),
         addServerHostInImage(hero.getHeroNo(), hero.getImage()),
         auth,
         hero.getIsLunar()

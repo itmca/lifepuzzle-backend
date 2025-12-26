@@ -29,7 +29,7 @@ public class UserHeroEndpoint {
     Long heroNo = request.heroId();
     heroValidationService.validateUserCanAccessHero(user.getId(), heroNo);
 
-    userWriteService.changeRecentHeroNo(user, heroNo);
+    userWriteService.changeRecentHero(user, heroNo);
   }
 
   @Operation(summary = "주인공 권한 링크 조회")

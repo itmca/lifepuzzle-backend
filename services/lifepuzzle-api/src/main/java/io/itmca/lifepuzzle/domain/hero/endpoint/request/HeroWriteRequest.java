@@ -9,7 +9,6 @@ public record HeroWriteRequest(
     String name,
     String nickName,
     LocalDate birthday,
-    String title,
     Boolean isLunar,
     boolean profileImageUpdate
 ) {
@@ -23,9 +22,8 @@ public record HeroWriteRequest(
     return Hero.builder()
         .name(name)
         .nickname(nickName)
-        .birthday(birthday)
+        .birthdate(birthday)
         .isLunar(isLunar)
-        .title(title)
         .build();
   }
 }

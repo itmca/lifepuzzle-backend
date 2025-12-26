@@ -22,7 +22,7 @@ public class LoginService {
   public LoginResponse getLoginResponse(Login login) {
     var user = login.getUser();
     var tokens = tokenIssueService.getTokensOfUser(user.getId());
-    var hero = heroQueryServiceService.findHeroByHeroNo(user.getRecentHeroNo());
+    var hero = heroQueryServiceService.findHeroByHeroNo(user.getRecentHero());
 
     var socialToken = login.getSocialToken();
     var isNewUser = login.getIsNewUser();

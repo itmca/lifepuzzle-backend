@@ -28,7 +28,7 @@ public class StoryGalleryDto {
         .content(story.getContent())
         .audios(story.getAudios())
         .audioUrl(story.getAudioUrl())
-        .audioDurationSeconds(story.getAudioDurationSeconds())
+        .audioDurationSeconds(story.getAudioDuration())
         .build();
   }
 }

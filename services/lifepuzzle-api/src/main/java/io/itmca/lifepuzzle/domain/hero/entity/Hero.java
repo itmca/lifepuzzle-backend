@@ -37,9 +37,7 @@ public class Hero {
   @Setter
   private String nickname;
   @Setter
-  private LocalDate birthday;
-  @Setter
-  private String title;
+  private LocalDate birthdate;
   private String image;
 
   @Setter
@@ -66,8 +64,7 @@ public class Hero {
     return Hero.builder()
         .name("주인공")
         .nickname("소중한 분")
-        .title("봄날의 햇살처럼 따뜻한 당신")
-        .birthday(LocalDate.of(1970, 1, 1))
+        .birthdate(LocalDate.of(1970, 1, 1))
         .isLunar(false)
         .image("")
         .build();

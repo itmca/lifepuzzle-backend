@@ -86,7 +86,7 @@ class StoryWriteServiceTest {
     var existingStory = Story.builder()
         .id("story-key")
         .heroId(heroId)
-        .userId(userId)
+        .writerId(userId)
         .content("old content")
         .build();
     when(storyRepository.findByHeroIdAndGalleryId(heroId, galleryId))
