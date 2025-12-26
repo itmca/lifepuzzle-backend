@@ -145,6 +145,7 @@ go run cmd/main.go               # 로컬 실행
 
 ### 개발 가이드
 - **[Git Workflow](./docs/GIT_WORKFLOW.md)** - 브랜치 전략, 커밋 컨벤션, PR 가이드
+- **[Database Conventions](./docs/DATABASE_CONVENTIONS.md)** - 데이터베이스 스키마 및 마이그레이션 작성 규칙
 - **[Versioning](./docs/VERSIONING.md)** - CalVer 기반 버전 관리 전략
 - **[CLAUDE.md](./CLAUDE.md)** - Claude AI 작업 가이드
 
