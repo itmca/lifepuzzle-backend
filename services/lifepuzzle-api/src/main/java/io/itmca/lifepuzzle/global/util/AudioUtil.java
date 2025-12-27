@@ -39,7 +39,7 @@ public class AudioUtil {
       String duration = metadata.get(XMPDM.DURATION);
       if (duration != null) {
         double durationSeconds = parseDurationSeconds(duration, metadata);
-        return (int) Math.ceil(durationSeconds);
+        return (int) Math.floor(durationSeconds);
       }
 
       log.warn("Could not extract duration from audio file: {}", audioFile.getOriginalFilename());
