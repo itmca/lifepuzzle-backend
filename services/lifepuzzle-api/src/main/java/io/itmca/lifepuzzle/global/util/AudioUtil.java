@@ -51,7 +51,7 @@ public class AudioUtil {
     }
   }
 
-  private static double parseDurationSeconds(String duration, Metadata metadata) {
+  static double parseDurationSeconds(String duration, Metadata metadata) {
     String trimmed = duration.trim();
     if (trimmed.startsWith("PT")) {
       try {

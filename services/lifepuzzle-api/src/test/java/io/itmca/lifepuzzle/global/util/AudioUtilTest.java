@@ -2,8 +2,7 @@ package io.itmca.lifepuzzle.global.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import org.apache.tika.metadata.Metadata;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
@@ -22,61 +21,16 @@ class AudioUtilTest {
   @DisplayName("audio duration is parsed as seconds for common audio types")
   @Test
   void parsesAudioDurationInSeconds() {
-    byte[] wavBytes = buildWavBytes(8000, 1);
-    var wavFile = new MockMultipartFile("voice", "voice.wav", "audio/wav", wavBytes);
-    var mp4AudioFile = new MockMultipartFile("voice", "voice.m4a", "audio/mp4", wavBytes);
-    var mp3File = new MockMultipartFile("voice", "voice.mp3", "audio/mpeg", wavBytes);
+    Metadata videoMetadata = new Metadata();
+    videoMetadata.set(Metadata.CONTENT_TYPE, "video/mp4");
+    assertThat(AudioUtil.parseDurationSeconds("6.0", videoMetadata)).isEqualTo(6.0);
 
-    assertThat(AudioUtil.extractDuration(wavFile)).isEqualTo(1);
-    assertThat(AudioUtil.extractDuration(mp4AudioFile)).isEqualTo(1);
-    assertThat(AudioUtil.extractDuration(mp3File)).isEqualTo(1);
-  }
+    Metadata audioMetadata = new Metadata();
+    audioMetadata.set(Metadata.CONTENT_TYPE, "audio/mp4");
+    assertThat(AudioUtil.parseDurationSeconds("6000", audioMetadata)).isEqualTo(6.0);
 
-  private static byte[] buildWavBytes(int sampleRate, int seconds) {
-    int bitsPerSample = 16;
-    int channels = 1;
-    int bytesPerSample = bitsPerSample / 8;
-    int numSamples = sampleRate * seconds;
-    int dataSize = numSamples * channels * bytesPerSample;
-    int byteRate = sampleRate * channels * bytesPerSample;
-    int blockAlign = channels * bytesPerSample;
-    int riffChunkSize = 36 + dataSize;
-
-    try {
-      ByteArrayOutputStream output = new ByteArrayOutputStream();
-      writeAscii(output, "RIFF");
-      writeIntLE(output, riffChunkSize);
-      writeAscii(output, "WAVE");
-      writeAscii(output, "fmt ");
-      writeIntLE(output, 16);
-      writeShortLE(output, (short) 1);
-      writeShortLE(output, (short) channels);
-      writeIntLE(output, sampleRate);
-      writeIntLE(output, byteRate);
-      writeShortLE(output, (short) blockAlign);
-      writeShortLE(output, (short) bitsPerSample);
-      writeAscii(output, "data");
-      writeIntLE(output, dataSize);
-      output.write(new byte[dataSize]);
-      return output.toByteArray();
-    } catch (IOException e) {
-      throw new IllegalStateException("Failed to build WAV bytes", e);
-    }
-  }
-
-  private static void writeAscii(ByteArrayOutputStream output, String value) throws IOException {
-    output.write(value.getBytes());
-  }
-
-  private static void writeIntLE(ByteArrayOutputStream output, int value) throws IOException {
-    output.write(value & 0xFF);
-    output.write((value >> 8) & 0xFF);
-    output.write((value >> 16) & 0xFF);
-    output.write((value >> 24) & 0xFF);
-  }
-
-  private static void writeShortLE(ByteArrayOutputStream output, short value) throws IOException {
-    output.write(value & 0xFF);
-    output.write((value >> 8) & 0xFF);
+    Metadata mp3Metadata = new Metadata();
+    mp3Metadata.set(Metadata.CONTENT_TYPE, "audio/mpeg");
+    assertThat(AudioUtil.parseDurationSeconds("PT1S", mp3Metadata)).isEqualTo(1.0);
   }
 }
