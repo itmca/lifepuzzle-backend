@@ -15,7 +15,8 @@ public record UserQueryDto(
     String userType,
     String email,
     LocalDate birthday,
-    String imageUrl
+    String imageUrl,
+    Boolean hasHero
 ) {
 
   public static UserQueryDto from(User user) {
@@ -27,7 +28,8 @@ public record UserQueryDto(
         user.getUserType(),
         user.getEmail(),
         user.getBirthday(),
-        addServerHostInImage(user.getId(), user.getImage())
+        addServerHostInImage(user.getId(), user.getImage()),
+        user.getRecentHero() != null
     );
   }
 

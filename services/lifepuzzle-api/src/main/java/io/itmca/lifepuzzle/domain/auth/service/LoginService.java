@@ -22,7 +22,13 @@ public class LoginService {
   public LoginResponse getLoginResponse(Login login) {
     var user = login.getUser();
     var tokens = tokenIssueService.getTokensOfUser(user.getId());
-    var hero = heroQueryServiceService.findHeroByHeroNo(user.getRecentHero());
+
+    // Only fetch hero if user has a recent hero set
+    HeroQueryResponse heroResponse = null;
+    if (user.getRecentHero() != null) {
+      var hero = heroQueryServiceService.findHeroByHeroNo(user.getRecentHero());
+      heroResponse = HeroQueryResponse.from(hero, user.getId());
+    }
 
     var socialToken = login.getSocialToken();
     var isNewUser = login.getIsNewUser();
@@ -42,7 +48,7 @@ public class LoginService {
     return new LoginResponse(
         userQueryDTO,
         tokenQueryDTO,
-        HeroQueryResponse.from(hero, user.getId()),
+        heroResponse,
         isNewUser
     );
   }

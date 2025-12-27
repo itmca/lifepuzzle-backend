@@ -3,7 +3,6 @@ package io.itmca.lifepuzzle.domain.user.service;
 import ch.qos.logback.core.util.StringUtil;
 import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
-import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
 import io.itmca.lifepuzzle.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,20 +11,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RegisterPostActionService {
 
-  private final HeroWriteService heroWriteService;
   private final HeroUserAuthWriteService heroUserAuthWriteService;
   private final UserWriteService userWriteService;
 
   public void doAfterRegisterActions(User user, String shareKey) {
-    Hero hero;
-
-    if (StringUtil.isNullOrEmpty(shareKey)) {
-      hero = heroWriteService.createDefaultHero(user);
-    } else {
+    // Only create hero connection when shareKey is provided
+    if (!StringUtil.isNullOrEmpty(shareKey)) {
       var newHeroUserAuth = heroUserAuthWriteService.createByShareKey(user, shareKey);
-      hero = newHeroUserAuth.getHero();
+      Hero hero = newHeroUserAuth.getHero();
+      userWriteService.changeRecentHero(user, hero.getHeroNo());
     }
-
-    userWriteService.changeRecentHero(user, hero.getHeroNo());
+    // If no shareKey, user will create their own hero from frontend
   }
 }
