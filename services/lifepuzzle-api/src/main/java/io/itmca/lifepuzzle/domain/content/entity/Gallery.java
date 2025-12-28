@@ -4,6 +4,7 @@ import static io.itmca.lifepuzzle.global.constants.FileConstant.ORIGINAL_BASE_PA
 import static io.itmca.lifepuzzle.global.constants.ServerConstant.S3_SERVER_HOST;
 
 import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
+import io.itmca.lifepuzzle.domain.content.type.GallerySource;
 import io.itmca.lifepuzzle.domain.content.type.GalleryStatus;
 import io.itmca.lifepuzzle.domain.content.type.GalleryType;
 import io.itmca.lifepuzzle.global.file.CustomFile;
@@ -58,6 +59,12 @@ public class Gallery {
   @Column(name = "type", nullable = false)
   @Enumerated(EnumType.STRING)
   private GalleryType galleryType;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  @Builder.Default
+  private GallerySource source = GallerySource.UPLOAD;
+  @Column(name = "uploaded_user_id")
+  private Long uploadedUserId;
   @Lob
   @Convert(converter = JsonListConverter.class)
   @Builder.Default
@@ -84,6 +91,7 @@ public class Gallery {
             .heroId(heroId)
             .ageGroup(ageGroup)
             .galleryType(galleryType)
+            .source(GallerySource.UPLOAD)
             .url(storyImageFile.getBase() + storyImageFile.getFileName())
             .build()
     ).toList();
@@ -94,10 +102,18 @@ public class Gallery {
       return "";
     }
 
+    if (isExternalUrl()) {
+      return url;
+    }
+
     return S3_SERVER_HOST + url;
   }
 
   public String getImageUrl(Integer size) {
+    if (isExternalUrl()) {
+      return url;
+    }
+
     var isExistResizedFile = resizedSizes != null && resizedSizes.contains(size);
     var thumbnailFilePath = isExistResizedFile
         ? url.replace(ORIGINAL_BASE_PATH, String.valueOf(size))
@@ -120,5 +136,9 @@ public class Gallery {
 
   public boolean isImage() {
     return galleryType == GalleryType.IMAGE;
+  }
+
+  private boolean isExternalUrl() {
+    return StringUtils.hasText(url) && (url.startsWith("http://") || url.startsWith("https://"));
   }
 }

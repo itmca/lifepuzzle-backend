@@ -44,6 +44,7 @@ public class User {
   private String nickName;
   private String kakaoId;
   private String appleId;
+  private String facebookUserId;
   private boolean pushOptIn;
   private String image;
 
@@ -95,5 +96,9 @@ public class User {
     } else {
       this.image = userProfileImage.getFileName();
     }
+  }
+
+  public void setFacebookUserId(String facebookUserId) {
+    this.facebookUserId = facebookUserId;
   }
 }
