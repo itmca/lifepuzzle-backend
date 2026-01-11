@@ -60,6 +60,8 @@ public class Hero {
   @Setter
   private Boolean isLunar;
 
+  private String facebookUserId;
+
   public static Hero defaultHero() {
     return Hero.builder()
         .name("주인공")
@@ -84,5 +86,9 @@ public class Hero {
 
   public boolean isActive() {
     return this.deletedAt == null;
+  }
+
+  public void setFacebookUserId(String facebookUserId) {
+    this.facebookUserId = facebookUserId;
   }
 }

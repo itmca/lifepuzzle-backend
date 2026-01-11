@@ -19,6 +19,8 @@ public interface GalleryRepository extends JpaRepository<Gallery, Long> {
 
   List<Gallery> findAllBySourceAndUploadedUserId(GallerySource source, Long uploadedUserId);
 
+  List<Gallery> findAllByHeroIdAndSource(Long heroId, GallerySource source);
+
   @Query("SELECT g FROM Gallery g "
          + "LEFT JOIN FETCH g.storyMaps sm "
          + "LEFT JOIN FETCH sm.story "

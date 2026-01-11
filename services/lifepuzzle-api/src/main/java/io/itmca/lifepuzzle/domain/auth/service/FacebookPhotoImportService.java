@@ -4,10 +4,10 @@ import io.itmca.lifepuzzle.domain.auth.endpoint.response.FacebookPhotoImportResp
 import io.itmca.lifepuzzle.domain.content.service.GalleryWriteService;
 import io.itmca.lifepuzzle.domain.content.service.GalleryWriteService.FacebookImportPhoto;
 import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
-import io.itmca.lifepuzzle.domain.user.repository.UserRepository;
+import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
 import io.itmca.lifepuzzle.global.exception.FacebookUserAlreadyLinkedException;
+import io.itmca.lifepuzzle.global.exception.HeroNotFoundException;
 import io.itmca.lifepuzzle.global.exception.MissingHeroNoException;
-import io.itmca.lifepuzzle.global.exception.UserNotFoundException;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class FacebookPhotoImportService {
   private final FacebookOAuthService facebookOAuthService;
   private final FacebookPhotoService facebookPhotoService;
   private final GalleryWriteService galleryWriteService;
-  private final UserRepository userRepository;
+  private final HeroRepository heroRepository;
 
   @Transactional
   public FacebookPhotoImportResponse importPhotos(Long userId, String code, Long heroNo, AgeGroup ageGroup) {
@@ -32,15 +32,15 @@ public class FacebookPhotoImportService {
     var accessToken = facebookOAuthService.getAccessToken(code);
     var facebookUserId = facebookOAuthService.getUserId(accessToken);
 
-    userRepository.findByFacebookUserId(facebookUserId)
-        .filter(existing -> !existing.getId().equals(userId))
+    heroRepository.findByFacebookUserId(facebookUserId)
+        .filter(existing -> !existing.getHeroNo().equals(heroNo))
         .ifPresent(existing -> {
           throw new FacebookUserAlreadyLinkedException(facebookUserId);
         });
 
-    var user = userRepository.findById(userId)
-        .orElseThrow(() -> UserNotFoundException.byUserNo(userId));
-    user.setFacebookUserId(facebookUserId);
+    var hero = heroRepository.findById(heroNo)
+        .orElseThrow(() -> HeroNotFoundException.byHeroNo(heroNo));
+    hero.setFacebookUserId(facebookUserId);
 
     var photosResponse = facebookPhotoService.getFilteredUserPhotos(accessToken);
     List<FacebookImportPhoto> photos = photosResponse.photos().stream()

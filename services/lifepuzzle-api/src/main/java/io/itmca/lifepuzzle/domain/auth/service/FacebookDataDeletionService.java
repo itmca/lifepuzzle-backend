@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.itmca.lifepuzzle.domain.auth.service.dto.FacebookSignedRequestPayload;
 import io.itmca.lifepuzzle.domain.content.repository.GalleryRepository;
 import io.itmca.lifepuzzle.domain.content.type.GallerySource;
-import io.itmca.lifepuzzle.domain.user.repository.UserRepository;
+import io.itmca.lifepuzzle.domain.hero.repository.HeroRepository;
 import io.itmca.lifepuzzle.global.exception.InvalidSignedRequestException;
 import io.itmca.lifepuzzle.global.file.service.S3UploadService;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +28,7 @@ public class FacebookDataDeletionService {
   private static final String EXPECTED_ALGORITHM = "HMAC-SHA256";
 
   private final ObjectMapper objectMapper;
-  private final UserRepository userRepository;
+  private final HeroRepository heroRepository;
   private final GalleryRepository galleryRepository;
   private final S3UploadService s3UploadService;
 
@@ -101,13 +101,13 @@ public class FacebookDataDeletionService {
   }
 
   private void deleteFacebookData(String facebookUserId) {
-    var userOpt = userRepository.findByFacebookUserId(facebookUserId);
-    if (userOpt.isEmpty()) {
+    var heroOpt = heroRepository.findByFacebookUserId(facebookUserId);
+    if (heroOpt.isEmpty()) {
       return;
     }
 
-    var user = userOpt.get();
-    var galleries = galleryRepository.findAllBySourceAndUploadedUserId(GallerySource.FACEBOOK, user.getId());
+    var hero = heroOpt.get();
+    var galleries = galleryRepository.findAllByHeroIdAndSource(hero.getHeroNo(), GallerySource.FACEBOOK);
     for (var gallery : galleries) {
       if (gallery.getUrl() != null && !gallery.getUrl().isBlank()) {
         s3UploadService.delete(gallery.getUrl());
@@ -115,6 +115,6 @@ public class FacebookDataDeletionService {
     }
     galleryRepository.deleteAll(galleries);
 
-    user.setFacebookUserId(null);
+    hero.setFacebookUserId(null);
   }
 }
