@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.domain.auth.service;
 
 import io.itmca.lifepuzzle.domain.auth.oauth.response.FacebookTokenResponse;
+import io.itmca.lifepuzzle.domain.auth.oauth.response.FacebookUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class FacebookOAuthService {
   private String redirectUri;
 
   private static final String TOKEN_PATH = "/oauth/access_token";
+  private static final String ME_PATH = "/me";
 
   public String getAccessToken(String code) {
     return restClient.get()
@@ -33,5 +35,16 @@ public class FacebookOAuthService {
         .body(FacebookTokenResponse.class)
         .accessToken();
   }
-}
 
+  public String getUserId(String accessToken) {
+    return restClient.get()
+        .uri(uriBuilder -> uriBuilder
+            .path(ME_PATH)
+            .queryParam("fields", "id")
+            .queryParam("access_token", accessToken)
+            .build())
+        .retrieve()
+        .body(FacebookUserResponse.class)
+        .id();
+  }
+}

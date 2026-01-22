@@ -2,6 +2,7 @@ package io.itmca.lifepuzzle.domain.content.service;
 
 import static io.itmca.lifepuzzle.domain.content.type.GalleryType.IMAGE;
 import static io.itmca.lifepuzzle.domain.content.type.GalleryType.VIDEO;
+import static io.itmca.lifepuzzle.global.constants.FileConstant.NEW_STORY_IMAGE_BASE_PATH_FORMAT;
 
 import io.itmca.lifepuzzle.domain.content.endpoint.response.GalleryUploadCompleteResponse;
 import io.itmca.lifepuzzle.domain.content.endpoint.response.dto.GalleryUploadResultDto;
@@ -9,6 +10,7 @@ import io.itmca.lifepuzzle.domain.content.entity.Gallery;
 import io.itmca.lifepuzzle.domain.content.event.PhotoUploadEventPublisher;
 import io.itmca.lifepuzzle.domain.content.repository.GalleryRepository;
 import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
+import io.itmca.lifepuzzle.domain.content.type.GallerySource;
 import io.itmca.lifepuzzle.domain.content.type.GalleryStatus;
 import io.itmca.lifepuzzle.global.exception.GalleryItemNotFoundException;
 import io.itmca.lifepuzzle.global.file.domain.StoryImageFile;
@@ -48,6 +50,46 @@ public class GalleryWriteService {
     // Publish photo upload events to RabbitMQ for image resizing
     publishPhotoUploadEvents(saveGalleryFiles, heroId);
   }
+
+  @Transactional
+  public List<Gallery> saveFacebookGallery(Long heroId, Long uploadedUserId,
+                                           List<FacebookImportPhoto> photos, AgeGroup ageGroup) {
+    var correctedAgeGroup = AgeGroup.orUncategorized(ageGroup);
+    var validPhotos = photos.stream()
+        .filter(photo -> photo != null && photo.bytes() != null && photo.bytes().length > 0)
+        .toList();
+    var galleries = validPhotos.stream()
+        .map(photo -> Gallery.builder()
+            .heroId(heroId)
+            .ageGroup(correctedAgeGroup)
+            .galleryType(IMAGE)
+            .source(GallerySource.FACEBOOK)
+            .galleryStatus(GalleryStatus.UPLOADED)
+            .uploadedUserId(uploadedUserId)
+            .url("")
+            .build())
+        .toList();
+
+    var savedGalleries = galleryRepository.saveAllAndFlush(galleries);
+
+    for (int i = 0; i < savedGalleries.size(); i++) {
+      var gallery = savedGalleries.get(i);
+      var photo = validPhotos.get(i);
+      var key = buildS3Key(heroId, gallery.getId(), photo.fileName());
+
+      s3UploadService.upload(key, photo.bytes());
+      gallery.setUrl(key);
+      photoUploadEventPublisher.publishPhotoUploadEvent(gallery.getId(), heroId, key);
+    }
+
+    return galleryRepository.saveAllAndFlush(savedGalleries);
+  }
+
+  private String buildS3Key(Long heroId, Long galleryId, String fileName) {
+    return NEW_STORY_IMAGE_BASE_PATH_FORMAT.formatted(heroId, galleryId) + fileName;
+  }
+
+  public record FacebookImportPhoto(String fileName, byte[] bytes) {}
 
 
   @Transactional

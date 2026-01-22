@@ -8,6 +8,7 @@ import io.itmca.lifepuzzle.domain.content.endpoint.response.PresignedUrlResponse
 import io.itmca.lifepuzzle.domain.content.entity.Gallery;
 import io.itmca.lifepuzzle.domain.content.repository.GalleryRepository;
 import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
+import io.itmca.lifepuzzle.domain.content.type.GallerySource;
 import io.itmca.lifepuzzle.domain.content.type.GalleryStatus;
 import io.itmca.lifepuzzle.domain.content.type.GalleryType;
 import java.time.Duration;
@@ -43,6 +44,7 @@ public class PresignedUrlService {
               .url("")
               .ageGroup(ageGroup)
               .galleryType(determineGalleryType(file.contentType()))
+              .source(GallerySource.UPLOAD)
               .galleryStatus(GalleryStatus.PENDING)
               .build()
       );

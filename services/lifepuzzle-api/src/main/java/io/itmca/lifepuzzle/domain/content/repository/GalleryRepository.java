@@ -1,6 +1,7 @@
 package io.itmca.lifepuzzle.domain.content.repository;
 
 import io.itmca.lifepuzzle.domain.content.entity.Gallery;
+import io.itmca.lifepuzzle.domain.content.type.GallerySource;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,10 @@ public interface GalleryRepository extends JpaRepository<Gallery, Long> {
   Optional<Gallery> findByUrl(String url);
 
   Optional<Gallery> findByIdAndHeroId(Long id, Long heroId);
+
+  List<Gallery> findAllBySourceAndUploadedUserId(GallerySource source, Long uploadedUserId);
+
+  List<Gallery> findAllByHeroIdAndSource(Long heroId, GallerySource source);
 
   @Query("SELECT g FROM Gallery g "
          + "LEFT JOIN FETCH g.storyMaps sm "
