@@ -38,4 +38,8 @@ public class UserQueryService {
     return userRepository.findByAppleId(appleId)
         .orElseThrow(() -> new AppleUserNotFoundException(appleId));
   }
+
+  public boolean existsByLoginId(String loginId) {
+    return userRepository.existsByLoginId(loginId);
+  }
 }
