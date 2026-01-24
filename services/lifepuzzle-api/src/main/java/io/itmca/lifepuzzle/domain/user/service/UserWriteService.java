@@ -49,8 +49,8 @@ public class UserWriteService {
   }
 
   @Transactional
-  public void changeRecentHeroNo(User user, Long heroNo) {
-    user.changeRecentHeroNo(heroNo);
+  public void changeRecentHero(User user, Long heroNo) {
+    user.changeRecentHero(heroNo);
   }
 
   @Transactional

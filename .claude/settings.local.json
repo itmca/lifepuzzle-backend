@@ -7,7 +7,10 @@
       "Bash(./gradlew:*)",
       "Bash(git commit:*)",
       "Bash(git pull:*)",
-      "Bash(go:*)"
+      "Bash(go:*)",
+      "Read(//Users/border-line/workspace/lifepuzzle-rn/**)",
+      "Bash(gh pr view:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

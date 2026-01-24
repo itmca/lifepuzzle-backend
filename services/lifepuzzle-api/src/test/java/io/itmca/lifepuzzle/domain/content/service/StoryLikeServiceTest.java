@@ -55,7 +55,7 @@ class StoryLikeServiceTest {
     var response = storyLikeService.addLike(storyKey, userId);
 
     // Then
-    assertTrue(response.getIsLiked());
+    assertTrue(response.isLiked());
     verify(storyQueryService).findById(storyKey);
     verify(likeRepository).save(any(Like.class));
   }
@@ -71,7 +71,7 @@ class StoryLikeServiceTest {
     var existingLike = Like.builder()
         .userId(userId)
         .type(STORY)
-        .targetId(storyKey)
+        .contentId(storyKey)
         .build();
     when(likeRepository.findLike(userId, storyKey, STORY)).thenReturn(Optional.of(existingLike));
 
@@ -108,7 +108,7 @@ class StoryLikeServiceTest {
     var existingLike = Like.builder()
         .userId(userId)
         .type(STORY)
-        .targetId(storyKey)
+        .contentId(storyKey)
         .build();
     when(likeRepository.findLike(userId, storyKey, STORY)).thenReturn(Optional.of(existingLike));
 
@@ -116,7 +116,7 @@ class StoryLikeServiceTest {
     var response = storyLikeService.deleteLike(storyKey, userId);
 
     // Then
-    assertEquals(false, response.getIsLiked());
+    assertEquals(false, response.isLiked());
     verify(likeRepository).delete(existingLike);
   }
 

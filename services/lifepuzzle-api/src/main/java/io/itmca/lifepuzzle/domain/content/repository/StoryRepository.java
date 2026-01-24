@@ -17,5 +17,10 @@ public interface StoryRepository extends JpaRepository<Story, String> {
   @Query("SELECT s FROM Story s LEFT JOIN FETCH s.likes l WHERE s.id = :storyKey")
   Optional<Story> findByStoryKey(@Param("storyKey") String storyKey);
 
+  @Query("SELECT s FROM Story s JOIN StoryGallery sg ON sg.storyId = s.id "
+      + "WHERE s.heroId = :heroId AND sg.galleryId = :galleryId")
+  Optional<Story> findByHeroIdAndGalleryId(@Param("heroId") Long heroId,
+                                           @Param("galleryId") Long galleryId);
+
   int countByHeroId(Long heroNo);
 }

@@ -26,10 +26,10 @@ public class UserHeroEndpoint {
   @PostMapping({"/v1/users/hero/recent"})
   public void updateRecentHero(@RequestBody UserRecentHeroRequest request,
                                @CurrentUser User user) {
-    Long heroNo = request.heroNo();
+    Long heroNo = request.heroId();
     heroValidationService.validateUserCanAccessHero(user.getId(), heroNo);
 
-    userWriteService.changeRecentHeroNo(user, heroNo);
+    userWriteService.changeRecentHero(user, heroNo);
   }
 
   @Operation(summary = "주인공 권한 링크 조회")

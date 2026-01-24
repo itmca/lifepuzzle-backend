@@ -11,7 +11,7 @@ jobs:
 
     steps:
       # 1. PR에 stale 라벨 & 코멘트 달기
-      - uses: actions/stale@v9
+      - uses: actions/stale@v10
         id: stale
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}

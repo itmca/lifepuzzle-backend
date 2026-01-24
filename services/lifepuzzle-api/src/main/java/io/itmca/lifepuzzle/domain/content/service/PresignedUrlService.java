@@ -7,6 +7,8 @@ import io.itmca.lifepuzzle.domain.content.endpoint.response.PresignedUrlResponse
 import io.itmca.lifepuzzle.domain.content.endpoint.response.PresignedUrlResponse.PresignedUrlDto;
 import io.itmca.lifepuzzle.domain.content.entity.Gallery;
 import io.itmca.lifepuzzle.domain.content.repository.GalleryRepository;
+import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
+import io.itmca.lifepuzzle.domain.content.type.GallerySource;
 import io.itmca.lifepuzzle.domain.content.type.GalleryStatus;
 import io.itmca.lifepuzzle.domain.content.type.GalleryType;
 import java.time.Duration;
@@ -33,14 +35,16 @@ public class PresignedUrlService {
   @Transactional
   public PresignedUrlResponse createPresignedUrls(PresignedUrlRequest request) {
     List<PresignedUrlDto> urls = new ArrayList<>();
+    var ageGroup = AgeGroup.orUncategorized(request.ageGroup());
 
     for (var file : request.files()) {
       var gallery = galleryRepository.save(
           Gallery.builder()
               .heroId(request.heroId())
               .url("")
-              .ageGroup(request.ageGroup())
-              .galleryType(GalleryType.IMAGE)
+              .ageGroup(ageGroup)
+              .galleryType(determineGalleryType(file.contentType()))
+              .source(GallerySource.UPLOAD)
               .galleryStatus(GalleryStatus.PENDING)
               .build()
       );
@@ -56,6 +60,13 @@ public class PresignedUrlService {
     }
 
     return new PresignedUrlResponse(urls);
+  }
+
+  private GalleryType determineGalleryType(String contentType) {
+    if (contentType != null && contentType.startsWith("video/")) {
+      return GalleryType.VIDEO;
+    }
+    return GalleryType.IMAGE;
   }
 
   private String buildS3Key(Long heroId, Long galleryId, String fileName) {

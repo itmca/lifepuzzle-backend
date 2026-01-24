@@ -1,6 +1,8 @@
 package io.itmca.lifepuzzle.domain.hero.endpoint;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroLegacyListQueryResponse;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroLegacyQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroListQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
@@ -26,15 +28,28 @@ public class HeroQueryEndpoint {
 
   @Operation(summary = "주인공 전체 목록 조회")
   @GetMapping({"/v1/heroes"})
-  public HeroListQueryResponse getHeroesV2(@AuthenticationPrincipal AuthPayload authPayload) {
+  public HeroLegacyListQueryResponse getHeroesV2(@AuthenticationPrincipal AuthPayload authPayload) {
     var user = userQueryService.findByUserNo(authPayload.getUserId());
 
-    return heroQueryService.toQueryResponses(user);
+    return heroQueryService.toLegacyQueryResponses(user);
   }
 
   @Operation(summary = "주인공 조회")
   @GetMapping({"/v1/heroes/{heroNo}"})
-  public HeroQueryResponse getHeroDetail(
+  public HeroLegacyQueryResponse getHeroDetail(
+      @PathVariable("heroNo") @Schema(description = "주인공키") Long heroNo,
+      @AuthenticationPrincipal AuthPayload authPayload) {
+    val userNo = authPayload.getUserId();
+    heroValidationService.validateUserCanAccessHero(userNo, heroNo);
+
+    var hero = heroQueryService.findHeroByHeroNo(heroNo);
+
+    return heroQueryService.toLegacyQueryResponse(hero, userNo);
+  }
+
+  @Operation(summary = "주인공 조회 v2")
+  @GetMapping({"/v2/heroes/{heroNo}"})
+  public HeroQueryResponse getHeroDetailV2(
       @PathVariable("heroNo") @Schema(description = "주인공키") Long heroNo,
       @AuthenticationPrincipal AuthPayload authPayload) {
     val userNo = authPayload.getUserId();
@@ -43,5 +58,14 @@ public class HeroQueryEndpoint {
     var hero = heroQueryService.findHeroByHeroNo(heroNo);
 
     return heroQueryService.toQueryResponse(hero, userNo);
+  }
+
+  @Operation(summary = "주인공 전체 목록 조회 v2")
+  @GetMapping({"/v2/heroes"})
+  public HeroListQueryResponse getHeroesV2List(
+      @AuthenticationPrincipal AuthPayload authPayload) {
+    var user = userQueryService.findByUserNo(authPayload.getUserId());
+
+    return heroQueryService.toQueryResponses(user);
   }
 }

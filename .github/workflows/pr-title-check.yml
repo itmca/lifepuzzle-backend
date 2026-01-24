@@ -8,27 +8,53 @@ jobs:
   check-pr-title:
     runs-on: ubuntu-latest
     steps:
-      - name: Validate PR title
+      - name: Validate PR title (Chris Beams Style)
         uses: actions/github-script@v7
         with:
           script: |
             const title = context.payload.pull_request.title;
 
-            const regex = /^(\[(SHIP|SHOW|ASK)\])?(\[LP-\d+\])?\s*(feat|fix|chore|docs|test|refactor|style|perf|ci|build|revert)(\([A-Za-z0-9,\-]+\))?: .+/;
+            // Extract title without optional ticket prefix
+            const titleWithoutTicket = title.replace(/^\[LP-\d+\]\s+/, '');
 
-            if (!regex.test(title)) {
-              const errorMessage = `❌ PR 제목 형식이 올바르지 않습니다: "${title}"`;
+            // Check if starts with capital letter
+            const startsWithCapital = /^[A-Z]/.test(titleWithoutTicket);
+
+            // Check length (50 characters max)
+            const isValidLength = title.length <= 50;
+
+            // Check no period at the end
+            const hasNoPeriod = !title.endsWith('.');
+
+            if (!startsWithCapital || !isValidLength || !hasNoPeriod) {
+              let errorMessage = `❌ PR 제목이 Chris Beams 스타일을 따르지 않습니다: "${title}"\n\n`;
+
+              if (!startsWithCapital) {
+                errorMessage += `• 제목은 대문자로 시작해야 합니다.\n`;
+              }
+
+              if (!isValidLength) {
+                errorMessage += `• 제목이 너무 깁니다 (${title.length}자). 50자 이내로 작성해주세요.\n`;
+              }
+
+              if (!hasNoPeriod) {
+                errorMessage += `• 제목 끝에 마침표를 사용하면 안됩니다.\n`;
+              }
 
               console.log(errorMessage);
               console.log(`
-                올바른 예시:
-                  - feat: 로그인 기능 추가
-                  - [SHOW] fix: UI 수정
-                  - [SHIP][LP-1234] chore: 테스트 추가
-                  - [LP-5678] docs: 설명 추가
+                Chris Beams 스타일 예시:
+                  ✅ Add user authentication feature
+                  ✅ Fix memory leak in image processor
+                  ✅ [LP-1234] Update API documentation
+                  ✅ Normalize request DTO field naming
+
+                  ❌ add user authentication feature (소문자 시작)
+                  ❌ Fix memory leak. (마침표)
+                  ❌ Add user authentication feature that allows users to login with social providers (너무 김)
               `);
 
               core.setFailed(errorMessage);
             } else {
-              console.log("✅ PR 제목 통과");
+              console.log("✅ PR 제목이 Chris Beams 스타일을 따릅니다");
             }

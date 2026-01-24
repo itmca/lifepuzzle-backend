@@ -5,7 +5,7 @@ import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
 import io.itmca.lifepuzzle.domain.hero.endpoint.request.HeroWriteRequest;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDto;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroValidationService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroWriteService;
@@ -35,19 +35,19 @@ public class HeroWriteEndpoint {
 
   @Operation(summary = "주인공 등록")
   @PostMapping({"/v1/heroes"})
-  public HeroQueryDto createHero(@RequestPart("toWrite") HeroWriteRequest request,
-                                 @RequestPart(value = "photo", required = false)
-                                 MultipartFile profile,
-                                 @CurrentUser User user) {
+  public HeroQueryResponse createHero(@RequestPart("toWrite") HeroWriteRequest request,
+                                      @RequestPart(value = "photo", required = false)
+                                      MultipartFile profile,
+                                      @CurrentUser User user) {
     var hero = heroWriteService.create(request, user, profile);
 
-    return HeroQueryDto.from(hero, user.getId());
+    return HeroQueryResponse.from(hero, user.getId());
   }
 
   @AuthCheck(auths = {ADMIN, OWNER})
   @Operation(summary = "주인공 수정")
   @PutMapping({"/v1/heroes/{heroNo}"})
-  public HeroQueryDto updateHero(
+  public HeroQueryResponse updateHero(
       @PathVariable("heroNo") @HeroNo Long heroNo,
       @RequestPart("toWrite")
       HeroWriteRequest request,
@@ -55,7 +55,7 @@ public class HeroWriteEndpoint {
       MultipartFile photo,
       @AuthenticationPrincipal
       AuthPayload authPayload) {
-    return HeroQueryDto.from(heroWriteService.update(heroNo, request, photo));
+    return HeroQueryResponse.from(heroWriteService.update(heroNo, request, photo));
   }
 
   @AuthCheck(auths = {OWNER})

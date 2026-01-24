@@ -65,7 +65,7 @@ public class UserWriteEndpoint {
 
     var isMatch = PasswordUtil.matches(
         PasswordVerification.builder()
-            .plainPassword(userPasswordUpdateRequest.getOldPassword())
+            .plainPassword(userPasswordUpdateRequest.oldPassword())
             .salt(user.getSalt())
             .hashedPassword(user.getPassword())
             .build()
@@ -75,7 +75,7 @@ public class UserWriteEndpoint {
       throw new PasswordMismatchException();
     }
 
-    userWriteService.updateUserPassword(user, userPasswordUpdateRequest.getNewPassword());
+    userWriteService.updateUserPassword(user, userPasswordUpdateRequest.newPassword());
   }
 
   @Operation(summary = "회원가입")
@@ -83,7 +83,7 @@ public class UserWriteEndpoint {
   public HttpStatus register(@RequestBody UserRegisterRequest userRegisterRequest) {
     var user = userRegisterRequest.toUser();
 
-    registerService.register(user, userRegisterRequest.getShareKey());
+    registerService.register(user, userRegisterRequest.shareKey());
 
     return HttpStatus.OK;
   }

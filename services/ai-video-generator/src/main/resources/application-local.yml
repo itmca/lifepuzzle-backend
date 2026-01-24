@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: ${DB_PROD_URL}
+    username: ${DB_PROD_USERNAME}
+    password: ${DB_PROD_PASSWORD}
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: lifepuzzle
+    password: lifepuzzlepass
+    virtual-host: lifepuzzle
+
+  cloud:
+    aws:
+      s3:
+        bucket: lifepuzzle-dev
+        endpoint: http://localhost:4566
+        region: ap-northeast-2
+        path-style-access: true
+      credentials:
+        access-key: test
+        secret-key: test
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    io.itmca.aivideogenerator: DEBUG
+server:
+  port: 8085
