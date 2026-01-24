@@ -13,7 +13,7 @@ public record LikeDto(
     return new LikeDto(
         like.getUserId(),
         like.getType(),
-        like.getTargetId()
+        like.getContentId()
     );
   }
 

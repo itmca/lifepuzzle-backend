@@ -41,18 +41,17 @@ public class GalleryQueryService {
   }
 
   private List<Gallery> getFilteredGallery(HeroDto heroDTO) {
-    var photos = getGalleryByHeroId(heroDTO.getId());
     var heroAgeGroup = AgeGroup.of(heroDTO.getAge());
-
-    return photos.stream()
-        .filter(photo -> photo.getAgeGroup().getRepresentativeAge()
-            <= heroAgeGroup.getRepresentativeAge())
-        .toList();
+    var allowedAgeGroups = getAgeGroupsUpTo(heroAgeGroup);
+    
+    return galleryRepository.findByHeroIdAndAgeGroupsWithStories(heroDTO.getId(), allowedAgeGroups)
+        .orElseThrow(() -> new GalleryNotFoundException(heroDTO.getId()));
   }
 
-  private List<Gallery> getGalleryByHeroId(Long heroId) {
-    return galleryRepository.findByHeroId(heroId)
-        .orElseThrow(() -> new GalleryNotFoundException(heroId));
+  private List<AgeGroup> getAgeGroupsUpTo(AgeGroup maxAgeGroup) {
+    return Arrays.stream(AgeGroup.values())
+        .filter(ageGroup -> ageGroup.getRepresentativeAge() <= maxAgeGroup.getRepresentativeAge())
+        .toList();
   }
 
   private Map<AgeGroup, AgeGroupGalleryDto> getGalleryByAgeGroup(List<Gallery> photos,
@@ -63,19 +62,18 @@ public class GalleryQueryService {
             toList()
         ));
 
-    return AgeGroupGalleryDto.fromGroupedGallery(groupedByAge, hero.getBirthday());
+    return AgeGroupGalleryDto.fromGroupedGallery(groupedByAge, hero.getBirthdate());
   }
 
   private List<TagDto> getTags(int age) {
     var heroAgeGroup = AgeGroup.of(age);
 
     return Arrays.stream(AgeGroup.values())
-        .filter(ageGroup -> ageGroup.getRepresentativeAge() <= heroAgeGroup.getRepresentativeAge())
+        .filter(ageGroup ->
+            ageGroup == AgeGroup.UNCATEGORIZED
+                || ageGroup.getRepresentativeAge() <= heroAgeGroup.getRepresentativeAge())
         .sorted(Comparator.comparingInt(AgeGroup::getRepresentativeAge))
-        .map(ageGroup -> TagDto.builder()
-            .key(ageGroup)
-            .label(ageGroup.getDisplayName())
-            .build())
+        .map(ageGroup -> new TagDto(ageGroup, ageGroup.getDisplayName()))
         .toList();
   }
 }

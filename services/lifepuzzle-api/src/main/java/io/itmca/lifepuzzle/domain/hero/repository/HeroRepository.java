@@ -9,5 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HeroRepository extends JpaRepository<Hero, Long> {
   @EntityGraph(attributePaths = {"heroUserAuths"})
-  Optional<Hero> findByHeroNoAndIsDeletedFalse(Long heroNo);
+  Optional<Hero> findByHeroNoAndDeletedAtIsNull(Long heroNo);
+
+  Optional<Hero> findByFacebookUserId(String facebookUserId);
 }

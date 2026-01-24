@@ -3,3 +3,18 @@ spring:
     url: ${DB_PROD_URL}
     username: ${DB_PROD_USERNAME}
     password: ${DB_PROD_PASSWORD}
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 15
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+  info:
+    env:
+      enabled: false

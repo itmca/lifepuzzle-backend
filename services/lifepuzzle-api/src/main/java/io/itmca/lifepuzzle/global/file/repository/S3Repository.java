@@ -5,6 +5,7 @@ import io.awspring.cloud.s3.S3Resource;
 import io.itmca.lifepuzzle.global.constants.FileConstant;
 import io.itmca.lifepuzzle.global.file.CustomFile;
 import io.itmca.lifepuzzle.global.util.FileUtil;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -59,6 +60,17 @@ public class S3Repository implements FileRepository {
         boolean deleted = localFile.delete();
         log.debug("Local temp file cleanup - path: {}, deleted: {}", localFile.getAbsolutePath(), deleted);
       }
+    }
+  }
+
+  public void upload(String key, byte[] bytes) throws IOException {
+    log.debug("S3Repository upload - bucket: {}, s3Key: {}, bytes: {}", bucket, key, bytes.length);
+    try (InputStream inputFile = new ByteArrayInputStream(bytes)) {
+      s3Operations.upload(bucket, key, inputFile);
+      log.debug("S3 upload completed successfully - key: {}", key);
+    } catch (IOException e) {
+      log.error("S3 upload failed - bucket: {}, key: {}, error: {}", bucket, key, e.getMessage(), e);
+      throw e;
     }
   }
 

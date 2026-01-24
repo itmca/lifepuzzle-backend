@@ -1,7 +1,6 @@
 package io.itmca.lifepuzzle.domain.content.endpoint.response.dto;
 
 import io.itmca.lifepuzzle.domain.content.entity.Story;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,18 +14,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StoryGalleryDto {
   private String id;
-  private String title;
   private String content;
+
+  @Deprecated
   private List<String> audios;
-  private LocalDate date;
+
+  private String audioUrl;
+  private Integer audioDurationSeconds;
 
   public static StoryGalleryDto from(Story story) {
     return StoryGalleryDto.builder()
         .id(story.getId())
-        .title(story.getTitle())
         .content(story.getContent())
         .audios(story.getAudios())
-        .date(story.getDate())
+        .audioUrl(story.getAudioUrl())
+        .audioDurationSeconds(story.getAudioDuration())
         .build();
   }
 }

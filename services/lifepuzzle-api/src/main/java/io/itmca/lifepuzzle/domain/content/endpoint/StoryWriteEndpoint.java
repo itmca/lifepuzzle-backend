@@ -5,7 +5,9 @@ import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.OWNER;
 import static io.itmca.lifepuzzle.domain.hero.type.HeroAuthStatus.WRITER;
 
 import io.itmca.lifepuzzle.domain.auth.jwt.AuthPayload;
+import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryContentUploadRequest;
 import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryGalleryWriteRequest;
+import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryVoiceUploadRequest;
 import io.itmca.lifepuzzle.domain.content.repository.StoryRepository;
 import io.itmca.lifepuzzle.domain.content.service.StoryQueryService;
 import io.itmca.lifepuzzle.domain.content.service.StoryWriteService;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,22 +40,6 @@ public class StoryWriteEndpoint {
   private final UserQueryService userQueryService;
   private final StoryRepository storyRepository;
 
-  @Deprecated
-  @AuthCheck(auths = {WRITER, ADMIN, OWNER})
-  @Operation(summary = "스토리 등록")
-  @PostMapping(value = {"/v2/heroes/{heroId}/stories",
-      "/v1/heroes/{heroId}/stories"})
-  public ResponseEntity<Void> createStory(
-      @HeroNo @PathVariable("heroId") Long heroId,
-      @RequestPart(value = "story") StoryGalleryWriteRequest storyGalleryWriteRequest,
-      @RequestPart(value = "voice", required = false) MultipartFile voice,
-      @AuthenticationPrincipal AuthPayload authPayload) {
-    var story = storyGalleryWriteRequest.toStory(heroId, authPayload.getUserId());
-
-    storyWriteService.create(story, storyGalleryWriteRequest.galleryIds(), voice);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
-  }
-
   //@AuthCheck(auths = {WRITER, ADMIN, OWNER})
   @Operation(summary = "스토리 등록")
   @PostMapping({"/v3/galleries/stories"})
@@ -63,21 +50,6 @@ public class StoryWriteEndpoint {
     var story = storyGalleryWriteRequest.toStory(authPayload.getUserId());
 
     storyWriteService.create(story, storyGalleryWriteRequest.galleryIds(), voice);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
-  }
-
-  @Deprecated
-  @AuthCheck(auths = {WRITER, ADMIN, OWNER})
-  @Operation(summary = "스토리 수정")
-  @PutMapping(value = {"/v2/heroes/{heroId}/stories/{storyId}",
-      "/v1/heroes/{heroId}/stories/{storyId}"})
-  public ResponseEntity<Void> putStory(
-      @HeroNo @PathVariable("heroId") Long heroId,
-      @PathVariable("storyId") String storyId,
-      @RequestPart(value = "story") StoryGalleryWriteRequest storyGalleryWriteRequest,
-      @RequestPart(value = "voice", required = false) MultipartFile voice,
-      @AuthenticationPrincipal AuthPayload authPayload) {
-    storyWriteService.update(storyId, storyGalleryWriteRequest, voice);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
@@ -93,21 +65,51 @@ public class StoryWriteEndpoint {
   }
 
   @Operation(summary = "스토리 삭제")
-  @DeleteMapping({"/v1/stories/{storyKey}", // TODO: FE 전환 후 제거
-                  "/v1/galleries/stories/{storyKey}"})
+  @DeleteMapping("/v1/galleries/stories/{storyKey}")
   public void deleteStory(@PathVariable("storyKey") String storyKey,
                           @AuthenticationPrincipal AuthPayload authPayload) {
     var story = storyQueryService.findById(storyKey);
 
-    if (story.getUserId() != authPayload.getUserId()) {
+    if (!story.getWriterId().equals(authPayload.getUserId())) {
       throw new UserNotAccessibleToStoryException(authPayload.getUserId(), storyKey);
     }
 
     var user = userQueryService.findByUserNo(authPayload.getUserId());
-    if (story.getHeroId() != user.getRecentHeroNo()) {
-      throw new HeroNotAccessibleToStoryException(user.getRecentHeroNo(), storyKey);
+    if (!story.getHeroId().equals(user.getRecentHero())) {
+      throw new HeroNotAccessibleToStoryException(user.getRecentHero(), storyKey);
     }
 
     storyRepository.delete(story);
+  }
+
+  @Operation(summary = "스토리 본문 업로드/수정")
+  @PostMapping("/v3/stories/content")
+  public ResponseEntity<Void> upsertStoryContent(
+      @RequestBody StoryContentUploadRequest request,
+      @AuthenticationPrincipal AuthPayload authPayload
+  ) {
+    storyWriteService.upsertContent(request, authPayload.getUserId());
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @Operation(summary = "스토리 음성 업로드/수정")
+  @PostMapping("/v3/stories/voice")
+  public ResponseEntity<Void> upsertStoryVoice(
+      @RequestPart("voice") MultipartFile voice,
+      @RequestPart("meta") StoryVoiceUploadRequest request,
+      @AuthenticationPrincipal AuthPayload authPayload
+  ) {
+    storyWriteService.upsertVoice(request, voice, authPayload.getUserId());
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @Operation(summary = "스토리 음성 삭제")
+  @DeleteMapping("/v3/stories/voice")
+  public ResponseEntity<Void> deleteStoryVoice(
+      @RequestBody StoryVoiceUploadRequest request,
+      @AuthenticationPrincipal AuthPayload authPayload
+  ) {
+    storyWriteService.deleteVoice(request, authPayload.getUserId());
+    return ResponseEntity.noContent().build();
   }
 }

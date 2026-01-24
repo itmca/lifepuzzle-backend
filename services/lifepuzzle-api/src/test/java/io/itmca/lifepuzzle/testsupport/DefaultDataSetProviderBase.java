@@ -74,17 +74,14 @@ public abstract class DefaultDataSetProviderBase implements DataSetProvider {
         .defaultValue("email", "test_email")
         .defaultValue("salt", DEFAULT_USER_SALT)
         .defaultValue("password", DEFAULT_USER_HASHED_PASSWORD)
-        .defaultValue("validated", "true")
+        .defaultValue("email_validated", "true")
+        .defaultValue("push_opt_in", false)
         .defaultValue("nick_name", "test_nick_name")
         .defaultValue("birthday", "1993-12-08")
         .defaultValue("recent_hero", 1)
         .defaultValue("image", "test_image")
         .defaultValue("kakao_id", "test_kakao_id")
         .defaultValue("apple_id", "test_apple_id")
-        .defaultValue("email_notice", false)
-        .defaultValue("phone_notice", false)
-        .defaultValue("kakao_notice", false)
-        .defaultValue("inapp_notice", false)
         .defaultValue("created_at", "[DAY,NOW]")
         .defaultValue("updated_at", "[DAY,NOW]");
 
@@ -92,12 +89,11 @@ public abstract class DefaultDataSetProviderBase implements DataSetProvider {
         .defaultValue("id", "1")
         .defaultValue("name", "test_name")
         .defaultValue("nickname", "test_nickname")
-        .defaultValue("birthday", "1993-12-08")
-        .defaultValue("title", "")
+        .defaultValue("birthdate", "1993-12-08")
         .defaultValue("image", "")
+        .defaultValue("is_lunar", false)
         .defaultValue("created_at", "[DAY,NOW]")
-        .defaultValue("updated_at", "[DAY,NOW]")
-        .defaultValue("deleted", false);
+        .defaultValue("updated_at", "[DAY,NOW]");
 
     builder.table("user_hero_share")
         .defaultValue("created_at", "[DAY,NOW]")

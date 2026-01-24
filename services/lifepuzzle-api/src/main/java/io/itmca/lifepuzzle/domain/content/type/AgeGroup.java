@@ -18,7 +18,8 @@ public enum AgeGroup {
   SEVENTY("70대", 70),
   EIGHTY("80대", 80),
   NINETY("90대", 90),
-  UPPER_NINETY("90대 이상", 100);
+  UPPER_NINETY("90대 이상", 100),
+  UNCATEGORIZED("미분류", Integer.MAX_VALUE);
 
   private final String displayName;
   private final Integer representativeAge;
@@ -36,15 +37,29 @@ public enum AgeGroup {
   }
 
   public static AgeGroup of(Integer age) {
+    if (age == null) {
+      return UNCATEGORIZED;
+    }
+
     var representativeAge = (age / 10) * 10;
     return representAgeMap.getOrDefault(representativeAge, UPPER_NINETY);
   }
 
+  public static AgeGroup orUncategorized(AgeGroup ageGroup) {
+    return ageGroup == null ? UNCATEGORIZED : ageGroup;
+  }
+
   public int getStartYear(LocalDate birthdate) {
+    if (this == UNCATEGORIZED) {
+      return 0;
+    }
     return birthdate.getYear() + this.representativeAge;
   }
 
   public int getEndYear(LocalDate birthdate) {
+    if (this == UNCATEGORIZED) {
+      return 0;
+    }
     return getStartYear(birthdate) + 9;
   }
 }

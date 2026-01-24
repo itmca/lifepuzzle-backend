@@ -3,10 +3,10 @@ package io.itmca.lifepuzzle.domain.auth.service;
 import io.itmca.lifepuzzle.domain.auth.Login;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.LoginResponse;
 import io.itmca.lifepuzzle.domain.auth.endpoint.response.dto.TokenQueryDto;
-import io.itmca.lifepuzzle.domain.auth.endpoint.response.dto.UserQueryDto;
-import io.itmca.lifepuzzle.domain.hero.endpoint.response.dto.HeroQueryDto;
+import io.itmca.lifepuzzle.domain.hero.endpoint.response.HeroQueryResponse;
 import io.itmca.lifepuzzle.domain.hero.service.HeroQueryService;
 import io.itmca.lifepuzzle.domain.hero.service.HeroUserAuthWriteService;
+import io.itmca.lifepuzzle.domain.user.endpoint.response.dto.UserQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -22,7 +22,13 @@ public class LoginService {
   public LoginResponse getLoginResponse(Login login) {
     var user = login.getUser();
     var tokens = tokenIssueService.getTokensOfUser(user.getId());
-    var hero = heroQueryServiceService.findHeroByHeroNo(user.getRecentHeroNo());
+
+    // Only fetch hero if user has a recent hero set
+    HeroQueryResponse heroResponse = null;
+    if (user.getRecentHero() != null) {
+      var hero = heroQueryServiceService.findHeroByHeroNo(user.getRecentHero());
+      heroResponse = HeroQueryResponse.from(hero, user.getId());
+    }
 
     var socialToken = login.getSocialToken();
     var isNewUser = login.getIsNewUser();
@@ -33,22 +39,16 @@ public class LoginService {
 
     var tokenQueryDTO = new TokenQueryDto(
         tokens.getAccessToken(),
-        tokens.getAccessTokenExpireAt(),
         tokens.getRefreshToken(),
-        tokens.getRefreshTokenExpireAt(),
         tokens.getSocialToken()
     );
 
-    var userQueryDTO = UserQueryDto.builder()
-        .userNo(user.getId())
-        .userNickName(user.getNickName())
-        .userType(user.getUserType())
-        .build();
+    var userQueryDTO = UserQueryDto.from(user);
 
     return new LoginResponse(
         userQueryDTO,
         tokenQueryDTO,
-        HeroQueryDto.from(hero, user.getId()),
+        heroResponse,
         isNewUser
     );
   }

@@ -52,7 +52,7 @@ public class WithdrawService {
 
   private String getSocialToken(UserWithdrawRequest userWithdrawRequest) {
     return Optional.ofNullable(userWithdrawRequest)
-        .map(UserWithdrawRequest::getSocialToken)
+        .map(UserWithdrawRequest::socialToken)
         .orElse(null);
   }
 

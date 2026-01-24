@@ -78,6 +78,15 @@ apple:
     TEST_PRIVATE_KEY_FOR_TESTING_ONLY
     -----END PRIVATE KEY-----
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
 logging:
   level:
     io.itmca.lifepuzzle: DEBUG

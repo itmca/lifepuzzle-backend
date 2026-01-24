@@ -32,18 +32,12 @@ public class Hero {
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long heroNo;
-  @Nullable
-  private Long parentId;
-  @Nullable
-  private Long spouseId;
   @Setter
   private String name;
   @Setter
   private String nickname;
   @Setter
-  private LocalDate birthday;
-  @Setter
-  private String title;
+  private LocalDate birthdate;
   private String image;
 
   @Setter
@@ -59,8 +53,6 @@ public class Hero {
   @UpdateTimestamp
   private LocalDateTime updatedAt;
 
-  @Column(name = "deleted", nullable = false)
-  private boolean isDeleted;
 
   @Column(name = "deleted_at")
   private LocalDateTime deletedAt;
@@ -68,12 +60,13 @@ public class Hero {
   @Setter
   private Boolean isLunar;
 
+  private String facebookUserId;
+
   public static Hero defaultHero() {
     return Hero.builder()
         .name("주인공")
         .nickname("소중한 분")
-        .title("봄날의 햇살처럼 따뜻한 당신")
-        .birthday(LocalDate.of(1970, 1, 1))
+        .birthdate(LocalDate.of(1970, 1, 1))
         .isLunar(false)
         .image("")
         .build();
@@ -88,7 +81,14 @@ public class Hero {
   }
 
   public void delete() {
-    this.isDeleted = true;
     this.deletedAt = LocalDateTime.now();
+  }
+
+  public boolean isActive() {
+    return this.deletedAt == null;
+  }
+
+  public void setFacebookUserId(String facebookUserId) {
+    this.facebookUserId = facebookUserId;
   }
 }

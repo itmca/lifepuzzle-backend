@@ -2,21 +2,16 @@ package io.itmca.lifepuzzle.domain.content.entity;
 
 import static io.itmca.lifepuzzle.global.constants.FileConstant.FILE_NAMES_SEPARATOR;
 import static java.util.stream.Collectors.joining;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryGalleryWriteRequest;
-import io.itmca.lifepuzzle.domain.content.endpoint.request.StoryWriteRequest;
-import io.itmca.lifepuzzle.domain.content.type.AgeGroup;
-import io.itmca.lifepuzzle.domain.hero.entity.Hero;
 import io.itmca.lifepuzzle.global.constants.ServerConstant;
 import io.itmca.lifepuzzle.global.file.CustomFile;
-import io.itmca.lifepuzzle.global.file.domain.StoryFile;
 import io.itmca.lifepuzzle.global.file.domain.StoryVoiceFile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,29 +36,20 @@ public class Story {
 
   @Id
   private String id;
-  private Long userId;
+  private Long writerId;
   private Long heroId;
-  private Long recQuestionId;
-  private String usedQuestion;
-  @Column(columnDefinition = "tinyint(1) default 0")
-  private boolean isQuestionModified;
-  private String title;
   private String content;
-  private String imageFolder;
-  private String imageFiles;
   private String audioFolder;
   private String audioFiles;
-  private String videoFolder;
-  private String videoFiles;
+  private Integer audioDuration;
   private String hashtag;
 
-  @OneToMany(mappedBy = "story", orphanRemoval = true)
+  @OneToMany(orphanRemoval = true)
+  @JoinColumn(name = "content_id", referencedColumnName = "id", insertable = false, updatable = false)
   private List<Like> likes;
 
   @OneToMany(mappedBy = "story", orphanRemoval = true)
   private List<StoryGallery> photoMaps;
-
-  private LocalDate date;
 
   @Column(nullable = false, updatable = false)
   @CreationTimestamp
@@ -74,48 +60,22 @@ public class Story {
   private LocalDateTime updatedAt;
 
 
-  @Deprecated
-  public void addStoryFile(StoryFile storyFile) {
-    if (!isEmpty(storyFile.images())) {
-      var storyImages = storyFile.images();
-
-      this.imageFolder = storyImages.get(0).getBase();
-      this.imageFiles = getFiles(storyImages);
-    } else {
-      this.imageFolder = "";
-      this.imageFiles = "";
-    }
-
-    if (!isEmpty(storyFile.voices())) {
-      var storyVoices = storyFile.voices();
-
-      this.audioFolder = storyVoices.get(0).getBase();
-      this.audioFiles = getFiles(storyVoices);
-    } else {
-      this.audioFolder = "";
-      this.audioFiles = "";
-    }
-
-    if (!isEmpty(storyFile.videos())) {
-      var storyVideos = storyFile.videos();
-
-      this.videoFolder = storyVideos.get(0).getBase();
-      this.videoFiles = getFiles(storyVideos);
-    } else {
-      this.videoFolder = "";
-      this.videoFiles = "";
-    }
-  }
 
   public void setVoice(@Nullable MultipartFile voice) {
+    setVoice(voice, null);
+  }
+
+  public void setVoice(@Nullable MultipartFile voice, @Nullable Integer durationSeconds) {
     if (voice != null) {
       var storyVoice = new StoryVoiceFile(this, voice);
 
       this.audioFolder = storyVoice.getBase();
       this.audioFiles = storyVoice.getFileName();
+      this.audioDuration = durationSeconds;
     } else {
       this.audioFolder = "";
       this.audioFiles = "";
+      this.audioDuration = null;
     }
   }
 
@@ -126,27 +86,13 @@ public class Story {
         .collect(joining(FILE_NAMES_SEPARATOR));
   }
 
-  public AgeGroup getTag(Hero hero) {
-    var age = Integer.valueOf(date.getYear() - hero.getBirthday().getYear() + 1);
-    return AgeGroup.of(age);
-  }
-
-  public List<String> getImages() {
-    if (!StringUtils.hasText(imageFiles)) {
-      return Collections.emptyList();
+  public String getAudioUrl() {
+    if (!StringUtils.hasText(audioFiles)) {
+      return null;
     }
 
-    return Arrays.stream(this.imageFiles.split("\\|\\|"))
-        .map(file -> ServerConstant.S3_SERVER_HOST + this.imageFolder + file)
-        .toList();
-  }
-
-  public List<String> getImageNames() {
-    if (!StringUtils.hasText(imageFiles)) {
-      return Collections.emptyList();
-    }
-
-    return Arrays.stream(this.imageFiles.split("\\|\\|")).toList();
+    String firstAudioFile = this.audioFiles.split("\\|\\|")[0];
+    return ServerConstant.S3_SERVER_HOST + this.audioFolder + firstAudioFile;
   }
 
   public List<String> getAudios() {
@@ -167,39 +113,11 @@ public class Story {
     return Arrays.stream(this.audioFiles.split("\\|\\|")).toList();
   }
 
-  public List<String> getVideos() {
-    if (!StringUtils.hasText(videoFiles)) {
-      return Collections.emptyList();
-    }
-
-    return Arrays.stream(this.videoFiles.split("\\|\\|"))
-        .map(file -> ServerConstant.S3_SERVER_HOST + this.videoFolder + file)
-        .toList();
-  }
-
-  public List<String> getVideoNames() {
-    if (!StringUtils.hasText(videoFiles)) {
-      return Collections.emptyList();
-    }
-
-    return Arrays.stream(this.videoFiles.split("\\|\\|")).toList();
-  }
-
-  public void updateStoryInfo(StoryWriteRequest storyWriteRequest) {
-    this.recQuestionId =
-        storyWriteRequest.recQuestionNo() == null ? -1 : storyWriteRequest.recQuestionNo();
-    this.isQuestionModified =
-        storyWriteRequest.recQuestionModified() == null ? false :
-            storyWriteRequest.recQuestionModified();
-    this.usedQuestion = storyWriteRequest.helpQuestionText();
-    this.date = storyWriteRequest.date();
-    this.title = storyWriteRequest.title();
-    this.content = storyWriteRequest.storyText();
-  }
-
   public void update(StoryGalleryWriteRequest request) {
-    this.date = request.date();
-    this.title = request.title();
     this.content = request.content();
+  }
+
+  public void updateContent(String content) {
+    this.content = content;
   }
 }

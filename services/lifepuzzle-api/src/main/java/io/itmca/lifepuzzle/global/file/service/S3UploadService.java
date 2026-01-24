@@ -40,6 +40,26 @@ public class S3UploadService {
     }
   }
 
+  public void upload(String key, byte[] bytes) {
+    final long startTime = System.currentTimeMillis();
+
+    log.info("Starting S3 upload - key: {}, fileSize: {} bytes", key, bytes.length);
+
+    try {
+      s3Repository.upload(key, bytes);
+      final long duration = System.currentTimeMillis() - startTime;
+
+      log.info("S3 upload successful - key: {}, duration: {}ms", key, duration);
+    } catch (IOException e) {
+      final long duration = System.currentTimeMillis() - startTime;
+
+      log.error("S3 upload failed - key: {}, fileSize: {} bytes, duration: {}ms, error: {}",
+          key, bytes.length, duration, e.getMessage(), e);
+
+      throw new S3UploadFailException(key, e);
+    }
+  }
+
   public void upload(List<? extends CustomFile> customFiles) {
     log.info("Starting batch S3 upload - total files: {}", customFiles.size());
     

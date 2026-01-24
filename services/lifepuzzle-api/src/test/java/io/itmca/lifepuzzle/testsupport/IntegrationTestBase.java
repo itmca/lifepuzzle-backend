@@ -73,7 +73,7 @@ public abstract class IntegrationTestBase {
    * @return access token
    */
   protected String login(String loginId, String password) throws Exception {
-    var response = mockMvc.perform(post("/auth/login/email")
+    var response = mockMvc.perform(post("/v1/auth/login/email")
             .contentType(MediaType.APPLICATION_JSON)
             .content(String.format("""
                   {

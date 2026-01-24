@@ -80,10 +80,11 @@ jobs:
             APPLE_BUNDLE_ID=${{ secrets.APPLE_BUNDLE_ID }}
             APPLE_PRIVATE_KEY_ID=${{ secrets.APPLE_PRIVATE_KEY_ID }}
             APPLE_PRIVATE_KEY=${{ secrets.APPLE_PRIVATE_KEY }}
+            S3_SERVER_HOST=${{ secrets.S3_SERVER_HOST }}
           tags: ${{ secrets.GHCR_LIFEPUZZLE_API }}:latest
 
       - name: SSH into Home Server and Restart Deployment
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.4
         with:
           host: ${{ secrets.HOME_SERVER_HOST }}
           username: ${{ secrets.HOME_SERVER_USER }}
