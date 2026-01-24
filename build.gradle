@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '3.4.1' apply false
-    id 'io.spring.dependency-management' version '1.1.7' apply false
+    alias(libs.plugins.spring.boot) apply false
+    alias(libs.plugins.spring.dependency.management) apply false
 }
 
 static def getDate() {
@@ -10,7 +10,7 @@ static def getDate() {
 allprojects {
     group = 'io.itmca'
     version = getDate()
-    
+
     repositories {
         mavenCentral()
         maven {
@@ -22,21 +22,16 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
-    
+
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
+            languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
         }
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-    
+
     tasks.named('test') {
         useJUnitPlatform()
     }
-}
-
-ext {
-    sentryVersion = '8.12.0'
-    jwtVersion = '0.12.6'
 }

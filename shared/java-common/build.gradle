@@ -1,6 +1,6 @@
 plugins {
     id 'java-library'
-    id 'io.spring.dependency-management'
+    alias(libs.plugins.spring.dependency.management)
 }
 
 static def getDate() {
@@ -12,7 +12,7 @@ version = getDate()
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
     }
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
@@ -30,12 +30,12 @@ dependencyManagement {
 
 dependencies {
     // Common utilities and shared code
-    api 'org.springframework.boot:spring-boot-starter'
-    api 'org.projectlombok:lombok:1.18.38'
-    annotationProcessor 'org.projectlombok:lombok:1.18.38'
-    
+    api libs.spring.boot.starter
+    api libs.lombok
+    annotationProcessor libs.lombok
+
     // Testing
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation libs.spring.boot.starter.test
 }
 
 tasks.named('test') {

@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot'
-    id 'io.spring.dependency-management'
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
     id 'java'
     id 'checkstyle'
 }
@@ -18,7 +18,7 @@ version = getDate()
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
     }
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
@@ -32,45 +32,39 @@ repositories {
     }
 }
 
-ext {
-    sentryVersion = '8.12.0'
-    jwtVersion = '0.12.6'
-}
-
 dependencies {
     // Shared modules
     implementation project(':shared:java-common')
-    
+
     // Web
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation libs.spring.boot.starter.web
+    implementation libs.spring.boot.starter.webflux
 
     // AWS
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
-    
+    implementation libs.spring.cloud.aws.starter.s3
+
     // Spring Cloud Stream RabbitMQ
-    implementation 'org.springframework.cloud:spring-cloud-starter-stream-rabbit:4.1.3'
+    implementation libs.spring.cloud.stream.rabbit
 
     // Data
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation libs.spring.boot.starter.data.jpa
+    runtimeOnly libs.mysql.connector
 
     // Monitoring
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation libs.spring.boot.starter.actuator
 
     // Security (for basic auth if needed)
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation libs.spring.boot.starter.security
 
     // Tool
-    compileOnly 'org.projectlombok:lombok:1.18.38'
-    annotationProcessor 'org.projectlombok:lombok:1.18.38'
-    implementation 'org.json:json:20240303'
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
+    implementation libs.json
+    implementation libs.spring.boot.starter.aop
 
     // Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+    implementation libs.springdoc.openapi
 }
-
 
 processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -89,7 +83,7 @@ task buildZip(type: Zip) {
 }
 
 checkstyle {
-    toolVersion('10.10.0')
+    toolVersion(libs.versions.checkstyle.get())
     configFile = rootProject.file('tools/checkstyle/checkstyle.xml')
     maxWarnings = 0
 }

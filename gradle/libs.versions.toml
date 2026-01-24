@@ -1,0 +1,91 @@
+[versions]
+# Java
+java = "21"
+
+# Spring
+spring-boot = "3.4.1"
+spring-dependency-management = "1.1.7"
+spring-cloud-aws = "3.4.0"
+spring-cloud-stream = "4.1.3"
+
+# Security
+jwt = "0.12.6"
+nimbus-jose-jwt = "10.5"
+sentry = "8.20.0"
+
+# Database
+flyway = "11.15.0"
+
+# Testing
+testcontainers = "1.21.3"
+database-rider = "1.44.0"
+fixture-monkey = "1.1.11"
+mysql-connector-legacy = "8.0.33"
+javax-persistence = "2.2"
+
+# Tools
+lombok = "1.18.38"
+json = "20240303"
+iv-compressor = "2.0.2"
+tika = "3.2.0"
+springdoc = "2.8.13"
+checkstyle = "10.10.0"
+
+[libraries]
+# Spring Boot Starters
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
+spring-boot-starter-thymeleaf = { module = "org.springframework.boot:spring-boot-starter-thymeleaf" }
+spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-mail = { module = "org.springframework.boot:spring-boot-starter-mail" }
+spring-boot-starter-aop = { module = "org.springframework.boot:spring-boot-starter-aop" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+
+# Spring Security
+spring-security-test = { module = "org.springframework.security:spring-security-test" }
+
+# Spring Cloud
+spring-cloud-aws-starter-s3 = { module = "io.awspring.cloud:spring-cloud-aws-starter-s3", version.ref = "spring-cloud-aws" }
+spring-cloud-stream-rabbit = { module = "org.springframework.cloud:spring-cloud-starter-stream-rabbit", version.ref = "spring-cloud-stream" }
+
+# Security / JWT
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jwt" }
+nimbus-jose-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus-jose-jwt" }
+
+# Sentry
+sentry-spring-boot = { module = "io.sentry:sentry-spring-boot-starter-jakarta", version.ref = "sentry" }
+sentry-logback = { module = "io.sentry:sentry-logback", version.ref = "sentry" }
+
+# Database
+mysql-connector = { module = "com.mysql:mysql-connector-j" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flyway-mysql = { module = "org.flywaydb:flyway-mysql", version.ref = "flyway" }
+
+# Testing
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
+database-rider-junit5 = { module = "com.github.database-rider:rider-junit5", version.ref = "database-rider" }
+database-rider-spring = { module = "com.github.database-rider:rider-spring", version.ref = "database-rider" }
+fixture-monkey = { module = "com.navercorp.fixturemonkey:fixture-monkey-starter", version.ref = "fixture-monkey" }
+mysql-connector-legacy = { module = "mysql:mysql-connector-java", version.ref = "mysql-connector-legacy" }
+javax-persistence = { module = "javax.persistence:javax.persistence-api", version.ref = "javax-persistence" }
+
+# Tools
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+json = { module = "org.json:json", version.ref = "json" }
+iv-compressor = { module = "io.github.techgnious:IVCompressor", version.ref = "iv-compressor" }
+tika-core = { module = "org.apache.tika:tika-core", version.ref = "tika" }
+tika-parsers = { module = "org.apache.tika:tika-parsers-standard-package", version.ref = "tika" }
+
+# Documentation
+springdoc-openapi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
