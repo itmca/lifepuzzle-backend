@@ -58,7 +58,7 @@ jobs:
           echo "JAR file uploaded successfully"
 
       - name: SSH into Home Server and Deploy Application
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.4
         with:
           host: ${{ secrets.HOME_SERVER_HOST }}
           username: ${{ secrets.HOME_SERVER_USER }}
