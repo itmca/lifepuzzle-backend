@@ -1,5 +1,13 @@
 # LifePuzzle Backend
 
+> **This repository has been archived and moved to a monorepo.**
+>
+> **New location: [itmca/lifepuzzle](https://github.com/itmca/lifepuzzle) (`apps/backend/`)**
+>
+> 모노레포로 통합되어 이 저장소는 더 이상 업데이트되지 않습니다.
+
+---
+
 > 소중한 사람들과의 추억을 모으고 기록하는 인생퍼즐 서비스의 백엔드 시스템
 
 ### 핵심 기능

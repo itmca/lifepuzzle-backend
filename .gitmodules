@@ -1,0 +1,3 @@
+[submodule ".team"]
+	path = .team
+	url = git@github.com:itmca/team-config.git
