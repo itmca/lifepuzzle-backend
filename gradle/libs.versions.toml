@@ -3,7 +3,7 @@
 java = "21"
 
 # Spring
-spring-boot = "3.4.1"
+spring-boot = "4.0.2"
 spring-dependency-management = "1.1.7"
 spring-cloud-aws = "3.4.0"
 spring-cloud-stream = "4.1.3"
