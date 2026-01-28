@@ -27,7 +27,7 @@ javax-persistence = "2.2"
 lombok = "1.18.38"
 json = "20240303"
 iv-compressor = "2.0.2"
-tika = "3.2.0"
+tika = "3.2.3"
 springdoc = "2.8.13"
 checkstyle = "10.10.0"
 
