@@ -9,7 +9,7 @@ spring-cloud-aws = "3.4.0"
 spring-cloud-stream = "4.1.3"
 
 # Security
-jwt = "0.12.6"
+jwt = "0.13.0"
 nimbus-jose-jwt = "10.5"
 sentry = "8.20.0"
 
