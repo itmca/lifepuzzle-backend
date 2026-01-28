@@ -28,7 +28,7 @@ lombok = "1.18.38"
 json = "20240303"
 iv-compressor = "2.0.2"
 tika = "3.2.0"
-springdoc = "2.8.13"
+springdoc = "3.0.1"
 checkstyle = "10.10.0"
 
 [libraries]
